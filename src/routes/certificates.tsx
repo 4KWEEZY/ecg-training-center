@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { Award, Download, Lock, CheckCircle2, Calendar, ShieldCheck } from 'lucide-react'
+import { useState } from 'react'
+import { Award, Download, Lock, CheckCircle2, Calendar, ShieldCheck, Search, SearchCheck, X } from 'lucide-react'
 
 export const Route = createFileRoute('/certificates')({
   component: Certificates,
@@ -23,7 +24,7 @@ const mockupCertificates = [
     credentialId: null,
     authority: "ECG Engineering Operations Directorate",
     isLocked: true,
-    requirement: "Requires passing score on Distribution Operations 101 end-of-module quiz."
+    requirement: "Requires passing score on Distribution Operations 101."
   },
   {
     id: "cert-03",
@@ -33,106 +34,123 @@ const mockupCertificates = [
     credentialId: null,
     authority: "ECG Commercial Services Training Division",
     isLocked: true,
-    requirement: "Requires completion of Customer Service and Metering tracks."
+    requirement: "Requires completion of Customer Service tracks."
   }
 ]
 
 function Certificates() {
-  const handleDownloadCertificate = (title: string) => {
-    alert(`Generating secure PDF download token for: "${title}"...`);
+  const [verifyId, setVerifyId] = useState("")
+  const [verificationResult, setVerificationResult] = useState<any | null>(null)
+  const [hasSearched, setHasSearched] = useState(false)
+
+  const handleVerifyLookup = (e: React.FormEvent) => {
+    e.preventDefault()
+    setHasSearched(true)
+    const matched = mockupCertificates.find(c => c.credentialId === verifyId.trim())
+    setVerificationResult(matched || null)
   }
 
   return (
-    <div className="min-h-screen bg-brand-dark text-white p-8 pt-28">
-      <main className="mx-auto max-w-5xl space-y-8">
+    <div className="min-h-screen bg-bg p-6 pt-32 lg:p-12">
+      <main className="mx-auto max-w-5xl space-y-12">
         
-        {/* Top Header Grid Area */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border pb-8">
           <div>
-            <h1 className="font-display text-4xl font-light uppercase tracking-wide text-white">
-              Training <span className="text-yellow">Certificates</span>
+            <h1 className="font-display text-4xl font-bold uppercase tracking-wide text-brand-primary">
+              Institutional <span className="text-brand-light">Certificates</span>
             </h1>
-            <p className="mt-1 text-sm text-white/70">
-              Review your earned milestones and monitor completion tracking criteria for upcoming certifications.
+            <p className="mt-2 text-text-body">
+              Review your earned engineering milestones and verify official credential hashes.
             </p>
           </div>
           
-          <div className="flex items-center gap-3 bg-brand-deep border border-white/10 px-4 py-3 rounded-xl shrink-0">
-            <Award className="h-6 w-6 text-yellow animate-pulse" />
+          <div className="flex items-center gap-4 bg-white border border-border px-6 py-4 rounded-xl shadow-sm">
+            <Award className="h-8 w-8 text-brand-primary" />
             <div>
-              <div className="text-sm font-bold">1 Milestone</div>
-              <div className="text-[10px] text-white/50 uppercase tracking-wider">Earned So Far</div>
+              <div className="text-sm font-black uppercase tracking-widest text-text-primary">1 Milestone</div>
+              <div className="text-[10px] font-bold text-text-muted uppercase tracking-wider">Earned Track Record</div>
             </div>
           </div>
         </div>
 
-        {/* Certificates Dynamic Catalog Layout */}
+        {/* Verification Hub */}
+        <div className="bg-white border border-border rounded-2xl p-8 shadow-sm">
+          <h2 className="text-sm font-black uppercase tracking-[0.2em] text-brand-primary mb-2 flex items-center gap-3">
+            <SearchCheck className="h-5 w-5" /> Public Verification Gateway
+          </h2>
+          <p className="text-xs text-text-muted mb-6 max-w-xl">
+            Employers or system regulators can run immediate token compliance lookups on credential hashes below.
+          </p>
+          
+          <form onSubmit={handleVerifyLookup} className="flex gap-4 max-w-2xl">
+            <input 
+              type="text"
+              required
+              placeholder="Enter Credential ID (e.g. ECG-SAF-2026-8849)"
+              value={verifyId}
+              onChange={(e) => setVerifyId(e.target.value)}
+              className="flex-1 rounded-xl border border-border bg-bg-muted px-4 py-3 text-sm text-text-primary outline-none focus:border-brand-primary transition-all"
+            />
+            <button type="submit" className="bg-brand-primary text-white rounded-xl px-8 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-dark transition-all">
+              Verify
+            </button>
+          </form>
+
+          {hasSearched && (
+            <div className="mt-6">
+              {verificationResult ? (
+                <div className="p-4 bg-accent-green/10 border border-accent-green/20 text-accent-green rounded-xl text-xs font-bold flex items-center gap-3">
+                  <CheckCircle2 className="h-5 w-5 shrink-0" />
+                  Authentic Credential Verified: {verificationResult.title}
+                </div>
+              ) : (
+                <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-600 rounded-xl text-xs font-bold flex items-center gap-3">
+                  <X className="h-5 w-5 shrink-0" />
+                  Invalid Hash: No record matches that ID within our system.
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Certificate List */}
         <div className="space-y-4">
           {mockupCertificates.map((cert) => (
-            <div 
-              key={cert.id}
-              className={`border p-6 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all ${
-                cert.isLocked 
-                  ? "bg-black/10 border-white/5 opacity-60" 
-                  : "bg-brand-deep border-white/10 hover:border-yellow/20"
-              }`}
-            >
-              {/* Info Frame Block */}
+            <div key={cert.id} className={`border rounded-xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-all ${cert.isLocked ? "bg-bg-muted border-border" : "bg-white border-border shadow-sm"}`}>
               <div className="flex items-start gap-4">
-                <div className={`p-4 rounded-lg shrink-0 mt-0.5 ${
-                  cert.isLocked ? "bg-white/5 text-white/30" : "bg-yellow/10 text-yellow"
-                }`}>
+                <div className={`p-3 rounded-xl ${cert.isLocked ? "bg-border text-text-muted" : "bg-brand-primary/10 text-brand-primary"}`}>
                   {cert.isLocked ? <Lock className="h-6 w-6" /> : <Award className="h-6 w-6" />}
                 </div>
-
-                <div className="space-y-1.5">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm ${
-                      cert.isLocked ? "bg-white/5 text-white/50" : "bg-green-500/20 text-green-400 border border-green-500/10"
-                    }`}>
+                <div>
+                  <div className="flex items-center gap-3 mb-1">
+                    <span className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded ${cert.isLocked ? "bg-border text-text-muted" : "bg-accent-green/10 text-accent-green"}`}>
                       {cert.status}
                     </span>
-                    <span className="text-xs text-white/40">{cert.authority}</span>
+                    <span className="text-[10px] font-bold text-text-muted uppercase">{cert.authority}</span>
                   </div>
-
-                  <h3 className={`text-lg font-semibold ${cert.isLocked ? "text-white/60" : "text-white"}`}>
-                    {cert.title}
-                  </h3>
-
-                  {/* Conditional Render Elements Based On Locked Status */}
+                  <h3 className={`text-lg font-bold ${cert.isLocked ? "text-text-muted" : "text-text-primary"}`}>{cert.title}</h3>
                   {cert.isLocked ? (
-                    <p className="text-xs text-yellow/70 italic flex items-center gap-1">
-                      <span className="inline-block w-1.5 h-1.5 rounded-full bg-yellow" /> {cert.requirement}
-                    </p>
+                    <p className="text-xs font-bold text-brand-primary mt-1 italic">{cert.requirement}</p>
                   ) : (
-                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-white/60 pt-0.5">
-                      <span className="flex items-center gap-1"><Calendar className="h-3.5 w-3.5 text-yellow" /> Issued: {cert.issueDate}</span>
-                      <span className="flex items-center gap-1"><ShieldCheck className="h-3.5 w-3.5 text-yellow" /> ID: {cert.credentialId}</span>
+                    <div className="flex gap-4 mt-1 text-[10px] font-bold text-text-muted uppercase tracking-widest">
+                      <span className="flex items-center gap-1.5"><Calendar className="h-3.5 w-3.5" /> {cert.issueDate}</span>
+                      <span className="flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" /> {cert.credentialId}</span>
                     </div>
                   )}
                 </div>
               </div>
 
-              {/* Action Button Section */}
-              <div className="shrink-0 flex items-center md:justify-end border-t md:border-t-0 border-white/5 pt-4 md:pt-0">
-                {cert.isLocked ? (
-                  <span className="text-xs font-bold uppercase tracking-widest text-white/30 border border-white/5 px-4 py-2 rounded-sm cursor-not-allowed bg-white/[0.01]">
-                    Locked
-                  </span>
-                ) : (
-                  <button
-                    onClick={() => handleDownloadCertificate(cert.title)}
-                    className="w-full md:w-auto inline-flex items-center justify-center gap-2 rounded-sm bg-yellow px-5 py-2.5 text-xs font-bold uppercase tracking-wider text-brand-dark transition hover:brightness-110 focus:outline-none"
-                  >
+              <div className="border-t md:border-t-0 border-border pt-4 md:pt-0">
+                {!cert.isLocked && (
+                  <button className="w-full md:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-brand-primary px-6 py-3 text-[11px] font-bold uppercase tracking-widest text-white hover:bg-brand-dark transition-all">
                     Download PDF <Download className="h-3.5 w-3.5" />
                   </button>
                 )}
               </div>
-
             </div>
           ))}
         </div>
-
       </main>
     </div>
   )

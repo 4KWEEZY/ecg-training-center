@@ -1,143 +1,173 @@
-@import "tailwindcss" source(none);
-@source "../src";
+/* --- 1. IMPORTS MUST BE AT THE VERY TOP --- */
+@import "tailwindcss";
 @import "tw-animate-css";
-
 @import url("https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap");
 
-@custom-variant dark (&:is(.dark *));
+/* --- 2. CONFIGURATION --- */
+@source "../src";
 
 @theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --font-display: var(--font-display);
-  --font-sans: var(--font-sans);
-}
-
-:root {
   --radius: 0.375rem;
 
-  /* Brand: deep utility blue + yellow + red CTA */
-  --brand-blue: oklch(0.32 0.18 265);          /* deep saturated blue */
-  --brand-blue-deep: oklch(0.24 0.17 265);
-  --brand-blue-dark: oklch(0.18 0.14 265);
-  --brand-yellow: oklch(0.88 0.18 95);
-  --brand-red: oklch(0.55 0.22 25);
-  --brand-red-deep: oklch(0.46 0.22 25);
-
-  --background: var(--brand-blue);
-  --foreground: oklch(0.99 0 0);
-  --card: var(--brand-blue-deep);
-  --card-foreground: oklch(0.99 0 0);
-  --popover: var(--brand-blue-deep);
-  --popover-foreground: oklch(0.99 0 0);
-  --primary: var(--brand-red);
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.99 0 0 / 0.08);
-  --secondary-foreground: oklch(0.99 0 0);
-  --muted: oklch(0.99 0 0 / 0.06);
-  --muted-foreground: oklch(0.99 0 0 / 0.7);
-  --accent: var(--brand-yellow);
-  --accent-foreground: var(--brand-blue-dark);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.99 0 0);
-  --border: oklch(0.99 0 0 / 0.12);
-  --input: oklch(0.99 0 0 / 0.15);
-  --ring: var(--brand-yellow);
-
+  /* ── Typography ── */
   --font-display: "Barlow Condensed", "Barlow", system-ui, sans-serif;
-  --font-sans: "Barlow", system-ui, sans-serif;
+  --font-sans:    "Barlow", system-ui, sans-serif;
 
-  --shadow-glow: 0 0 0 1px oklch(0.99 0 0 / 0.06), 0 20px 50px -20px oklch(0 0 0 / 0.5);
-  --shadow-card: 0 8px 24px -8px oklch(0 0 0 / 0.45);
+  /* ── ECG Brand Colors (matched from app screenshot) ── */
+  --color-brand-primary:   #3B3DA6;   /* deep indigo — main brand */
+  --color-brand-deep:      #2B2D8A;   /* darker indigo — hover/depth */
+  --color-brand-mid:       #4B4FBF;   /* mid indigo — gradients */
+  --color-brand-light:     #6B6FD4;   /* light indigo — accents */
+  --color-brand-dark:      #1A1C5C;   /* near-navy — text on light */
 
-  --gradient-hero: linear-gradient(180deg, oklch(0.32 0.18 265 / 0.65) 0%, oklch(0.24 0.17 265 / 0.92) 100%);
-  --gradient-hero-side: linear-gradient(90deg, oklch(0.24 0.17 265 / 0.92) 0%, oklch(0.32 0.18 265 / 0.55) 60%, oklch(0.32 0.18 265 / 0.3) 100%);
+  --color-yellow:          #FFD700;   /* ECG gold/yellow */
+  --color-yellow-deep:     #E6BE00;   /* yellow hover */
+
+  --color-red-cta:         #E8534A;   /* alert red — CTA button */
+  --color-red-cta-deep:    #CC3F37;   /* red hover */
+
+  --color-accent-green:    #2E9E6B;   /* meter/success green */
+  --color-accent-purple:   #7B5EA7;   /* billing purple */
+
+  /* ── UI Surface Colors ── */
+  --color-bg:              #F4F5FB;   /* page background (light) */
+  --color-bg-card:         #FFFFFF;   /* card surface */
+  --color-bg-muted:        #EAEBF6;   /* subtle tinted bg */
+  --color-bg-dark:         #1A1C5C;   /* dark sections */
+
+  /* ── Text ── */
+  --color-text-primary:    #1A1C5C;   /* dark navy — headings */
+  --color-text-body:       #3D3F6E;   /* mid navy — body */
+  --color-text-muted:      #8B8DAE;   /* muted — captions */
+  --color-text-white:      #FFFFFF;
+
+  /* ── Borders & Shadows ── */
+  --color-border:          #DDDDF0;
+  --color-border-strong:   #AAAAC8;
+
+  --shadow-card: 0 2px 12px 0 rgba(59, 61, 166, 0.10);
+  --shadow-card-hover: 0 6px 24px 0 rgba(59, 61, 166, 0.18);
+
+  /* ── Legacy aliases (keeps Hero.tsx / other components working) ── */
+  --color-brand-yellow:    #FFD700;
 }
 
+/* --- 3. BASE STYLES --- */
 @layer base {
-  * {
-    border-color: var(--color-border);
+  *, *::before, *::after {
+    box-sizing: border-box;
   }
+
   html {
-    font-family: var(--font-sans);
+    scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
+
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background-color: var(--color-bg);
+    color: var(--color-text-body);
+    font-family: var(--font-sans);
   }
-  h1, h2, h3, h4 {
+
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--color-text-primary);
     font-family: var(--font-display);
-    letter-spacing: -0.005em;
   }
 }
 
+/* --- 4. UTILITY / COMPONENT CLASSES --- */
 @layer utilities {
-  .font-display { font-family: var(--font-display); }
-  .text-balance { text-wrap: balance; }
 
-  .bg-brand { background-color: var(--brand-blue); }
-  .bg-brand-deep { background-color: var(--brand-blue-deep); }
-  .bg-brand-dark { background-color: var(--brand-blue-dark); }
-  .bg-yellow { background-color: var(--brand-yellow); }
-  .text-yellow { color: var(--brand-yellow); }
-  .text-red-cta { color: var(--brand-red); }
-  .bg-red-cta { background-color: var(--brand-red); }
-  .bg-red-cta-deep { background-color: var(--brand-red-deep); }
-
-  .shadow-card { box-shadow: var(--shadow-card); }
-  .shadow-glow { box-shadow: var(--shadow-glow); }
-
-  .gradient-hero { background-image: var(--gradient-hero); }
-  .gradient-hero-side { background-image: var(--gradient-hero-side); }
-
-  /* Thin red rule that ECG uses under nav */
-  .red-rule { background: linear-gradient(90deg, transparent, var(--brand-red) 30%, var(--brand-red) 70%, transparent); height: 1px; }
-
-  .ticker-track { animation: ticker 60s linear infinite; }
-  @keyframes ticker {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
+  /* Hero gradient — dark indigo overlay on hero image */
+  .gradient-hero {
+    background: linear-gradient(
+      105deg,
+      rgba(26, 28, 92, 0.92) 0%,
+      rgba(59, 61, 166, 0.75) 50%,
+      rgba(75, 79, 191, 0.30) 100%
+    );
   }
 
-  .word-cycle {
-    display: inline-block;
-    color: var(--brand-yellow);
-    animation: wordCycle 9s steps(1) infinite;
-    border-right: 2px solid var(--brand-yellow);
-    padding-right: 6px;
+  /* Section gradient — indigo to transparent (for dark sections) */
+  .gradient-section {
+    background: linear-gradient(
+      180deg,
+      var(--color-brand-primary) 0%,
+      var(--color-brand-deep) 100%
+    );
   }
-  @keyframes wordCycle {
-    0%, 33%   { content: "Home"; }
-    33%, 66%  { content: "Business"; }
-    66%, 100% { content: "Community"; }
-  }
-  .word-cycle::before { content: "Home"; }
-  .word-cycle.b2::before { content: "Business"; animation-delay: 3s; }
 
-  .blink { animation: blink 1s steps(1) infinite; }
+  /* Card base */
+  .card {
+    background-color: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+  }
+
+  .card-hover {
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .card-hover:hover {
+    box-shadow: var(--shadow-card-hover);
+    transform: translateY(-2px);
+  }
+
+  /* Brand button */
+  .btn-primary {
+    background-color: var(--color-brand-primary);
+    color: var(--color-text-white);
+    border-radius: var(--radius);
+    padding: 0.75rem 1.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .btn-primary:hover {
+    background-color: var(--color-brand-deep);
+    box-shadow: var(--shadow-card-hover);
+  }
+
+  /* Red CTA button */
+  .btn-cta {
+    background-color: var(--color-red-cta);
+    color: var(--color-text-white);
+    border-radius: var(--radius);
+    padding: 0.75rem 1.75rem;
+    font-weight: 600;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: background-color 0.2s ease;
+  }
+  .btn-cta:hover {
+    background-color: var(--color-red-cta-deep);
+  }
+
+  /* Blinking cursor for hero typewriter */
+  .blink {
+    animation: blink 1s step-end infinite;
+  }
   @keyframes blink {
-    50% { opacity: 0; }
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
   }
+
+  /* Topbar / nav bg */
+  .bg-brand-primary  { background-color: var(--color-brand-primary); }
+  .bg-brand-deep     { background-color: var(--color-brand-deep); }
+  .bg-brand-dark     { background-color: var(--color-brand-dark); }
+  .bg-page           { background-color: var(--color-bg); }
+  .bg-card           { background-color: var(--color-bg-card); }
+  .bg-muted          { background-color: var(--color-bg-muted); }
+
+  .text-brand        { color: var(--color-brand-primary); }
+  .text-yellow       { color: var(--color-yellow); }
+  .text-muted        { color: var(--color-text-muted); }
+  .text-body         { color: var(--color-text-body); }
+  .border-brand      { border-color: var(--color-border); }
+  .shadow-card       { box-shadow: var(--shadow-card); }
 }

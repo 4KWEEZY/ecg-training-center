@@ -2,153 +2,129 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Nav } from "@/components/landing/Nav";
 import { TopBar } from "@/components/landing/TopBar";
 import { Footer } from "@/components/landing/Footer";
+import { PlusCircle, Wrench, RefreshCw, Terminal, Calendar, Layers, ShieldCheck } from "lucide-react";
 
 export const Route = createFileRoute("/version")({
   component: VersionPage,
 });
 
 type ChangeType = "add" | "fix" | "update";
-type LabelType = "latest" | "stable" | "beta" | "deprecated";
+type LabelType = "latest" | "stable" | "beta";
 
-interface Change {
-  type: ChangeType;
-  text: string;
-}
-
-interface Release {
-  version: string;
-  date: string;
-  label: LabelType;
-  notes: string;
-  changes: Change[];
-}
+interface Change { type: ChangeType; text: string; }
+interface Release { version: string; date: string; label: LabelType; notes: string; changes: Change[]; }
 
 const releases: Release[] = [
   {
-    version: "v2.4.1",
-    date: "16 May 2026",
+    version: "v2.0.0",
+    date: "19 May 2026",
     label: "latest",
-    notes: "Hotfix targeting billing API timeout issues and prepaid top-up failures.",
+    notes: "Official Version 2.0 release. Complete public landing infrastructure overhaul and automated online student registration systems.",
     changes: [
-      { type: "fix", text: "Fixed billing API request timeout on high-traffic periods" },
-      { type: "fix", text: "Resolved prepaid top-up failure for MTN Mobile Money" },
-      { type: "update", text: "Upgraded payment gateway SDK to v4.2.0" },
+      { type: "add", text: "Integrated MoMo Payment Flow gateway supporting MTN, Telecel, and AT networks" },
+      { type: "add", text: "Added high-impact landing layouts with animated statistics and interactive filters" },
+      { type: "update", text: "Connected frontend layout routers to live Cloudflare CDN optimization nodes" },
+      { type: "fix", text: "Resolved deep response layout breakages on mobile device viewports" },
     ],
   },
   {
-    version: "v2.4.0",
-    date: "1 May 2026",
+    version: "v1.4.2",
+    date: "28 Apr 2026",
     label: "stable",
-    notes: "Major update introducing outage reporting and real-time notifications.",
+    notes: "Minor internal platform patch targeting user authentication middleware and quiz grading criteria.",
     changes: [
-      { type: "add", text: "Added outage reporting and live status map" },
-      { type: "add", text: "Real-time SMS/email notifications for supply interruptions" },
-      { type: "fix", text: "Fixed meter reading submission on Safari mobile" },
-    ],
-  },
-  {
-    version: "v2.3.2",
-    date: "10 Apr 2026",
-    label: "stable",
-    notes: "Patch release with security improvements and accessibility fixes.",
-    changes: [
-      { type: "fix", text: "Patched XSS vulnerability in account settings form" },
-      { type: "update", text: "Improved keyboard navigation across all forms" },
+      { type: "update", text: "Upgraded institutional JWT access and refresh security token lifetimes" },
+      { type: "fix", text: "Fixed automatic grading calculation error on multichoice evaluation forms" },
     ],
   },
 ];
 
 const BADGE: Record<LabelType, string> = {
-  latest:     "bg-yellow-100 text-yellow-800",
-  stable:     "bg-green-100 text-green-800",
-  beta:       "bg-blue-100 text-blue-800",
-  deprecated: "bg-red-100 text-red-800",
+  latest: "bg-brand-primary/10 text-brand-primary border border-brand-primary/20",
+  stable: "bg-accent-green/10 text-accent-green border border-accent-green/20",
+  beta: "bg-accent-purple/10 text-accent-purple border border-accent-purple/20",
 };
 
-const CHANGE_ICON: Record<ChangeType, string> = {
-  add:    "+ ",
-  fix:    "✕ ",
-  update: "↑ ",
-};
-
-const CHANGE_COLOR: Record<ChangeType, string> = {
-  add:    "text-green-500",
-  fix:    "text-red-400",
-  update: "text-blue-400",
+const CHANGE_ICON = {
+  add: <PlusCircle className="h-4 w-4 text-accent-green shrink-0 mt-0.5" />,
+  fix: <Wrench className="h-4 w-4 text-red-cta shrink-0 mt-0.5" />,
+  update: <RefreshCw className="h-4 w-4 text-brand-primary shrink-0 mt-0.5" />,
 };
 
 function VersionPage() {
   return (
-    <div className="min-h-screen bg-brand text-white">
+    <div className="min-h-screen bg-bg">
       <TopBar />
       <Nav />
-      <main className="mx-auto max-w-6xl px-4 pt-28 pb-16 sm:px-6 lg:px-8">
+      
+      <main className="mx-auto max-w-5xl px-6 pt-36 pb-20">
 
-        {/* Header */}
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_30px_80px_rgba(0,0,0,0.25)] backdrop-blur-md">
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+        {/* ── Header ── */}
+        <div className="rounded-xl border border-border bg-white p-6 md:p-8 shadow-card mb-8">
+          <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-lg bg-[#F5A623] flex items-center justify-center text-2xl">
-                ⚡
+              <div className="w-12 h-12 rounded-xl bg-brand-primary flex items-center justify-center text-white shadow-lg">
+                <Terminal className="h-6 w-6" />
               </div>
               <div>
-                <h1 className="text-2xl font-semibold">ECG Training Center</h1>
-                <p className="text-sm text-white/60">Version & Release History</p>
+                <h1 className="text-2xl font-bold text-text-primary tracking-wide uppercase font-display">LMS Release Logs</h1>
+                <p className="text-xs text-text-muted uppercase tracking-widest mt-0.5">System Architecture Track</p>
               </div>
             </div>
-            <div className="rounded-2xl bg-white/10 px-4 py-2 text-sm text-white/80">
-              Latest release: <span className="font-semibold text-white">{releases[0].version}</span>
+            <div className="inline-flex self-start md:self-auto items-center gap-2 rounded-lg bg-bg-muted border border-border px-4 py-2 text-[10px] font-bold uppercase tracking-widest text-text-primary">
+              Active Build: <span className="text-brand-primary">{releases[0].version}</span>
             </div>
           </div>
         </div>
 
-        {/* Meta cards */}
-        <div className="grid grid-cols-1 gap-4 py-8 sm:grid-cols-2 xl:grid-cols-4">
+        {/* ── Metrics ── */}
+        <div className="grid grid-cols-2 gap-4 mb-8 lg:grid-cols-4">
           {[
-            { label: "Current version", value: "v2.4.1", highlight: true },
-            { label: "Build", value: "20240516", highlight: false },
-            { label: "Last deploy", value: "16 May 2026", highlight: false },
-            { label: "Releases", value: String(releases.length), highlight: false },
+            { label: "Version", value: releases[0].version, icon: Layers },
+            { label: "Stack", value: "React + TS", icon: Terminal },
+            { label: "Deployment", value: "Cloudflare", icon: ShieldCheck },
+            { label: "Pushed", value: releases[0].date, icon: Calendar },
           ].map((m) => (
-            <div key={m.label} className="bg-white/10 rounded-3xl p-4">
-              <p className="text-xs uppercase tracking-widest text-white/50 mb-2">{m.label}</p>
-              <p className={`text-xl font-semibold ${m.highlight ? "text-[#F5A623]" : "text-white"}`}>
-                {m.value}
-              </p>
+            <div key={m.label} className="bg-white border border-border rounded-xl p-4 flex flex-col justify-between shadow-card">
+              <span className="text-[9px] uppercase tracking-widest text-text-muted block mb-3 font-bold">{m.label}</span>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-bold text-text-primary">{m.value}</span>
+                <m.icon className="h-3.5 w-3.5 text-brand-light" />
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Release history */}
-        <div className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-[0_20px_60px_rgba(0,0,0,0.18)]">
-          <p className="text-xs uppercase tracking-widest text-white/50 mb-4">Release history</p>
-          <div className="flex flex-col gap-4">
+        {/* ── Version Stack ── */}
+        <div className="space-y-6">
+          <h2 className="text-[10px] font-bold uppercase tracking-widest text-text-muted mb-4">Deployment History</h2>
           {releases.map((r) => (
-            <div key={r.version} className="bg-white/10 border border-white/10 rounded-xl p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{r.version}</span>
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${BADGE[r.label]}`}>
+            <div key={r.version} className="bg-white border border-border rounded-xl p-6 shadow-card">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div className="flex items-center gap-3">
+                  <span className="font-display font-bold text-lg text-text-primary">{r.version}</span>
+                  <span className={`text-[9px] uppercase tracking-wider px-3 py-1 rounded-full font-bold ${BADGE[r.label]}`}>
                     {r.label}
                   </span>
                 </div>
-                <span className="text-xs text-white/50">{r.date}</span>
+                <span className="text-[10px] font-bold text-text-muted uppercase">{r.date}</span>
               </div>
-              <p className="text-sm text-white/70 mb-2">{r.notes}</p>
-              <ul className="flex flex-col gap-1">
-                {r.changes.map((c, i) => (
-                  <li key={i} className="text-sm flex gap-1">
-                    <span className={CHANGE_COLOR[c.type]}>{CHANGE_ICON[c.type]}</span>
-                    <span className="text-white/80">{c.text}</span>
+              
+              <p className="text-sm text-text-body mb-6 leading-relaxed border-l-2 border-brand-light pl-4">{r.notes}</p>
+              
+              <ul className="flex flex-col gap-3">
+                {r.changes.map((c, idx) => (
+                  <li key={idx} className="text-xs flex items-start gap-3 text-text-body">
+                    {CHANGE_ICON[c.type]}
+                    {c.text}
                   </li>
                 ))}
               </ul>
             </div>
           ))}
-          </div>
         </div>
-
       </main>
+      
       <Footer />
     </div>
   );

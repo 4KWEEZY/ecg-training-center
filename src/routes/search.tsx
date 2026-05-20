@@ -9,7 +9,6 @@ export const Route = createFileRoute("/search")({
   component: SearchPage,
 });
 
-// Mock portal data pool for high-fidelity search matching
 const searchableItems = [
   { title: "Workplace Safety & Compliance Module", category: "Course materials", type: "course", path: "/courses" },
   { title: "Distribution Operations 101 Guide", category: "Course materials", type: "course", path: "/courses" },
@@ -23,112 +22,128 @@ const searchableItems = [
 function SearchPage() {
   const [query, setQuery] = useState("");
 
-  // Filters the data array in real-time based on the trainee's search input
   const filteredResults = searchableItems.filter((item) =>
     item.title.toLowerCase().includes(query.toLowerCase()) ||
     item.category.toLowerCase().includes(query.toLowerCase())
   );
 
   return (
-    <div className="min-h-screen bg-brand text-white flex flex-col justify-between">
-      <div>
-        <TopBar />
-        <Nav />
-        
-        <main className="mx-auto max-w-4xl px-6 py-40 sm:px-8">
-          <div className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-[0_30px_80px_rgba(0,0,0,0.18)] backdrop-blur-md">
-            
-            {/* Header Content */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h1 className="text-3xl font-semibold text-white">Search the Training Center</h1>
-                <p className="mt-2 text-sm text-white/70">Find courses, resources, and quizzes across the portal.</p>
-              </div>
-              <Link
-                to="/login"
-                className="inline-flex rounded-3xl bg-yellow px-4 py-2 text-xs font-semibold uppercase tracking-wider text-brand-dark transition hover:brightness-110 shrink-0 self-start sm:self-center"
-              >
-                Sign in to continue
-              </Link>
-            </div>
+    <div className="min-h-screen flex flex-col bg-[#F4F5FB]">
+      <TopBar />
+      <Nav />
 
-            {/* Interactive Search Bar Input */}
-            <div className="mt-8">
-              <label className="block text-sm text-white/80 font-medium">Search term</label>
-              <div className="relative mt-3">
-                <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-white/40" />
-                <input
-                  type="search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search courses, quizzes, and guides (e.g., safety, substation, metrics)..."
-                  className="w-full rounded-3xl border border-white/10 bg-white/5 py-4 pl-12 pr-4 text-white outline-none transition focus:border-yellow text-sm"
-                />
-              </div>
-            </div>
+      <main className="flex-1 mx-auto w-full max-w-3xl px-6 py-36 sm:px-8">
 
-            {/* Clickable Quick Filter Badges */}
-            <div className="mt-8">
-              <span className="text-xs font-bold uppercase tracking-wider text-white/50 block mb-3">Quick Categories</span>
-              <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
-                {["Course materials", "Live sessions", "Certification", "Help articles"].map((item) => (
-                  <button
-                    key={item}
-                    onClick={() => setQuery(item)}
-                    className={`rounded-xl border text-left px-4 py-3 text-xs font-medium transition focus:outline-none ${
-                      query === item 
-                        ? "border-yellow bg-yellow/10 text-yellow" 
-                        : "border-white/10 bg-white/5 text-white/80 hover:border-white/30"
-                    }`}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-            </div>
+        {/* Page heading */}
+        <div className="mb-8 text-center">
+          <h1 className="font-display text-3xl font-bold uppercase tracking-wide text-[#1A1C5C] sm:text-4xl">
+            Search the Training Center
+          </h1>
+          <p className="mt-2 text-sm text-[#8B8DAE]">
+            Find courses, resources, and quizzes across the portal.
+          </p>
+        </div>
 
-            {/* Dynamic Real-Time Results Field */}
-            {query.length > 0 && (
-              <div className="mt-8 border-t border-white/10 pt-6 space-y-3">
-                <div className="flex items-center justify-between text-xs text-white/50 uppercase tracking-wider font-semibold px-1">
-                  <span>Search Results</span>
-                  <span>{filteredResults.length} Found</span>
-                </div>
-                
-                {filteredResults.length > 0 ? (
-                  filteredResults.map((result) => (
+        {/* Search card */}
+        <div className="rounded-2xl border border-[#DDDDF0] bg-white p-8 shadow-[0_4px_24px_rgba(59,61,166,0.08)]">
+
+          {/* Search input */}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-[0.15em] text-[#3B3DA6]">
+              Search term
+            </label>
+            <div className="relative mt-3">
+              <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#AAAAC8]" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search courses, quizzes, guides (e.g. safety, substation)…"
+                className="w-full rounded-xl border border-[#DDDDF0] bg-[#F4F5FB] py-3.5 pl-12 pr-4 text-sm text-[#1A1C5C] outline-none transition placeholder:text-[#AAAAC8] focus:border-[#3B3DA6] focus:ring-2 focus:ring-[#3B3DA6]/10"
+              />
+            </div>
+          </div>
+
+          {/* Quick filter badges */}
+          <div className="mt-6">
+            <span className="mb-3 block text-[10px] font-bold uppercase tracking-[0.2em] text-[#AAAAC8]">
+              Quick Categories
+            </span>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {["Course materials", "Live sessions", "Certification", "Help articles"].map((item) => (
+                <button
+                  key={item}
+                  onClick={() => setQuery(query === item ? "" : item)}
+                  className={`rounded-lg border px-3 py-2.5 text-left text-xs font-medium transition focus:outline-none ${
+                    query === item
+                      ? "border-[#3B3DA6] bg-[#3B3DA6] text-white"
+                      : "border-[#DDDDF0] bg-[#F4F5FB] text-[#3D3F6E] hover:border-[#3B3DA6]/40 hover:bg-[#EAEBF6]"
+                  }`}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Results */}
+          {query.length > 0 && (
+            <div className="mt-6 border-t border-[#DDDDF0] pt-6">
+              <div className="mb-3 flex items-center justify-between px-1">
+                <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#AAAAC8]">
+                  Results
+                </span>
+                <span className="rounded-full bg-[#3B3DA6]/10 px-2.5 py-0.5 text-[10px] font-bold text-[#3B3DA6]">
+                  {filteredResults.length} found
+                </span>
+              </div>
+
+              {filteredResults.length > 0 ? (
+                <div className="flex flex-col gap-2">
+                  {filteredResults.map((result) => (
                     <Link
                       key={result.title}
                       to={result.path}
-                      className="flex items-center justify-between border border-white/5 bg-black/10 hover:bg-white/5 hover:border-yellow/30 p-4 rounded-xl transition group"
+                      className="group flex items-center justify-between rounded-xl border border-[#DDDDF0] bg-[#F4F5FB] p-4 transition hover:border-[#3B3DA6]/40 hover:bg-[#EAEBF6]"
                     >
                       <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-md bg-white/5 text-yellow">
-                          {result.type === "course" && <BookOpen className="h-4 w-4" />}
-                          {result.type === "quiz" && <ClipboardList className="h-4 w-4" />}
-                          {result.type === "help" && <HelpCircle className="h-4 w-4" />}
-                          {result.type === "session" && <FileText className="h-4 w-4" />}
+                        <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#3B3DA6]/10 text-[#3B3DA6]">
+                          {result.type === "course"  && <BookOpen      className="h-4 w-4" />}
+                          {result.type === "quiz"    && <ClipboardList className="h-4 w-4" />}
+                          {result.type === "help"    && <HelpCircle    className="h-4 w-4" />}
+                          {result.type === "session" && <FileText      className="h-4 w-4" />}
                         </div>
                         <div>
-                          <span className="block text-sm font-medium text-white group-hover:text-yellow transition-colors">{result.title}</span>
-                          <span className="text-[11px] text-white/40 uppercase font-medium">{result.category}</span>
+                          <span className="block text-sm font-semibold text-[#1A1C5C] transition group-hover:text-[#3B3DA6]">
+                            {result.title}
+                          </span>
+                          <span className="text-[10px] font-medium uppercase tracking-wider text-[#AAAAC8]">
+                            {result.category}
+                          </span>
                         </div>
                       </div>
-                      <span className="text-xs text-yellow opacity-0 group-hover:opacity-100 transition-opacity pr-2 font-medium">View →</span>
+                      <span className="text-xs font-semibold text-[#3B3DA6] opacity-0 transition-opacity group-hover:opacity-100">
+                        View →
+                      </span>
                     </Link>
-                  )
-                )) : (
-                  <div className="text-center py-8 border border-dashed border-white/10 rounded-xl bg-white/[0.01]">
-                    <p className="text-sm text-white/40">No configuration logs or materials match your query.</p>
-                  </div>
-                )}
-              </div>
-            )}
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-xl border border-dashed border-[#DDDDF0] bg-[#F4F5FB] py-10 text-center">
+                  <p className="text-sm text-[#AAAAC8]">
+                    No results match your search.
+                  </p>
+                  <p className="mt-1 text-xs text-[#AAAAC8]">
+                    Try a different keyword or browse a category above.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
-          </div>
-        </main>
-      </div>
-      
+        </div>
+      </main>
+
       <Footer />
     </div>
   );

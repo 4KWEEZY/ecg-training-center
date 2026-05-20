@@ -1,48 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import { Play, Search, Video, Clock, Eye, Layers, ShieldCheck } from 'lucide-react'
+import { Play, Video, Clock, Eye, ShieldCheck, Search } from 'lucide-react'
 
 export const Route = createFileRoute('/library')({
   component: Library,
 })
 
 const videoCatalog = [
-  {
-    id: "vid-1",
-    title: "High-Voltage Substation Isolation Best Practices",
-    duration: "42:15",
-    views: "340",
-    category: "Safety",
-    instructor: "Ing. Appiah-Kubi",
-    thumbnailTag: "Feeder Control"
-  },
-  {
-    id: "vid-2",
-    title: "Vesting & Smart Meter Infrastructure Calibration",
-    duration: "28:40",
-    views: "185",
-    category: "Commercial",
-    instructor: "Madam E. Osei",
-    thumbnailTag: "Prepaid Systems"
-  },
-  {
-    id: "vid-3",
-    title: "Emergency Network Fault Isolation Protocols",
-    duration: "35:10",
-    views: "298",
-    category: "Operations",
-    instructor: "Ing. F. Mensah",
-    thumbnailTag: "Grid Restoration"
-  },
-  {
-    id: "vid-4",
-    title: "Customer Engagement Standards & Service Charter Review",
-    duration: "18:25",
-    views: "142",
-    category: "Public Relations",
-    instructor: "Mr. J. Boateng",
-    thumbnailTag: "Frontline Metrics"
-  }
+  { id: "vid-1", title: "High-Voltage Substation Isolation Best Practices", duration: "42:15", views: "340", category: "Safety", instructor: "Ing. Appiah-Kubi", thumbnailTag: "Feeder Control" },
+  { id: "vid-2", title: "Vesting & Smart Meter Infrastructure Calibration", duration: "28:40", views: "185", category: "Commercial", instructor: "Madam E. Osei", thumbnailTag: "Prepaid Systems" },
+  { id: "vid-3", title: "Emergency Network Fault Isolation Protocols", duration: "35:10", views: "298", category: "Operations", instructor: "Ing. F. Mensah", thumbnailTag: "Grid Restoration" },
+  { id: "vid-4", title: "Customer Engagement Standards & Service Charter Review", duration: "18:25", views: "142", category: "Public Relations", instructor: "Mr. J. Boateng", thumbnailTag: "Frontline Metrics" }
 ]
 
 function Library() {
@@ -52,40 +20,36 @@ function Library() {
     ? videoCatalog 
     : videoCatalog.filter(v => v.category === selectedCategory)
 
-  const handlePlayVideo = (title: string) => {
-    alert(`Streaming Media Node initialized for: "${title}"\n(Simulated Video Framework Player Ready)`);
-  }
-
   return (
-    <div className="min-h-screen bg-brand-dark text-white p-8 pt-28">
-      <main className="mx-auto max-w-5xl space-y-8">
+    <div className="min-h-screen bg-bg p-6 pt-32 lg:p-12">
+      <main className="mx-auto max-w-6xl space-y-10">
         
-        {/* Header Block Section */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-            <h1 className="font-display text-4xl font-light uppercase tracking-wide text-white">
-              Video <span className="text-yellow">Library</span>
+            <h1 className="font-display text-4xl font-bold uppercase tracking-wide text-brand-primary">
+              Video <span className="text-brand-light">Library</span>
             </h1>
-            <p className="mt-1 text-sm text-white/70">
-              Stream on-demand technical demonstrations, operations walkthroughs, and safety briefs.
+            <p className="mt-2 text-text-body max-w-lg">
+              Access official technical demonstrations, operational walkthroughs, and safety training modules.
             </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-green-400 bg-green-500/10 border border-green-500/20 px-3 py-1.5 rounded-sm">
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-accent-green bg-accent-green/10 border border-accent-green/20 px-4 py-2 rounded-full">
             <ShieldCheck className="h-4 w-4" /> Media Stream Active
           </div>
         </div>
 
-        {/* Dynamic Category Horizontal Filter Nav */}
-        <div className="flex flex-wrap items-center gap-2 border-b border-white/5 pb-4">
+        {/* Filter Nav */}
+        <div className="flex flex-wrap items-center gap-2 pb-4">
           {["All", "Safety", "Operations", "Commercial", "Public Relations"].map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`rounded-full px-4 py-1.5 text-xs font-medium uppercase tracking-wider transition focus:outline-none ${
+              className={`rounded-lg px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.1em] transition-all ${
                 selectedCategory === cat 
-                  ? "bg-yellow text-brand-dark font-bold" 
-                  : "bg-white/5 border border-white/10 text-white/70 hover:border-white/30 hover:bg-white/10"
+                  ? "bg-brand-primary text-white shadow-card" 
+                  : "bg-white border border-border text-text-muted hover:border-brand-primary/30"
               }`}
             >
               {cat}
@@ -93,57 +57,51 @@ function Library() {
           ))}
         </div>
 
-        {/* Video Catalog Responsive Grid Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {filteredVideos.map((video) => (
             <div 
               key={video.id}
-              className="group flex flex-col justify-between overflow-hidden rounded-xl border border-white/10 bg-brand-deep hover:border-yellow/30 transition-all"
+              className="group flex flex-col overflow-hidden rounded-xl border border-border bg-white shadow-card hover:shadow-card-hover transition-all duration-300"
             >
-              {/* Pseudo Video Content Card Cover Frame */}
-              <div 
-                onClick={() => handlePlayVideo(video.title)}
-                className="aspect-video w-full bg-black/40 border-b border-white/5 flex flex-col items-center justify-center relative cursor-pointer group-hover:bg-black/60 transition-all"
-              >
-                {/* Custom Label tag on Thumbnail corner */}
-                <span className="absolute top-3 left-3 text-[10px] bg-brand-dark/80 text-white border border-white/10 px-2 py-0.5 rounded-sm uppercase tracking-wide font-medium">
+              {/* Thumbnail */}
+              <div className="aspect-video w-full bg-bg-muted relative cursor-pointer overflow-hidden">
+                <div className="absolute inset-0 bg-brand-primary/10 group-hover:bg-transparent transition-all" />
+                <span className="absolute top-4 left-4 text-[10px] bg-white/90 backdrop-blur text-brand-primary px-3 py-1 rounded-full uppercase tracking-wider font-bold border border-border">
                   {video.thumbnailTag}
                 </span>
 
-                {/* Floating center play bubble element layout */}
-                <div className="p-4 rounded-full bg-yellow text-brand-dark scale-100 group-hover:scale-110 shadow-card transition-transform duration-300">
-                  <Play className="h-5 w-5 fill-brand-dark translate-x-0.5" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="p-4 rounded-full bg-white text-brand-primary scale-90 group-hover:scale-100 shadow-xl transition-transform duration-300">
+                    <Play className="h-6 w-6 fill-brand-primary" />
+                  </div>
                 </div>
 
-                <div className="absolute bottom-3 right-3 flex items-center gap-1.5 bg-black/70 px-2 py-1 rounded-md text-xs text-white/90">
+                <div className="absolute bottom-4 right-4 flex items-center gap-1.5 bg-brand-dark/80 backdrop-blur px-2.5 py-1 rounded-md text-[10px] font-bold text-white">
                   <Clock className="h-3 w-3 text-yellow" /> {video.duration}
                 </div>
               </div>
 
-              {/* Text Description Block metadata details footer */}
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-1.5">
-                  <span className="text-[10px] font-bold text-yellow uppercase tracking-wider block">
-                    {video.category} Module Division
-                  </span>
-                  <h3 className="text-base font-semibold leading-snug text-white group-hover:text-yellow transition-colors">
-                    {video.title}
-                  </h3>
-                  <p className="text-xs text-white/50">
-                    Presented by: <strong className="text-white/70 font-medium">{video.instructor}</strong>
-                  </p>
-                </div>
+              {/* Metadata */}
+              <div className="p-6 flex flex-col flex-1">
+                <span className="text-[10px] font-black text-brand-light uppercase tracking-[0.15em] mb-2">
+                  {video.category} Division
+                </span>
+                <h3 className="text-lg font-bold leading-tight text-text-primary mb-3 group-hover:text-brand-primary transition-colors">
+                  {video.title}
+                </h3>
+                <p className="text-xs text-text-muted mb-6">
+                  Presented by: <span className="font-semibold text-text-primary">{video.instructor}</span>
+                </p>
 
-                <div className="flex items-center gap-4 text-xs text-white/40 border-t border-white/5 pt-3">
-                  <span className="flex items-center gap-1"><Video className="h-3.5 w-3.5" /> Stream HD</span>
-                  <span className="flex items-center gap-1"><Eye className="h-3.5 w-3.5" /> {video.views} trainees watched</span>
+                <div className="mt-auto flex items-center gap-4 text-[11px] font-bold uppercase tracking-wider text-text-muted border-t border-border pt-4">
+                  <span className="flex items-center gap-1.5"><Video className="h-3.5 w-3.5" /> HD Stream</span>
+                  <span className="flex items-center gap-1.5"><Eye className="h-3.5 w-3.5" /> {video.views} Watched</span>
                 </div>
               </div>
-
             </div>
           ))}
         </div>
-
       </main>
     </div>
   )

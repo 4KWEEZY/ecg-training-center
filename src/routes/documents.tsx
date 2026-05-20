@@ -38,7 +38,7 @@ function Documents() {
   const [downloadedIds, setDownloadedIds] = useState<string[]>([])
 
   const handleDownload = (id: string, title: string) => {
-    alert(`Downloading: "${title}" (Simulated Frontend Action)`);
+    alert(`Downloading: "${title}"`);
     if (!downloadedIds.includes(id)) {
       setDownloadedIds([...downloadedIds, id]);
     }
@@ -50,34 +50,33 @@ function Documents() {
   )
 
   return (
-    <div className="min-h-screen bg-brand-dark text-white p-8 pt-28">
-      <main className="mx-auto max-w-5xl space-y-8">
+    <div className="min-h-screen bg-bg p-6 pt-32 lg:p-12">
+      <main className="mx-auto max-w-5xl space-y-10">
         
-        {/* Page Title Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-6">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border pb-8">
           <div>
-            <h1 className="font-display text-4xl font-light uppercase tracking-wide text-white">
-              Official <span className="text-yellow">Documents</span>
+            <h1 className="font-display text-4xl font-bold uppercase tracking-wide text-brand-primary">
+              Official <span className="text-brand-light">Documents</span>
             </h1>
-            <p className="mt-1 text-sm text-white/70">
+            <p className="mt-2 text-text-body max-w-lg">
               Review and sign off on mandatory corporate documents, policy files, and legal frameworks.
             </p>
           </div>
 
-          {/* Real-time frontend filter field */}
-          <div className="relative w-full md:w-72">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
+          <div className="relative w-full md:w-80">
+            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-text-muted" />
             <input
               type="text"
-              placeholder="Filter onboarding files..."
+              placeholder="Search files..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-md border border-white/10 bg-brand-deep py-2 pl-10 pr-4 text-sm text-white outline-none transition focus:border-yellow"
+              className="w-full rounded-xl border border-border bg-white py-3 pl-11 pr-4 text-sm text-text-primary outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary transition-all shadow-sm"
             />
           </div>
         </div>
 
-        {/* Dynamic Documents List Layout */}
+        {/* Document List */}
         <div className="space-y-4">
           {filteredDocs.length > 0 ? (
             filteredDocs.map((doc) => {
@@ -87,33 +86,33 @@ function Documents() {
               return (
                 <div 
                   key={doc.id}
-                  className="flex flex-col sm:flex-row sm:items-center justify-between border border-white/10 bg-brand-deep p-6 rounded-xl gap-4 transition hover:bg-brand/40"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between border border-border bg-white p-6 rounded-xl gap-6 transition hover:shadow-card-hover"
                 >
-                  <div className="flex items-start gap-4 max-w-3xl">
-                    <div className="p-3 rounded-lg bg-yellow/10 text-yellow shrink-0 mt-0.5">
-                      <Icon className="h-5 w-5" />
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 rounded-xl bg-brand-primary/10 text-brand-primary shrink-0 mt-0.5">
+                      <Icon className="h-6 w-6" />
                     </div>
                     <div>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider bg-white/10 text-white/80 px-2 py-0.5 rounded-sm">
+                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                        <span className="text-[9px] font-black uppercase tracking-[0.15em] bg-bg-muted text-brand-primary px-2 py-1 rounded">
                           {doc.category}
                         </span>
-                        <span className="text-xs text-white/40">Updated {doc.updatedAt}</span>
+                        <span className="text-[10px] font-bold text-text-muted uppercase">Updated {doc.updatedAt}</span>
                       </div>
-                      <h3 className="text-lg font-semibold text-white mt-1.5">{doc.title}</h3>
-                      <p className="text-sm text-white/70 mt-1 leading-relaxed">{doc.description}</p>
+                      <h3 className="text-lg font-bold text-text-primary">{doc.title}</h3>
+                      <p className="text-sm text-text-body mt-1 leading-relaxed max-w-2xl">{doc.description}</p>
                     </div>
                   </div>
 
-                  <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 border-white/5 pt-4 sm:pt-0 shrink-0 gap-2">
+                  <div className="flex sm:flex-col items-center sm:items-end justify-between border-t sm:border-t-0 border-border pt-4 sm:pt-0 shrink-0 gap-2">
                     {isDownloaded ? (
-                      <span className="inline-flex items-center gap-1.5 text-xs text-green-400 bg-green-500/10 px-3 py-1.5 rounded-sm font-semibold uppercase tracking-wider">
+                      <span className="inline-flex items-center gap-1.5 text-[10px] text-accent-green bg-accent-green/10 px-4 py-2 rounded-lg font-bold uppercase tracking-widest">
                         <CheckCircle2 className="h-3.5 w-3.5" /> Reviewed
                       </span>
                     ) : (
                       <button 
                         onClick={() => handleDownload(doc.id, doc.title)}
-                        className="inline-flex items-center gap-2 rounded-sm bg-yellow px-4 py-2 text-xs font-bold uppercase tracking-wider text-brand-dark transition hover:brightness-110 focus:outline-none w-full sm:w-auto justify-center"
+                        className="inline-flex items-center gap-2 rounded-lg bg-brand-primary px-6 py-3 text-[11px] font-bold uppercase tracking-widest text-white transition hover:bg-brand-dark hover:shadow-lg w-full sm:w-auto justify-center"
                       >
                         Access File <Download className="h-3.5 w-3.5" />
                       </button>
@@ -123,13 +122,12 @@ function Documents() {
               )
             })
           ) : (
-            <div className="text-center py-12 border border-dashed border-white/10 rounded-xl bg-white/[0.01]">
-              <FileText className="h-12 w-12 text-white/20 mx-auto mb-3" />
-              <p className="text-sm text-white/50">No files found matching "{searchTerm}"</p>
+            <div className="text-center py-16 border border-dashed border-border rounded-2xl bg-bg-muted">
+              <FileText className="h-10 w-10 text-text-muted mx-auto mb-3" />
+              <p className="text-sm font-bold text-text-muted">No files found matching "{searchTerm}"</p>
             </div>
           )}
         </div>
-
       </main>
     </div>
   )

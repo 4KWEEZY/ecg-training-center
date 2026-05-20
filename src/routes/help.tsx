@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
-import { HelpCircle, ChevronDown, ChevronUp, ShieldAlert, Phone, Mail, FileText } from 'lucide-react'
+import { HelpCircle, ChevronDown, ChevronUp, ShieldAlert, Phone, Mail, FileText, Download } from 'lucide-react'
 
 export const Route = createFileRoute('/help')({
   component: Help,
@@ -17,56 +17,54 @@ const faqs = [
   },
   {
     question: "I am having issues streaming the high-definition training videos. What should I do?",
-    answer: "Ensure your network settings allow media stream connections. If you are operating on a restricted system profile or standard Windows build, check that your device's physical memory isn't throttled by background tasks."
+    answer: "Ensure your network settings allow media stream connections. If you are operating on a restricted system profile, check that your device's physical memory isn't throttled by background tasks."
   }
 ]
 
 function Help() {
-  const [openIndex, setOpenIndex] = useState<number | null>(null)
+  const [openIndex, setOpenIndex] = useState<number | null>(0)
 
   const toggleFaq = (index: number) => {
     setOpenIndex(openIndex === index ? null : index)
   }
 
   return (
-    <div className="min-h-screen bg-brand-dark text-white p-8 pt-28">
-      <main className="mx-auto max-w-4xl space-y-10">
+    <div className="min-h-screen bg-bg p-6 pt-32 lg:p-12">
+      <main className="mx-auto max-w-4xl space-y-12">
         
-        {/* Header Section */}
-        <div>
-          <h1 className="font-display text-4xl font-light uppercase tracking-wide text-white">
-            Support & <span className="text-yellow">Help Center</span>
+        {/* Header */}
+        <div className="border-b border-border pb-8">
+          <h1 className="font-display text-4xl font-bold uppercase tracking-wide text-brand-primary">
+            Support & <span className="text-brand-light">Help Center</span>
           </h1>
-          <p className="mt-2 text-sm text-white/70">
+          <p className="mt-3 text-text-body max-w-xl">
             Welcome to the official ECG orientation support workspace. Find instant answers or contact your coordinator.
           </p>
         </div>
 
-        <hr className="border-white/10" />
-
         {/* FAQ Section */}
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold tracking-wide text-yellow uppercase flex items-center gap-2">
+        <section className="space-y-6">
+          <h2 className="text-sm font-black uppercase tracking-[0.2em] text-brand-primary flex items-center gap-3">
             <HelpCircle className="h-5 w-5" /> Frequently Asked Questions
           </h2>
           
-          <div className="space-y-3 mt-4">
+          <div className="space-y-4">
             {faqs.map((faq, index) => (
-              <div 
-                key={index} 
-                className="rounded-xl border border-white/10 bg-brand-deep overflow-hidden transition-all"
-              >
+              <div key={index} className="rounded-xl border border-border bg-white shadow-sm overflow-hidden">
                 <button
                   onClick={() => toggleFaq(index)}
-                  className="w-full flex items-center justify-between p-5 text-left font-medium hover:bg-white/5 transition focus:outline-none"
+                  className="w-full flex items-center justify-between p-6 text-left font-bold transition hover:bg-bg-muted"
                 >
-                  <span className="text-white/90 text-sm md:text-base">{faq.question}</span>
-                  {openIndex === index ? <ChevronUp className="text-yellow h-5 w-5 shrink-0 ml-4" /> : <ChevronDown className="text-white/50 h-5 w-5 shrink-0 ml-4" />}
+                  <span className="text-text-primary text-sm md:text-base">{faq.question}</span>
+                  {openIndex === index ? 
+                    <ChevronUp className="text-brand-primary h-5 w-5 shrink-0 ml-4" /> : 
+                    <ChevronDown className="text-text-muted h-5 w-5 shrink-0 ml-4" />
+                  }
                 </button>
                 
                 {openIndex === index && (
-                  <div className="px-5 pb-5 pt-1 text-sm text-white/70 border-t border-white/5 leading-relaxed bg-black/10">
-                    {faq.answer}
+                  <div className="px-6 pb-6 pt-0 text-sm text-text-body leading-relaxed border-t border-border bg-bg-muted/50">
+                    <p className="pt-4">{faq.answer}</p>
                   </div>
                 )}
               </div>
@@ -77,38 +75,34 @@ function Help() {
         {/* Contact/Escalation Grid */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-6">
           
-          {/* Training Coordination Desk */}
-          <div className="rounded-xl border border-white/10 bg-brand-deep p-6 space-y-4">
-            <h3 className="text-lg font-semibold uppercase tracking-wide text-white flex items-center gap-2">
-              <ShieldAlert className="h-5 w-5 text-yellow" /> Training Coordinator Desk
+          <div className="rounded-xl border border-border bg-white p-8 shadow-sm space-y-4">
+            <h3 className="font-bold uppercase tracking-widest text-text-primary flex items-center gap-3">
+              <ShieldAlert className="h-5 w-5 text-brand-primary" /> Coordinator Desk
             </h3>
-            <p className="text-xs text-white/70 leading-relaxed">
+            <p className="text-xs text-text-muted leading-relaxed">
               For issues regarding physical orientation placement, departmental tracks, or assignment evaluation.
             </p>
-            <div className="space-y-2 pt-2 text-sm text-white/80">
-              <div className="flex items-center gap-3"><Phone className="h-4 w-4 text-yellow" /> +233 (0302) 611 611</div>
-              <div className="flex items-center gap-3"><Mail className="h-4 w-4 text-yellow" /> academy@ecggh.com</div>
+            <div className="space-y-3 pt-2 text-sm font-bold text-text-primary">
+              <div className="flex items-center gap-3"><Phone className="h-4 w-4 text-brand-primary" /> +233 (0302) 611 611</div>
+              <div className="flex items-center gap-3"><Mail className="h-4 w-4 text-brand-primary" /> academy@ecggh.com</div>
             </div>
           </div>
 
-          {/* Technical Documentation Support */}
-          <div className="rounded-xl border border-white/10 bg-brand-deep p-6 space-y-4">
-            <h3 className="text-lg font-semibold uppercase tracking-wide text-white flex items-center gap-2">
-              <FileText className="h-5 w-5 text-yellow" /> Portal Documentation
+          <div className="rounded-xl border border-border bg-white p-8 shadow-sm space-y-4">
+            <h3 className="font-bold uppercase tracking-widest text-text-primary flex items-center gap-3">
+              <FileText className="h-5 w-5 text-brand-primary" /> Portal Documentation
             </h3>
-            <p className="text-xs text-white/70 leading-relaxed">
+            <p className="text-xs text-text-muted leading-relaxed">
               Access structural setup blueprints, digital trainee profile instructions, or platform system requirements guidebooks.
             </p>
             <button 
-              onClick={() => alert("Downloading Trainee Portal Quickstart Blueprint Guide (PDF)...")}
-              className="mt-2 inline-flex items-center gap-2 rounded-sm bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-white transition hover:bg-white/20"
+              className="mt-2 inline-flex items-center gap-2 rounded-lg bg-brand-primary px-6 py-3 text-[11px] font-bold uppercase tracking-widest text-white transition hover:bg-brand-dark"
             >
-              Download User Manual
+              Download User Manual <Download className="h-3.5 w-3.5" />
             </button>
           </div>
 
         </section>
-
       </main>
     </div>
   )
