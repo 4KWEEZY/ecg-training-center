@@ -1,58 +1,69 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
-import { FileText, Download, CheckCircle2, Search, Briefcase, ShieldCheck, FileSpreadsheet } from 'lucide-react'
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import {
+  FileText,
+  Download,
+  CheckCircle2,
+  Search,
+  Briefcase,
+  ShieldCheck,
+  FileSpreadsheet,
+} from "lucide-react";
 
-export const Route = createFileRoute('/documents')({
+export const Route = createFileRoute("/documents")({
   component: Documents,
-})
+});
 
 const officialDocs = [
   {
     id: "doc-1",
     title: "ECG Trainee Service Charter & Conditions of Service",
     category: "HR & Policy",
-    description: "Core structural guidelines outlining staff expectations, code of conduct, training benchmarks, and employment frames for the 2026 cohort.",
+    description:
+      "Core structural guidelines outlining staff expectations, code of conduct, training benchmarks, and employment frames for the 2026 cohort.",
     updatedAt: "May 2026",
-    icon: Briefcase
+    icon: Briefcase,
   },
   {
     id: "doc-2",
     title: "National Operational Safety Policy Handbook",
     category: "Safety & Compliance",
-    description: "The mandatory grid protocol manual covering workplace hazard declarations, emergency insulation systems, and field protection routines.",
+    description:
+      "The mandatory grid protocol manual covering workplace hazard declarations, emergency insulation systems, and field protection routines.",
     updatedAt: "April 2026",
-    icon: ShieldCheck
+    icon: ShieldCheck,
   },
   {
     id: "doc-3",
     title: "Orientation Evaluation Milestone Matrix",
     category: "Curriculum",
-    description: "Spreadsheet breakdown of the 6-week module structure, showing lesson sequences, quiz weight distributions, and certificate thresholds.",
+    description:
+      "Spreadsheet breakdown of the 6-week module structure, showing lesson sequences, quiz weight distributions, and certificate thresholds.",
     updatedAt: "May 2026",
-    icon: FileSpreadsheet
-  }
-]
+    icon: FileSpreadsheet,
+  },
+];
 
 function Documents() {
-  const [searchTerm, setSearchTerm] = useState('')
-  const [downloadedIds, setDownloadedIds] = useState<string[]>([])
+  const [searchTerm, setSearchTerm] = useState("");
+  const [downloadedIds, setDownloadedIds] = useState<string[]>([]);
 
   const handleDownload = (id: string, title: string) => {
     alert(`Downloading: "${title}"`);
     if (!downloadedIds.includes(id)) {
       setDownloadedIds([...downloadedIds, id]);
     }
-  }
+  };
 
-  const filteredDocs = officialDocs.filter(doc => 
-    doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    doc.category.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredDocs = officialDocs.filter(
+    (doc) =>
+      doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doc.category.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
 
   return (
     <div className="min-h-screen bg-bg p-6 pt-32 lg:p-12">
       <main className="mx-auto max-w-5xl space-y-10">
-        
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-border pb-8">
           <div>
@@ -60,7 +71,8 @@ function Documents() {
               Official <span className="text-brand-light">Documents</span>
             </h1>
             <p className="mt-2 text-text-body max-w-lg">
-              Review and sign off on mandatory corporate documents, policy files, and legal frameworks.
+              Review and sign off on mandatory corporate documents, policy files, and legal
+              frameworks.
             </p>
           </div>
 
@@ -84,7 +96,7 @@ function Documents() {
               const isDownloaded = downloadedIds.includes(doc.id);
 
               return (
-                <div 
+                <div
                   key={doc.id}
                   className="flex flex-col sm:flex-row sm:items-center justify-between border border-border bg-white p-6 rounded-xl gap-6 transition hover:shadow-card-hover"
                 >
@@ -97,10 +109,14 @@ function Documents() {
                         <span className="text-[9px] font-black uppercase tracking-[0.15em] bg-bg-muted text-brand-primary px-2 py-1 rounded">
                           {doc.category}
                         </span>
-                        <span className="text-[10px] font-bold text-text-muted uppercase">Updated {doc.updatedAt}</span>
+                        <span className="text-[10px] font-bold text-text-muted uppercase">
+                          Updated {doc.updatedAt}
+                        </span>
                       </div>
                       <h3 className="text-lg font-bold text-text-primary">{doc.title}</h3>
-                      <p className="text-sm text-text-body mt-1 leading-relaxed max-w-2xl">{doc.description}</p>
+                      <p className="text-sm text-text-body mt-1 leading-relaxed max-w-2xl">
+                        {doc.description}
+                      </p>
                     </div>
                   </div>
 
@@ -110,7 +126,7 @@ function Documents() {
                         <CheckCircle2 className="h-3.5 w-3.5" /> Reviewed
                       </span>
                     ) : (
-                      <button 
+                      <button
                         onClick={() => handleDownload(doc.id, doc.title)}
                         className="inline-flex items-center gap-2 rounded-lg bg-brand-primary px-6 py-3 text-[11px] font-bold uppercase tracking-widest text-white transition hover:bg-brand-dark hover:shadow-lg w-full sm:w-auto justify-center"
                       >
@@ -119,16 +135,18 @@ function Documents() {
                     )}
                   </div>
                 </div>
-              )
+              );
             })
           ) : (
             <div className="text-center py-16 border border-dashed border-border rounded-2xl bg-bg-muted">
               <FileText className="h-10 w-10 text-text-muted mx-auto mb-3" />
-              <p className="text-sm font-bold text-text-muted">No files found matching "{searchTerm}"</p>
+              <p className="text-sm font-bold text-text-muted">
+                No files found matching "{searchTerm}"
+              </p>
             </div>
           )}
         </div>
       </main>
     </div>
-  )
+  );
 }

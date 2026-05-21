@@ -1,8 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState, useMemo } from "react";
 import {
-  Search, Clock, CreditCard, CheckCircle2,
-  ArrowRight, BookOpen, X, Smartphone,
+  Search,
+  Clock,
+  CreditCard,
+  CheckCircle2,
+  ArrowRight,
+  BookOpen,
+  X,
+  Smartphone,
 } from "lucide-react";
 import { TopBar } from "@/components/landing/TopBar";
 import { Nav } from "@/components/landing/Nav";
@@ -20,7 +26,8 @@ const MOCK_COURSES = [
     level: "Advanced",
     duration: "6 Weeks",
     fee: 1200,
-    description: "Comprehensive training on sub-station management, network safety protection grids, and high voltage feeder operations.",
+    description:
+      "Comprehensive training on sub-station management, network safety protection grids, and high voltage feeder operations.",
   },
   {
     id: "course-2",
@@ -29,7 +36,8 @@ const MOCK_COURSES = [
     level: "Intermediate",
     duration: "4 Weeks",
     fee: 850,
-    description: "Technician framework on standard commercial solar installation systems and synchronizing clean grids to main feeds.",
+    description:
+      "Technician framework on standard commercial solar installation systems and synchronizing clean grids to main feeds.",
   },
   {
     id: "course-3",
@@ -38,7 +46,8 @@ const MOCK_COURSES = [
     level: "Beginner",
     duration: "3 Weeks",
     fee: 500,
-    description: "Introduction to digital infrastructure, internal system networking tools, and network diagnostics data setups.",
+    description:
+      "Introduction to digital infrastructure, internal system networking tools, and network diagnostics data setups.",
   },
   {
     id: "course-4",
@@ -47,7 +56,8 @@ const MOCK_COURSES = [
     level: "Beginner",
     duration: "2 Weeks",
     fee: 350,
-    description: "Mandatory personal protective protocols, fall risk controls, and electrical hazard audits required for ECG contract approval.",
+    description:
+      "Mandatory personal protective protocols, fall risk controls, and electrical hazard audits required for ECG contract approval.",
   },
   {
     id: "course-5",
@@ -56,46 +66,53 @@ const MOCK_COURSES = [
     level: "Advanced",
     duration: "8 Weeks",
     fee: 1500,
-    description: "Advanced maintenance blueprints covering cooling systems, core winding repairs, and automatic emergency trip configurations.",
+    description:
+      "Advanced maintenance blueprints covering cooling systems, core winding repairs, and automatic emergency trip configurations.",
   },
 ];
 
 const CATEGORIES = ["All Categories", "Power Systems", "Renewable Energy", "IT", "Contractors"];
-const LEVELS     = ["All Levels", "Beginner", "Intermediate", "Advanced"];
+const LEVELS = ["All Levels", "Beginner", "Intermediate", "Advanced"];
 
 const LEVEL_COLORS: Record<string, string> = {
-  Beginner:     "bg-[#2E9E6B]/10 text-[#2E9E6B]",
+  Beginner: "bg-[#2E9E6B]/10 text-[#2E9E6B]",
   Intermediate: "bg-[#3B3DA6]/10 text-[#3B3DA6]",
-  Advanced:     "bg-[#E8534A]/10 text-[#E8534A]",
+  Advanced: "bg-[#E8534A]/10 text-[#E8534A]",
 };
 
 function CoursesCatalogPage() {
-  const [searchQuery,    setSearchQuery]    = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
-  const [selectedLevel,    setSelectedLevel]    = useState("All Levels");
+  const [selectedLevel, setSelectedLevel] = useState("All Levels");
 
-  const [selectedCourse, setSelectedCourse] = useState<typeof MOCK_COURSES[0] | null>(null);
-  const [paymentMethod,  setPaymentMethod]  = useState<"momo" | "card">("momo");
-  const [momoProvider,   setMomoProvider]   = useState("MTN");
-  const [phoneNumber,    setPhoneNumber]    = useState("");
-  const [isProcessing,   setIsProcessing]   = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<(typeof MOCK_COURSES)[0] | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<"momo" | "card">("momo");
+  const [momoProvider, setMomoProvider] = useState("MTN");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
 
-  const filteredCourses = useMemo(() =>
-    MOCK_COURSES.filter((c) => {
-      const matchSearch   = c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                            c.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchCategory = selectedCategory === "All Categories" || c.category === selectedCategory;
-      const matchLevel    = selectedLevel    === "All Levels"      || c.level    === selectedLevel;
-      return matchSearch && matchCategory && matchLevel;
-    }),
-    [searchQuery, selectedCategory, selectedLevel]
+  const filteredCourses = useMemo(
+    () =>
+      MOCK_COURSES.filter((c) => {
+        const matchSearch =
+          c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          c.description.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchCategory =
+          selectedCategory === "All Categories" || c.category === selectedCategory;
+        const matchLevel = selectedLevel === "All Levels" || c.level === selectedLevel;
+        return matchSearch && matchCategory && matchLevel;
+      }),
+    [searchQuery, selectedCategory, selectedLevel],
   );
 
   const handlePaymentSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    setTimeout(() => { setIsProcessing(false); setPaymentSuccess(true); }, 2500);
+    setTimeout(() => {
+      setIsProcessing(false);
+      setPaymentSuccess(true);
+    }, 2500);
   };
 
   const closeModal = () => {
@@ -110,7 +127,6 @@ function CoursesCatalogPage() {
       <Nav />
 
       <main className="flex-1 mx-auto w-full max-w-7xl px-6 pt-36 pb-20">
-
         {/* Page heading */}
         <div className="mb-8 text-center">
           <span className="mb-2 inline-block rounded-full border border-[#3B3DA6]/20 bg-[#3B3DA6]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-[#3B3DA6]">
@@ -120,8 +136,8 @@ function CoursesCatalogPage() {
             Available Programmes
           </h1>
           <p className="mx-auto mt-2 max-w-2xl text-sm text-[#8B8DAE]">
-            Explore fully certified electrical engineering, safety compliance, and technology courses.
-            Enroll directly online with local payment processing.
+            Explore fully certified electrical engineering, safety compliance, and technology
+            courses. Enroll directly online with local payment processing.
           </p>
         </div>
 
@@ -147,7 +163,9 @@ function CoursesCatalogPage() {
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="w-full rounded-xl border border-[#DDDDF0] bg-[#F4F5FB] px-4 py-2.5 text-sm text-[#3D3F6E] outline-none focus:border-[#3B3DA6]"
               >
-                {CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                {CATEGORIES.map((c) => (
+                  <option key={c}>{c}</option>
+                ))}
               </select>
             </div>
 
@@ -158,7 +176,9 @@ function CoursesCatalogPage() {
                 onChange={(e) => setSelectedLevel(e.target.value)}
                 className="w-full rounded-xl border border-[#DDDDF0] bg-[#F4F5FB] px-4 py-2.5 text-sm text-[#3D3F6E] outline-none focus:border-[#3B3DA6]"
               >
-                {LEVELS.map((l) => <option key={l}>{l}</option>)}
+                {LEVELS.map((l) => (
+                  <option key={l}>{l}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -194,7 +214,9 @@ function CoursesCatalogPage() {
                   </div>
 
                   {/* Level badge */}
-                  <span className={`mb-2 inline-block rounded-lg px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${LEVEL_COLORS[course.level]}`}>
+                  <span
+                    className={`mb-2 inline-block rounded-lg px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${LEVEL_COLORS[course.level]}`}
+                  >
                     {course.level}
                   </span>
 
@@ -230,8 +252,12 @@ function CoursesCatalogPage() {
         ) : (
           <div className="rounded-2xl border border-dashed border-[#DDDDF0] bg-white py-20 text-center">
             <BookOpen className="mx-auto mb-4 h-12 w-12 text-[#DDDDF0]" />
-            <h3 className="text-base font-semibold text-[#3D3F6E]">No programmes match your filters</h3>
-            <p className="mt-1 text-sm text-[#AAAAC8]">Try resetting your search or selecting all categories.</p>
+            <h3 className="text-base font-semibold text-[#3D3F6E]">
+              No programmes match your filters
+            </h3>
+            <p className="mt-1 text-sm text-[#AAAAC8]">
+              Try resetting your search or selecting all categories.
+            </p>
           </div>
         )}
       </main>
@@ -242,7 +268,6 @@ function CoursesCatalogPage() {
       {selectedCourse && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1A1C5C]/60 p-4 backdrop-blur-sm">
           <div className="relative w-full max-w-md rounded-2xl border border-[#DDDDF0] bg-white p-6 shadow-2xl">
-
             <button
               onClick={closeModal}
               className="absolute right-4 top-4 rounded-lg p-1.5 text-[#AAAAC8] transition hover:bg-[#F4F5FB] hover:text-[#1A1C5C]"
@@ -285,10 +310,15 @@ function CoursesCatalogPage() {
                               : "border-[#DDDDF0] bg-[#F4F5FB] text-[#8B8DAE] hover:border-[#3B3DA6]/30"
                           }`}
                         >
-                          {method === "momo"
-                            ? <><Smartphone className="h-4 w-4" /> Mobile Money</>
-                            : <><CreditCard  className="h-4 w-4" /> Credit Card</>
-                          }
+                          {method === "momo" ? (
+                            <>
+                              <Smartphone className="h-4 w-4" /> Mobile Money
+                            </>
+                          ) : (
+                            <>
+                              <CreditCard className="h-4 w-4" /> Credit Card
+                            </>
+                          )}
                         </button>
                       ))}
                     </div>
@@ -303,7 +333,10 @@ function CoursesCatalogPage() {
                         </label>
                         <div className="flex gap-4">
                           {["MTN", "Telecel", "AT"].map((net) => (
-                            <label key={net} className="flex cursor-pointer items-center gap-2 text-xs font-medium text-[#3D3F6E]">
+                            <label
+                              key={net}
+                              className="flex cursor-pointer items-center gap-2 text-xs font-medium text-[#3D3F6E]"
+                            >
                               <input
                                 type="radio"
                                 name="momoProvider"
@@ -371,10 +404,12 @@ function CoursesCatalogPage() {
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full border border-[#2E9E6B]/20 bg-[#2E9E6B]/10">
                   <CheckCircle2 className="h-8 w-8 text-[#2E9E6B]" />
                 </div>
-                <h3 className="font-display text-xl font-bold text-[#1A1C5C]">Enrollment Confirmed!</h3>
+                <h3 className="font-display text-xl font-bold text-[#1A1C5C]">
+                  Enrollment Confirmed!
+                </h3>
                 <p className="mx-auto mt-2 max-w-xs px-2 text-sm text-[#8B8DAE]">
-                  Payment was successfully processed. Your course workspace is now unlocked.
-                  Check your institutional inbox for the enrollment receipt.
+                  Payment was successfully processed. Your course workspace is now unlocked. Check
+                  your institutional inbox for the enrollment receipt.
                 </p>
                 <button
                   onClick={closeModal}

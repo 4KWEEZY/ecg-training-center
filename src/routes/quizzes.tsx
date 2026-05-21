@@ -1,8 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import {
-  HelpCircle, ArrowRight, Lock, Award,
-  AlertCircle, Timer, ChevronRight, Check,
+  HelpCircle,
+  ArrowRight,
+  Lock,
+  Award,
+  AlertCircle,
+  Timer,
+  ChevronRight,
+  Check,
 } from "lucide-react";
 import { TopBar } from "@/components/landing/TopBar";
 import { Nav } from "@/components/landing/Nav";
@@ -15,7 +21,8 @@ export const Route = createFileRoute("/quizzes")({
 const MOCK_QUIZ_QUESTIONS = [
   {
     id: "q1",
-    question: "Which type of personal protective clothing must be worn when accessing high voltage feeder zones?",
+    question:
+      "Which type of personal protective clothing must be worn when accessing high voltage feeder zones?",
     options: [
       "Standard cotton overalls and steel-toe boots",
       "Arc-rated clothing (NFPA 70E compliant) and dielectric boots",
@@ -26,7 +33,8 @@ const MOCK_QUIZ_QUESTIONS = [
   },
   {
     id: "q2",
-    question: "What is the standard clearance protocol requirement before conducting line operations on a standard 11kV grid?",
+    question:
+      "What is the standard clearance protocol requirement before conducting line operations on a standard 11kV grid?",
     options: [
       "Verbal team confirmation statement",
       "Immediate visual trip verification check",
@@ -39,16 +47,37 @@ const MOCK_QUIZ_QUESTIONS = [
 
 function QuizzesPage() {
   const [quizzes, setQuizzes] = useState([
-    { id: "q-01", title: "Safety & Compliance Assessment",    questions: 20, status: "Passed",    score: 90,   duration: "30 mins" },
-    { id: "q-02", title: "Distribution Network Fundamentals", questions: 15, status: "Available", score: null, duration: "25 mins" },
-    { id: "q-03", title: "Customer Service Code Quiz",        questions: 10, status: "Locked",    score: null, duration: "15 mins" },
+    {
+      id: "q-01",
+      title: "Safety & Compliance Assessment",
+      questions: 20,
+      status: "Passed",
+      score: 90,
+      duration: "30 mins",
+    },
+    {
+      id: "q-02",
+      title: "Distribution Network Fundamentals",
+      questions: 15,
+      status: "Available",
+      score: null,
+      duration: "25 mins",
+    },
+    {
+      id: "q-03",
+      title: "Customer Service Code Quiz",
+      questions: 10,
+      status: "Locked",
+      score: null,
+      duration: "15 mins",
+    },
   ]);
 
-  const [activeQuiz,          setActiveQuiz]          = useState<any | null>(null);
-  const [currentQuestionIdx,  setCurrentQuestionIdx]  = useState(0);
-  const [selectedAnswers,     setSelectedAnswers]     = useState<Record<number, number>>({});
-  const [examSubmitted,       setExamSubmitted]       = useState(false);
-  const [finalScore,          setFinalScore]          = useState(0);
+  const [activeQuiz, setActiveQuiz] = useState<any | null>(null);
+  const [currentQuestionIdx, setCurrentQuestionIdx] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, number>>({});
+  const [examSubmitted, setExamSubmitted] = useState(false);
+  const [finalScore, setFinalScore] = useState(0);
 
   const handleStartQuiz = (quiz: any) => {
     setActiveQuiz(quiz);
@@ -73,8 +102,8 @@ function QuizzesPage() {
       prev.map((item) =>
         item.id === activeQuiz.id
           ? { ...item, status: score >= 70 ? "Passed" : "Available", score }
-          : item
-      )
+          : item,
+      ),
     );
   };
 
@@ -89,11 +118,9 @@ function QuizzesPage() {
       <Nav />
 
       <main className="flex-1 mx-auto w-full max-w-4xl px-6 pt-36 pb-20">
-
         {/* ── Active Quiz Workspace ── */}
         {activeQuiz ? (
           <div className="rounded-2xl border border-[#DDDDF0] bg-white p-6 shadow-[0_4px_24px_rgba(59,61,166,0.10)] md:p-8">
-
             {/* Quiz header */}
             <div className="mb-6 flex items-center justify-between border-b border-[#EAEBF6] pb-4">
               <div className="flex items-center gap-2 text-xs">
@@ -117,7 +144,9 @@ function QuizzesPage() {
             <div className="mb-6 h-1.5 w-full rounded-full bg-[#EAEBF6]">
               <div
                 className="h-1.5 rounded-full bg-[#3B3DA6] transition-all duration-300"
-                style={{ width: `${((currentQuestionIdx + 1) / MOCK_QUIZ_QUESTIONS.length) * 100}%` }}
+                style={{
+                  width: `${((currentQuestionIdx + 1) / MOCK_QUIZ_QUESTIONS.length) * 100}%`,
+                }}
               />
             </div>
 
@@ -141,7 +170,9 @@ function QuizzesPage() {
                         }`}
                       >
                         <span>{option}</span>
-                        <div className={`ml-4 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${selected ? "border-[#3B3DA6] bg-[#3B3DA6]" : "border-[#AAAAC8]"}`}>
+                        <div
+                          className={`ml-4 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${selected ? "border-[#3B3DA6] bg-[#3B3DA6]" : "border-[#AAAAC8]"}`}
+                        >
                           {selected && <div className="h-1.5 w-1.5 rounded-full bg-white" />}
                         </div>
                       </button>
@@ -176,12 +207,18 @@ function QuizzesPage() {
             ) : (
               /* Results screen */
               <div className="space-y-5 py-6 text-center">
-                <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${
-                  finalScore >= 70
-                    ? "border-[#2E9E6B]/20 bg-[#2E9E6B]/10 text-[#2E9E6B]"
-                    : "border-[#E8534A]/20 bg-[#E8534A]/10 text-[#E8534A]"
-                }`}>
-                  {finalScore >= 70 ? <Award className="h-8 w-8" /> : <AlertCircle className="h-8 w-8" />}
+                <div
+                  className={`mx-auto flex h-16 w-16 items-center justify-center rounded-full border ${
+                    finalScore >= 70
+                      ? "border-[#2E9E6B]/20 bg-[#2E9E6B]/10 text-[#2E9E6B]"
+                      : "border-[#E8534A]/20 bg-[#E8534A]/10 text-[#E8534A]"
+                  }`}
+                >
+                  {finalScore >= 70 ? (
+                    <Award className="h-8 w-8" />
+                  ) : (
+                    <AlertCircle className="h-8 w-8" />
+                  )}
                 </div>
 
                 <div>
@@ -197,7 +234,9 @@ function QuizzesPage() {
                   <span className="block text-[10px] uppercase tracking-wider text-[#AAAAC8]">
                     Your Score
                   </span>
-                  <span className={`font-display text-4xl font-bold ${finalScore >= 70 ? "text-[#2E9E6B]" : "text-[#E8534A]"}`}>
+                  <span
+                    className={`font-display text-4xl font-bold ${finalScore >= 70 ? "text-[#2E9E6B]" : "text-[#E8534A]"}`}
+                  >
                     {finalScore}%
                   </span>
                 </div>
@@ -220,7 +259,6 @@ function QuizzesPage() {
         ) : (
           /* ── Quiz List ── */
           <div className="space-y-6">
-
             {/* Page heading */}
             <div className="mb-2 text-center">
               <h1 className="font-display text-3xl font-bold uppercase tracking-wide text-[#1A1C5C] sm:text-4xl">
@@ -243,11 +281,15 @@ function QuizzesPage() {
                   >
                     {/* Left */}
                     <div className="flex items-start gap-4">
-                      <div className={`mt-0.5 shrink-0 rounded-xl p-3 ${locked ? "bg-[#F4F5FB] text-[#AAAAC8]" : "bg-[#3B3DA6]/10 text-[#3B3DA6]"}`}>
+                      <div
+                        className={`mt-0.5 shrink-0 rounded-xl p-3 ${locked ? "bg-[#F4F5FB] text-[#AAAAC8]" : "bg-[#3B3DA6]/10 text-[#3B3DA6]"}`}
+                      >
                         {locked ? <Lock className="h-5 w-5" /> : <HelpCircle className="h-5 w-5" />}
                       </div>
                       <div>
-                        <h3 className={`text-base font-semibold ${locked ? "text-[#AAAAC8]" : "text-[#1A1C5C]"}`}>
+                        <h3
+                          className={`text-base font-semibold ${locked ? "text-[#AAAAC8]" : "text-[#1A1C5C]"}`}
+                        >
                           {quiz.title}
                         </h3>
                         <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-[#AAAAC8]">
@@ -261,11 +303,13 @@ function QuizzesPage() {
                     {/* Right */}
                     <div className="flex items-center gap-3 border-t border-[#EAEBF6] pt-3 sm:border-t-0 sm:pt-0">
                       {quiz.score !== null && (
-                        <span className={`rounded-lg px-3 py-1 text-xs font-bold ${
-                          quiz.score >= 70
-                            ? "bg-[#2E9E6B]/10 text-[#2E9E6B]"
-                            : "bg-[#E8534A]/10 text-[#E8534A]"
-                        }`}>
+                        <span
+                          className={`rounded-lg px-3 py-1 text-xs font-bold ${
+                            quiz.score >= 70
+                              ? "bg-[#2E9E6B]/10 text-[#2E9E6B]"
+                              : "bg-[#E8534A]/10 text-[#E8534A]"
+                          }`}
+                        >
                           Score: {quiz.score}%
                         </span>
                       )}

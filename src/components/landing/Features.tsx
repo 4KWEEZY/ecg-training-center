@@ -36,14 +36,15 @@ export function Features() {
     <section id="features" className="mx-auto max-w-7xl px-6 py-28">
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
         <div className="lg:col-span-4">
-          <span className="font-mono text-xs uppercase tracking-[0.25em] text-clay">The platform</span>
+          <span className="font-mono text-xs uppercase tracking-[0.25em] text-clay">
+            The platform
+          </span>
           <h2 className="mt-4 font-display text-5xl font-light leading-[1.05] tracking-tight text-ink">
-            Everything you need to <em className="italic">teach well</em>.
-            Nothing you don't.
+            Everything you need to <em className="italic">teach well</em>. Nothing you don't.
           </h2>
           <p className="mt-6 max-w-sm text-ink-soft">
-            We rebuilt the LMS from scratch — for instructors who care about
-            craft and learners who care about substance.
+            We rebuilt the LMS from scratch — for instructors who care about craft and learners who
+            care about substance.
           </p>
         </div>
 

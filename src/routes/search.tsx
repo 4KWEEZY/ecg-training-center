@@ -10,21 +10,52 @@ export const Route = createFileRoute("/search")({
 });
 
 const searchableItems = [
-  { title: "Workplace Safety & Compliance Module", category: "Course materials", type: "course", path: "/courses" },
-  { title: "Distribution Operations 101 Guide", category: "Course materials", type: "course", path: "/courses" },
-  { title: "High Voltage Substation Isolation Live Stream", category: "Live sessions", type: "session", path: "/library" },
+  {
+    title: "Workplace Safety & Compliance Module",
+    category: "Course materials",
+    type: "course",
+    path: "/courses",
+  },
+  {
+    title: "Distribution Operations 101 Guide",
+    category: "Course materials",
+    type: "course",
+    path: "/courses",
+  },
+  {
+    title: "High Voltage Substation Isolation Live Stream",
+    category: "Live sessions",
+    type: "session",
+    path: "/library",
+  },
   { title: "Safety Assessment Practice Quiz", category: "Quizzes", type: "quiz", path: "/quizzes" },
-  { title: "Smart Metering Billing Platform Walkthrough", category: "Course materials", type: "course", path: "/courses" },
-  { title: "How to unlock my Training Certificate", category: "Certification", type: "help", path: "/help" },
-  { title: "Troubleshooting HD video streaming issues", category: "Help articles", type: "help", path: "/help" },
+  {
+    title: "Smart Metering Billing Platform Walkthrough",
+    category: "Course materials",
+    type: "course",
+    path: "/courses",
+  },
+  {
+    title: "How to unlock my Training Certificate",
+    category: "Certification",
+    type: "help",
+    path: "/help",
+  },
+  {
+    title: "Troubleshooting HD video streaming issues",
+    category: "Help articles",
+    type: "help",
+    path: "/help",
+  },
 ];
 
 function SearchPage() {
   const [query, setQuery] = useState("");
 
-  const filteredResults = searchableItems.filter((item) =>
-    item.title.toLowerCase().includes(query.toLowerCase()) ||
-    item.category.toLowerCase().includes(query.toLowerCase())
+  const filteredResults = searchableItems.filter(
+    (item) =>
+      item.title.toLowerCase().includes(query.toLowerCase()) ||
+      item.category.toLowerCase().includes(query.toLowerCase()),
   );
 
   return (
@@ -33,7 +64,6 @@ function SearchPage() {
       <Nav />
 
       <main className="flex-1 mx-auto w-full max-w-3xl px-6 py-36 sm:px-8">
-
         {/* Page heading */}
         <div className="mb-8 text-center">
           <h1 className="font-display text-3xl font-bold uppercase tracking-wide text-[#1A1C5C] sm:text-4xl">
@@ -46,7 +76,6 @@ function SearchPage() {
 
         {/* Search card */}
         <div className="rounded-2xl border border-[#DDDDF0] bg-white p-8 shadow-[0_4px_24px_rgba(59,61,166,0.08)]">
-
           {/* Search input */}
           <div>
             <label className="block text-xs font-bold uppercase tracking-[0.15em] text-[#3B3DA6]">
@@ -70,19 +99,21 @@ function SearchPage() {
               Quick Categories
             </span>
             <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {["Course materials", "Live sessions", "Certification", "Help articles"].map((item) => (
-                <button
-                  key={item}
-                  onClick={() => setQuery(query === item ? "" : item)}
-                  className={`rounded-lg border px-3 py-2.5 text-left text-xs font-medium transition focus:outline-none ${
-                    query === item
-                      ? "border-[#3B3DA6] bg-[#3B3DA6] text-white"
-                      : "border-[#DDDDF0] bg-[#F4F5FB] text-[#3D3F6E] hover:border-[#3B3DA6]/40 hover:bg-[#EAEBF6]"
-                  }`}
-                >
-                  {item}
-                </button>
-              ))}
+              {["Course materials", "Live sessions", "Certification", "Help articles"].map(
+                (item) => (
+                  <button
+                    key={item}
+                    onClick={() => setQuery(query === item ? "" : item)}
+                    className={`rounded-lg border px-3 py-2.5 text-left text-xs font-medium transition focus:outline-none ${
+                      query === item
+                        ? "border-[#3B3DA6] bg-[#3B3DA6] text-white"
+                        : "border-[#DDDDF0] bg-[#F4F5FB] text-[#3D3F6E] hover:border-[#3B3DA6]/40 hover:bg-[#EAEBF6]"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                ),
+              )}
             </div>
           </div>
 
@@ -108,10 +139,10 @@ function SearchPage() {
                     >
                       <div className="flex items-center gap-3">
                         <div className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-[#3B3DA6]/10 text-[#3B3DA6]">
-                          {result.type === "course"  && <BookOpen      className="h-4 w-4" />}
-                          {result.type === "quiz"    && <ClipboardList className="h-4 w-4" />}
-                          {result.type === "help"    && <HelpCircle    className="h-4 w-4" />}
-                          {result.type === "session" && <FileText      className="h-4 w-4" />}
+                          {result.type === "course" && <BookOpen className="h-4 w-4" />}
+                          {result.type === "quiz" && <ClipboardList className="h-4 w-4" />}
+                          {result.type === "help" && <HelpCircle className="h-4 w-4" />}
+                          {result.type === "session" && <FileText className="h-4 w-4" />}
                         </div>
                         <div>
                           <span className="block text-sm font-semibold text-[#1A1C5C] transition group-hover:text-[#3B3DA6]">
@@ -130,9 +161,7 @@ function SearchPage() {
                 </div>
               ) : (
                 <div className="rounded-xl border border-dashed border-[#DDDDF0] bg-[#F4F5FB] py-10 text-center">
-                  <p className="text-sm text-[#AAAAC8]">
-                    No results match your search.
-                  </p>
+                  <p className="text-sm text-[#AAAAC8]">No results match your search.</p>
                   <p className="mt-1 text-xs text-[#AAAAC8]">
                     Try a different keyword or browse a category above.
                   </p>
@@ -140,7 +169,6 @@ function SearchPage() {
               )}
             </div>
           )}
-
         </div>
       </main>
 

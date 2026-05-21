@@ -9,16 +9,16 @@ export const Route = createFileRoute("/progress")({
 });
 
 const modulesProgress = [
-  { name: "Workplace Safety & Compliance",  status: "Completed",   percent: 100 },
-  { name: "Distribution Operations 101",    status: "In Progress", percent: 45  },
-  { name: "Customer Service Essentials",    status: "Not Started", percent: 0   },
-  { name: "Metering & Billing Systems",     status: "Not Started", percent: 0   },
-  { name: "Network Protection & Faults",    status: "Not Started", percent: 0   },
-  { name: "Code of Conduct & Ethics",       status: "Not Started", percent: 0   },
+  { name: "Workplace Safety & Compliance", status: "Completed", percent: 100 },
+  { name: "Distribution Operations 101", status: "In Progress", percent: 45 },
+  { name: "Customer Service Essentials", status: "Not Started", percent: 0 },
+  { name: "Metering & Billing Systems", status: "Not Started", percent: 0 },
+  { name: "Network Protection & Faults", status: "Not Started", percent: 0 },
+  { name: "Code of Conduct & Ethics", status: "Not Started", percent: 0 },
 ];
 
 const STATUS_STYLES = {
-  "Completed":   { bar: "bg-[#2E9E6B]", text: "text-[#2E9E6B]" },
+  Completed: { bar: "bg-[#2E9E6B]", text: "text-[#2E9E6B]" },
   "In Progress": { bar: "bg-[#3B3DA6]", text: "text-[#3B3DA6]" },
   "Not Started": { bar: "bg-[#DDDDF0]", text: "text-[#AAAAC8]" },
 };
@@ -30,7 +30,6 @@ function Progress() {
       <Nav />
 
       <main className="flex-1 mx-auto w-full max-w-4xl px-6 pt-36 pb-20">
-
         {/* Page heading */}
         <div className="mb-8 text-center">
           <h1 className="font-display text-3xl font-bold uppercase tracking-wide text-[#1A1C5C] sm:text-4xl">
@@ -55,9 +54,18 @@ function Progress() {
             {/* Circular progress visual */}
             <div className="flex items-center gap-5">
               <svg className="h-20 w-20 -rotate-90" viewBox="0 0 36 36">
-                <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth="3" />
                 <circle
-                  cx="18" cy="18" r="15.9"
+                  cx="18"
+                  cy="18"
+                  r="15.9"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.15)"
+                  strokeWidth="3"
+                />
+                <circle
+                  cx="18"
+                  cy="18"
+                  r="15.9"
                   fill="none"
                   stroke="#FFD700"
                   strokeWidth="3"
@@ -83,9 +91,27 @@ function Progress() {
         {/* KPI stats */}
         <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {[
-            { icon: CheckCircle2, value: "14 Lessons", label: "Completed",       iconBg: "bg-[#2E9E6B]/10", iconColor: "text-[#2E9E6B]" },
-            { icon: Clock,        value: "4.5 Hours",  label: "Total Study Time", iconBg: "bg-[#3B3DA6]/10", iconColor: "text-[#3B3DA6]" },
-            { icon: BarChart3,    value: "88% Avg",    label: "Quiz Accuracy",    iconBg: "bg-[#FFD700]/15", iconColor: "text-[#B8960C]" },
+            {
+              icon: CheckCircle2,
+              value: "14 Lessons",
+              label: "Completed",
+              iconBg: "bg-[#2E9E6B]/10",
+              iconColor: "text-[#2E9E6B]",
+            },
+            {
+              icon: Clock,
+              value: "4.5 Hours",
+              label: "Total Study Time",
+              iconBg: "bg-[#3B3DA6]/10",
+              iconColor: "text-[#3B3DA6]",
+            },
+            {
+              icon: BarChart3,
+              value: "88% Avg",
+              label: "Quiz Accuracy",
+              iconBg: "bg-[#FFD700]/15",
+              iconColor: "text-[#B8960C]",
+            },
           ].map(({ icon: Icon, value, label, iconBg, iconColor }) => (
             <div
               key={label}
@@ -96,7 +122,9 @@ function Progress() {
               </div>
               <div>
                 <div className="font-display text-xl font-bold text-[#1A1C5C]">{value}</div>
-                <div className="text-[11px] font-medium uppercase tracking-wider text-[#AAAAC8]">{label}</div>
+                <div className="text-[11px] font-medium uppercase tracking-wider text-[#AAAAC8]">
+                  {label}
+                </div>
               </div>
             </div>
           ))}
@@ -119,13 +147,15 @@ function Progress() {
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       {/* Step number / icon */}
-                      <div className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
-                        mod.status === "Completed"
-                          ? "bg-[#2E9E6B]/15 text-[#2E9E6B]"
-                          : mod.status === "In Progress"
-                          ? "bg-[#3B3DA6]/10 text-[#3B3DA6]"
-                          : "bg-[#F4F5FB] text-[#AAAAC8]"
-                      }`}>
+                      <div
+                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
+                          mod.status === "Completed"
+                            ? "bg-[#2E9E6B]/15 text-[#2E9E6B]"
+                            : mod.status === "In Progress"
+                              ? "bg-[#3B3DA6]/10 text-[#3B3DA6]"
+                              : "bg-[#F4F5FB] text-[#AAAAC8]"
+                        }`}
+                      >
                         {mod.status === "Completed" ? (
                           <CheckCircle2 className="h-4 w-4" />
                         ) : mod.status === "In Progress" ? (
@@ -135,15 +165,18 @@ function Progress() {
                         )}
                       </div>
 
-                      <span className={`text-sm font-medium ${
-                        mod.status === "Not Started" ? "text-[#AAAAC8]" : "text-[#1A1C5C]"
-                      }`}>
+                      <span
+                        className={`text-sm font-medium ${
+                          mod.status === "Not Started" ? "text-[#AAAAC8]" : "text-[#1A1C5C]"
+                        }`}
+                      >
                         {mod.name}
                       </span>
                     </div>
 
                     <span className={`shrink-0 text-[11px] font-bold ${styles.text}`}>
-                      {mod.status}{mod.percent > 0 ? ` · ${mod.percent}%` : ""}
+                      {mod.status}
+                      {mod.percent > 0 ? ` · ${mod.percent}%` : ""}
                     </span>
                   </div>
 
@@ -159,7 +192,6 @@ function Progress() {
             })}
           </div>
         </div>
-
       </main>
 
       <Footer />

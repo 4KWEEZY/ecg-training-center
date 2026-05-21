@@ -55,20 +55,16 @@ export function Nav() {
 
   return (
     <header className="fixed left-0 right-0 top-0 z-50">
-
       {/* ── Top accent strip ── */}
       <div className="h-1 w-full bg-gradient-to-r from-[#FFD700] via-[#3B3DA6] to-[#FFD700]" />
 
       {/* ── Main navbar ── */}
       <div
         className={`w-full transition-all duration-300 ${
-          scrolled
-            ? "bg-[#3B3DA6] shadow-[0_4px_24px_rgba(59,61,166,0.35)]"
-            : "bg-[#3B3DA6]"
+          scrolled ? "bg-[#3B3DA6] shadow-[0_4px_24px_rgba(59,61,166,0.35)]" : "bg-[#3B3DA6]"
         }`}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2 md:px-6">
-
           {/* ── Logo ── */}
           <Link to="/" className="flex shrink-0 items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/15 p-1.5 ring-1 ring-white/20 transition hover:bg-white/20">
@@ -82,8 +78,7 @@ export function Nav() {
             </div>
             <div className="leading-tight">
               <div className="font-display text-base font-bold uppercase tracking-[0.12em] text-white md:text-lg">
-                ECG{" "}
-                <span className="text-[#FFD700]">Training Center</span>
+                ECG <span className="text-[#FFD700]">Training Center</span>
               </div>
               <div className="text-[9px] uppercase tracking-[0.22em] text-white/60">
                 Learning Management Portal
@@ -147,9 +142,7 @@ export function Nav() {
                           key={item.label}
                           to={item.href}
                           className={`flex items-center gap-2 rounded-lg px-4 py-2.5 text-[11px] font-medium uppercase tracking-[0.12em] transition-all duration-200 hover:bg-white/10 hover:text-[#FFD700] ${
-                            isActive(item.href)
-                              ? "bg-white/10 text-[#FFD700]"
-                              : "text-white/80"
+                            isActive(item.href) ? "bg-white/10 text-[#FFD700]" : "text-white/80"
                           }`}
                           onClick={() => setActiveDropdown(null)}
                         >
@@ -200,7 +193,6 @@ export function Nav() {
         }`}
       >
         <div className="border-t border-white/10 bg-[#2B2D8A] px-4 pb-6 pt-4">
-
           {/* Mobile search */}
           <Link
             to="/search"

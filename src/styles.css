@@ -11,50 +11,52 @@
 
   /* ── Typography ── */
   --font-display: "Barlow Condensed", "Barlow", system-ui, sans-serif;
-  --font-sans:    "Barlow", system-ui, sans-serif;
+  --font-sans: "Barlow", system-ui, sans-serif;
 
   /* ── ECG Brand Colors (matched from app screenshot) ── */
-  --color-brand-primary:   #3B3DA6;   /* deep indigo — main brand */
-  --color-brand-deep:      #2B2D8A;   /* darker indigo — hover/depth */
-  --color-brand-mid:       #4B4FBF;   /* mid indigo — gradients */
-  --color-brand-light:     #6B6FD4;   /* light indigo — accents */
-  --color-brand-dark:      #1A1C5C;   /* near-navy — text on light */
+  --color-brand-primary: #3b3da6; /* deep indigo — main brand */
+  --color-brand-deep: #2b2d8a; /* darker indigo — hover/depth */
+  --color-brand-mid: #4b4fbf; /* mid indigo — gradients */
+  --color-brand-light: #6b6fd4; /* light indigo — accents */
+  --color-brand-dark: #1a1c5c; /* near-navy — text on light */
 
-  --color-yellow:          #FFD700;   /* ECG gold/yellow */
-  --color-yellow-deep:     #E6BE00;   /* yellow hover */
+  --color-yellow: #ffd700; /* ECG gold/yellow */
+  --color-yellow-deep: #e6be00; /* yellow hover */
 
-  --color-red-cta:         #E8534A;   /* alert red — CTA button */
-  --color-red-cta-deep:    #CC3F37;   /* red hover */
+  --color-red-cta: #e8534a; /* alert red — CTA button */
+  --color-red-cta-deep: #cc3f37; /* red hover */
 
-  --color-accent-green:    #2E9E6B;   /* meter/success green */
-  --color-accent-purple:   #7B5EA7;   /* billing purple */
+  --color-accent-green: #2e9e6b; /* meter/success green */
+  --color-accent-purple: #7b5ea7; /* billing purple */
 
   /* ── UI Surface Colors ── */
-  --color-bg:              #F4F5FB;   /* page background (light) */
-  --color-bg-card:         #FFFFFF;   /* card surface */
-  --color-bg-muted:        #EAEBF6;   /* subtle tinted bg */
-  --color-bg-dark:         #1A1C5C;   /* dark sections */
+  --color-bg: #f4f5fb; /* page background (light) */
+  --color-bg-card: #ffffff; /* card surface */
+  --color-bg-muted: #eaebf6; /* subtle tinted bg */
+  --color-bg-dark: #1a1c5c; /* dark sections */
 
   /* ── Text ── */
-  --color-text-primary:    #1A1C5C;   /* dark navy — headings */
-  --color-text-body:       #3D3F6E;   /* mid navy — body */
-  --color-text-muted:      #8B8DAE;   /* muted — captions */
-  --color-text-white:      #FFFFFF;
+  --color-text-primary: #1a1c5c; /* dark navy — headings */
+  --color-text-body: #3d3f6e; /* mid navy — body */
+  --color-text-muted: #8b8dae; /* muted — captions */
+  --color-text-white: #ffffff;
 
   /* ── Borders & Shadows ── */
-  --color-border:          #DDDDF0;
-  --color-border-strong:   #AAAAC8;
+  --color-border: #ddddf0;
+  --color-border-strong: #aaaac8;
 
-  --shadow-card: 0 2px 12px 0 rgba(59, 61, 166, 0.10);
+  --shadow-card: 0 2px 12px 0 rgba(59, 61, 166, 0.1);
   --shadow-card-hover: 0 6px 24px 0 rgba(59, 61, 166, 0.18);
 
   /* ── Legacy aliases (keeps Hero.tsx / other components working) ── */
-  --color-brand-yellow:    #FFD700;
+  --color-brand-yellow: #ffd700;
 }
 
 /* --- 3. BASE STYLES --- */
 @layer base {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     box-sizing: border-box;
   }
 
@@ -70,7 +72,12 @@
     font-family: var(--font-sans);
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     color: var(--color-text-primary);
     font-family: var(--font-display);
   }
@@ -78,14 +85,13 @@
 
 /* --- 4. UTILITY / COMPONENT CLASSES --- */
 @layer utilities {
-
   /* Hero gradient — dark indigo overlay on hero image */
   .gradient-hero {
     background: linear-gradient(
       105deg,
       rgba(26, 28, 92, 0.92) 0%,
       rgba(59, 61, 166, 0.75) 50%,
-      rgba(75, 79, 191, 0.30) 100%
+      rgba(75, 79, 191, 0.3) 100%
     );
   }
 
@@ -107,7 +113,9 @@
   }
 
   .card-hover {
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    transition:
+      box-shadow 0.2s ease,
+      transform 0.2s ease;
   }
   .card-hover:hover {
     box-shadow: var(--shadow-card-hover);
@@ -124,7 +132,9 @@
     font-size: 0.875rem;
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
   }
   .btn-primary:hover {
     background-color: var(--color-brand-deep);
@@ -152,22 +162,51 @@
     animation: blink 1s step-end infinite;
   }
   @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50%       { opacity: 0; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
   }
 
   /* Topbar / nav bg */
-  .bg-brand-primary  { background-color: var(--color-brand-primary); }
-  .bg-brand-deep     { background-color: var(--color-brand-deep); }
-  .bg-brand-dark     { background-color: var(--color-brand-dark); }
-  .bg-page           { background-color: var(--color-bg); }
-  .bg-card           { background-color: var(--color-bg-card); }
-  .bg-muted          { background-color: var(--color-bg-muted); }
+  .bg-brand-primary {
+    background-color: var(--color-brand-primary);
+  }
+  .bg-brand-deep {
+    background-color: var(--color-brand-deep);
+  }
+  .bg-brand-dark {
+    background-color: var(--color-brand-dark);
+  }
+  .bg-page {
+    background-color: var(--color-bg);
+  }
+  .bg-card {
+    background-color: var(--color-bg-card);
+  }
+  .bg-muted {
+    background-color: var(--color-bg-muted);
+  }
 
-  .text-brand        { color: var(--color-brand-primary); }
-  .text-yellow       { color: var(--color-yellow); }
-  .text-muted        { color: var(--color-text-muted); }
-  .text-body         { color: var(--color-text-body); }
-  .border-brand      { border-color: var(--color-border); }
-  .shadow-card       { box-shadow: var(--shadow-card); }
+  .text-brand {
+    color: var(--color-brand-primary);
+  }
+  .text-yellow {
+    color: var(--color-yellow);
+  }
+  .text-muted {
+    color: var(--color-text-muted);
+  }
+  .text-body {
+    color: var(--color-text-body);
+  }
+  .border-brand {
+    border-color: var(--color-border);
+  }
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
 }

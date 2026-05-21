@@ -8,7 +8,7 @@ class RegisterSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=254)
     username = serializers.CharField(max_length=20)
     password = serializers.CharField(write_only=True)
-    confirm_password = serializers.CharField(write_only=True)
+    confirm_password = serializers.CharField(write_only=True,min_length=8)
     email = serializers.EmailField()
     phone_number = serializers.CharField(max_length=10)
 
@@ -42,8 +42,8 @@ class RegisterSerializer(serializers.Serializer):
     def validate(self, data):
 
         if data['password'] != data['confirm_password']:
-            raise serializers.ValidationError(
-                "Passwords do not match."
+            raise serializers.ValidationError({
+                "confirm_password":"Passwords do not match."}
             )
 
         return data

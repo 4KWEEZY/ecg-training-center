@@ -19,7 +19,7 @@ type Social = {
 
 const socials: Social[] = [
   { icon: Facebook, label: "Facebook", href: "https://facebook.com" },
-  { icon: Twitter,  label: "Twitter",  href: "https://twitter.com"  },
+  { icon: Twitter, label: "Twitter", href: "https://twitter.com" },
   { icon: Linkedin, label: "LinkedIn", href: "https://linkedin.com" },
 ];
 
@@ -28,7 +28,6 @@ export function TopBar() {
 
   return (
     <div className="hidden md:block w-full relative z-50">
-
       {/* Fraud Alert Bar */}
       {showNotice && (
         <div className="bg-[#E8534A]">
@@ -36,12 +35,9 @@ export function TopBar() {
             <div className="flex items-center gap-2.5">
               <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-white" />
               <p className="text-[11px] leading-relaxed text-white">
-                <span className="font-bold uppercase tracking-widest">
-                  Fraud Notice:&nbsp;
-                </span>
-                ECG Training Centre will NEVER request payments through personal
-                mobile money numbers or unofficial agents. Report suspicious
-                activity immediately.
+                <span className="font-bold uppercase tracking-widest">Fraud Notice:&nbsp;</span>
+                ECG Training Centre will NEVER request payments through personal mobile money
+                numbers or unofficial agents. Report suspicious activity immediately.
               </p>
             </div>
             <button
@@ -58,10 +54,8 @@ export function TopBar() {
       {/* Main Top Bar */}
       <div className="border-b border-white/10 bg-[#2B2D8A]">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2">
-
           {/* Left: badge + socials */}
           <div className="flex items-center gap-5">
-
             <div className="flex items-center gap-1.5 rounded-full border border-[#FFD700]/30 bg-[#FFD700]/10 px-3 py-1">
               <ShieldCheck className="h-3 w-3 text-[#FFD700]" />
               <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-[#FFD700]">
@@ -89,7 +83,6 @@ export function TopBar() {
 
           {/* Right: contact links */}
           <div className="flex items-center gap-5">
-
             <a
               href="https://www.ecgtc.edu.gh"
               target="_blank"
@@ -119,7 +112,6 @@ export function TopBar() {
               <Mail className="h-3 w-3 text-[#FFD700]" />
               info@ecgtc.edu.gh
             </a>
-
           </div>
         </div>
       </div>

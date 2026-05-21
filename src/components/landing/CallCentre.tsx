@@ -31,9 +31,8 @@ export function CallCentre() {
             <span className="text-yellow">A trainer is online</span>
           </h2>
           <p className="mt-5 max-w-md text-white/75">
-            Every cohort is paired with experienced ECG staff mentors. Ask
-            questions, request clarification on any lesson, or book a 1:1
-            session — Monday to Friday, 8:00–17:00 GMT.
+            Every cohort is paired with experienced ECG staff mentors. Ask questions, request
+            clarification on any lesson, or book a 1:1 session — Monday to Friday, 8:00–17:00 GMT.
           </p>
 
           <div className="mt-8 flex flex-wrap gap-3">

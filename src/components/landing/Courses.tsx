@@ -17,8 +17,9 @@ const ECG_CATALOG_DATA = [
     title: "High Voltage Substation Safety & Isolation Protocols",
     instructor: "Ing. Emmanuel Ofori-Atta",
     durationWeeks: 6,
-    description: "Mandatory safety certifications covering arc-rated clothing compliance, grounding installation, and lockout/tagout operations.",
-    icon: ShieldCheck
+    description:
+      "Mandatory safety certifications covering arc-rated clothing compliance, grounding installation, and lockout/tagout operations.",
+    icon: ShieldCheck,
   },
   {
     id: "crs-02",
@@ -26,8 +27,9 @@ const ECG_CATALOG_DATA = [
     title: "Distribution Operations & Grid Infrastructure II",
     instructor: "Ing. Kwabena Mensah",
     durationWeeks: 8,
-    description: "Deep dive into 11kV/33kV distribution feeder designs, substation load balancing, and automated circuit breaker protection schemes.",
-    icon: Zap
+    description:
+      "Deep dive into 11kV/33kV distribution feeder designs, substation load balancing, and automated circuit breaker protection schemes.",
+    icon: Zap,
   },
   {
     id: "crs-03",
@@ -35,8 +37,9 @@ const ECG_CATALOG_DATA = [
     title: "Integrated Smart Metering & AMI Architectures",
     instructor: "Mrs. Akua Appiah",
     durationWeeks: 4,
-    description: "Hands-on implementation paths for advanced smart meters, cryptographic vending protocols, and split-unit remote data sync.",
-    icon: Cpu
+    description:
+      "Hands-on implementation paths for advanced smart meters, cryptographic vending protocols, and split-unit remote data sync.",
+    icon: Cpu,
   },
   {
     id: "crs-04",
@@ -44,9 +47,10 @@ const ECG_CATALOG_DATA = [
     title: "Utility Customer Service Charter & Loss Reduction",
     instructor: "Mr. David Owusu-Ansah",
     durationWeeks: 5,
-    description: "Strategies for mitigating commercial losses, detecting energy theft, and implementing the regulatory customer response framework.",
-    icon: Layers
-  }
+    description:
+      "Strategies for mitigating commercial losses, detecting energy theft, and implementing the regulatory customer response framework.",
+    icon: Layers,
+  },
 ];
 
 const CATEGORIES = ["All", "Safety", "Engineering", "Metering", "Commercial"];
@@ -56,9 +60,10 @@ function CoursesPage() {
   const [activeFilter, setActiveFilter] = useState("All");
 
   // Filtered Computed Array
-  const filteredCourses = activeFilter === "All" 
-    ? ECG_CATALOG_DATA 
-    : ECG_CATALOG_DATA.filter(course => course.cat === activeFilter);
+  const filteredCourses =
+    activeFilter === "All"
+      ? ECG_CATALOG_DATA
+      : ECG_CATALOG_DATA.filter((course) => course.cat === activeFilter);
 
   return (
     <div className="min-h-screen bg-brand-dark text-white selection:bg-yellow selection:text-brand-dark">
@@ -67,7 +72,6 @@ function CoursesPage() {
 
       {/* Main Container Core */}
       <main className="mx-auto max-w-7xl px-6 pt-36 pb-20">
-        
         {/* Header Grid Section */}
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-white/10 pb-8 mb-12">
           <div>
@@ -78,7 +82,9 @@ function CoursesPage() {
               Course <span className="text-yellow font-normal">Catalog</span>
             </h1>
             <p className="mt-2 text-xs md:text-sm text-white/60 max-w-2xl leading-relaxed">
-              Explore professional engineering milestones and technical certifications offered by the Electricity Company of Ghana Training Academy. Select a track to view module criteria.
+              Explore professional engineering milestones and technical certifications offered by
+              the Electricity Company of Ghana Training Academy. Select a track to view module
+              criteria.
             </p>
           </div>
 
@@ -138,7 +144,9 @@ function CoursesPage() {
                 {/* Footer Meta Section Component */}
                 <div className="mt-6 border-t border-white/5 pt-4 flex items-center justify-between gap-4">
                   <div>
-                    <div className="text-[9px] uppercase tracking-widest text-white/40 font-bold">Lead Facilitator</div>
+                    <div className="text-[9px] uppercase tracking-widest text-white/40 font-bold">
+                      Lead Facilitator
+                    </div>
                     <div className="text-xs font-medium text-white/80 mt-0.5">{c.instructor}</div>
                   </div>
 
@@ -164,10 +172,11 @@ function CoursesPage() {
         {filteredCourses.length === 0 && (
           <div className="text-center py-20 border border-dashed border-white/10 rounded-xl bg-brand-deep/10">
             <BookOpen className="mx-auto h-8 w-8 text-white/20 mb-3" />
-            <p className="text-sm text-white/40 font-medium">No specialized programs currently matching that search parameter tier.</p>
+            <p className="text-sm text-white/40 font-medium">
+              No specialized programs currently matching that search parameter tier.
+            </p>
           </div>
         )}
-
       </main>
 
       <Footer />

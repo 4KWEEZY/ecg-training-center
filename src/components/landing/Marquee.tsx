@@ -1,7 +1,16 @@
 export function Marquee() {
   const items = [
-    "MIT", "Figma", "Stripe", "Notion", "Linear", "Pixar",
-    "RISD", "Harvard", "Vercel", "Penguin", "The New Yorker",
+    "MIT",
+    "Figma",
+    "Stripe",
+    "Notion",
+    "Linear",
+    "Pixar",
+    "RISD",
+    "Harvard",
+    "Vercel",
+    "Penguin",
+    "The New Yorker",
   ];
   const row = [...items, ...items];
   return (
@@ -12,12 +21,19 @@ export function Marquee() {
       <div className="flex overflow-hidden">
         <div className="marquee-track flex shrink-0 gap-14 pr-14 font-display text-2xl text-ink-soft">
           {row.map((it, i) => (
-            <span key={i} className="whitespace-nowrap italic">{it}</span>
+            <span key={i} className="whitespace-nowrap italic">
+              {it}
+            </span>
           ))}
         </div>
-        <div className="marquee-track flex shrink-0 gap-14 pr-14 font-display text-2xl text-ink-soft" aria-hidden>
+        <div
+          className="marquee-track flex shrink-0 gap-14 pr-14 font-display text-2xl text-ink-soft"
+          aria-hidden
+        >
           {row.map((it, i) => (
-            <span key={i} className="whitespace-nowrap italic">{it}</span>
+            <span key={i} className="whitespace-nowrap italic">
+              {it}
+            </span>
           ))}
         </div>
       </div>

@@ -30,16 +30,20 @@ export function News() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <div className="text-xs font-bold uppercase tracking-[0.3em] text-yellow">This week</div>
+            <div className="text-xs font-bold uppercase tracking-[0.3em] text-yellow">
+              This week
+            </div>
             <h2 className="mt-3 font-display text-4xl font-light uppercase text-white sm:text-5xl">
               Upcoming <br /> Sessions
             </h2>
             <p className="mt-5 max-w-sm text-white/70">
-              Live training, workshops, and quiz deadlines for the active
-              orientation cohort. Add events to your calendar from the trainee
-              dashboard.
+              Live training, workshops, and quiz deadlines for the active orientation cohort. Add
+              events to your calendar from the trainee dashboard.
             </p>
-            <a href="#" className="mt-8 inline-block text-sm font-semibold uppercase tracking-wider text-yellow hover:underline">
+            <a
+              href="#"
+              className="mt-8 inline-block text-sm font-semibold uppercase tracking-wider text-yellow hover:underline"
+            >
               Full schedule →
             </a>
           </div>
@@ -48,7 +52,10 @@ export function News() {
             <ul className="divide-y divide-white/10 border-y border-white/10">
               {items.map(({ date, cat, icon: Icon, title, meta }) => (
                 <li key={title}>
-                  <a href="#" className="group grid grid-cols-12 items-center gap-6 py-7 transition hover:bg-white/[0.03]">
+                  <a
+                    href="#"
+                    className="group grid grid-cols-12 items-center gap-6 py-7 transition hover:bg-white/[0.03]"
+                  >
                     <div className="col-span-3 sm:col-span-2">
                       <div className="font-display text-2xl font-semibold text-yellow">
                         {date.split(" ")[0]}

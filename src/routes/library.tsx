@@ -1,29 +1,61 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
-import { Play, Video, Clock, Eye, ShieldCheck, Search } from 'lucide-react'
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { Play, Video, Clock, Eye, ShieldCheck, Search } from "lucide-react";
 
-export const Route = createFileRoute('/library')({
+export const Route = createFileRoute("/library")({
   component: Library,
-})
+});
 
 const videoCatalog = [
-  { id: "vid-1", title: "High-Voltage Substation Isolation Best Practices", duration: "42:15", views: "340", category: "Safety", instructor: "Ing. Appiah-Kubi", thumbnailTag: "Feeder Control" },
-  { id: "vid-2", title: "Vesting & Smart Meter Infrastructure Calibration", duration: "28:40", views: "185", category: "Commercial", instructor: "Madam E. Osei", thumbnailTag: "Prepaid Systems" },
-  { id: "vid-3", title: "Emergency Network Fault Isolation Protocols", duration: "35:10", views: "298", category: "Operations", instructor: "Ing. F. Mensah", thumbnailTag: "Grid Restoration" },
-  { id: "vid-4", title: "Customer Engagement Standards & Service Charter Review", duration: "18:25", views: "142", category: "Public Relations", instructor: "Mr. J. Boateng", thumbnailTag: "Frontline Metrics" }
-]
+  {
+    id: "vid-1",
+    title: "High-Voltage Substation Isolation Best Practices",
+    duration: "42:15",
+    views: "340",
+    category: "Safety",
+    instructor: "Ing. Appiah-Kubi",
+    thumbnailTag: "Feeder Control",
+  },
+  {
+    id: "vid-2",
+    title: "Vesting & Smart Meter Infrastructure Calibration",
+    duration: "28:40",
+    views: "185",
+    category: "Commercial",
+    instructor: "Madam E. Osei",
+    thumbnailTag: "Prepaid Systems",
+  },
+  {
+    id: "vid-3",
+    title: "Emergency Network Fault Isolation Protocols",
+    duration: "35:10",
+    views: "298",
+    category: "Operations",
+    instructor: "Ing. F. Mensah",
+    thumbnailTag: "Grid Restoration",
+  },
+  {
+    id: "vid-4",
+    title: "Customer Engagement Standards & Service Charter Review",
+    duration: "18:25",
+    views: "142",
+    category: "Public Relations",
+    instructor: "Mr. J. Boateng",
+    thumbnailTag: "Frontline Metrics",
+  },
+];
 
 function Library() {
-  const [selectedCategory, setSelectedCategory] = useState<string>("All")
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const filteredVideos = selectedCategory === "All" 
-    ? videoCatalog 
-    : videoCatalog.filter(v => v.category === selectedCategory)
+  const filteredVideos =
+    selectedCategory === "All"
+      ? videoCatalog
+      : videoCatalog.filter((v) => v.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-bg p-6 pt-32 lg:p-12">
       <main className="mx-auto max-w-6xl space-y-10">
-        
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
@@ -31,7 +63,8 @@ function Library() {
               Video <span className="text-brand-light">Library</span>
             </h1>
             <p className="mt-2 text-text-body max-w-lg">
-              Access official technical demonstrations, operational walkthroughs, and safety training modules.
+              Access official technical demonstrations, operational walkthroughs, and safety
+              training modules.
             </p>
           </div>
 
@@ -47,8 +80,8 @@ function Library() {
               key={cat}
               onClick={() => setSelectedCategory(cat)}
               className={`rounded-lg px-5 py-2.5 text-[11px] font-bold uppercase tracking-[0.1em] transition-all ${
-                selectedCategory === cat 
-                  ? "bg-brand-primary text-white shadow-card" 
+                selectedCategory === cat
+                  ? "bg-brand-primary text-white shadow-card"
                   : "bg-white border border-border text-text-muted hover:border-brand-primary/30"
               }`}
             >
@@ -60,7 +93,7 @@ function Library() {
         {/* Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {filteredVideos.map((video) => (
-            <div 
+            <div
               key={video.id}
               className="group flex flex-col overflow-hidden rounded-xl border border-border bg-white shadow-card hover:shadow-card-hover transition-all duration-300"
             >
@@ -91,12 +124,17 @@ function Library() {
                   {video.title}
                 </h3>
                 <p className="text-xs text-text-muted mb-6">
-                  Presented by: <span className="font-semibold text-text-primary">{video.instructor}</span>
+                  Presented by:{" "}
+                  <span className="font-semibold text-text-primary">{video.instructor}</span>
                 </p>
 
                 <div className="mt-auto flex items-center gap-4 text-[11px] font-bold uppercase tracking-wider text-text-muted border-t border-border pt-4">
-                  <span className="flex items-center gap-1.5"><Video className="h-3.5 w-3.5" /> HD Stream</span>
-                  <span className="flex items-center gap-1.5"><Eye className="h-3.5 w-3.5" /> {video.views} Watched</span>
+                  <span className="flex items-center gap-1.5">
+                    <Video className="h-3.5 w-3.5" /> HD Stream
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Eye className="h-3.5 w-3.5" /> {video.views} Watched
+                  </span>
                 </div>
               </div>
             </div>
@@ -104,5 +142,5 @@ function Library() {
         </div>
       </main>
     </div>
-  )
+  );
 }

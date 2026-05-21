@@ -28,6 +28,7 @@ class RegisterView(APIView):
                         "name": user.name,
                         "username": user.username,
                         "email": user.email,
+                        "phone_number": user.phone_number,
                     },
                     "access": str(refresh.access_token),
                     "refresh": str(refresh),

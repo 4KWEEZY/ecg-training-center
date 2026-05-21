@@ -12,13 +12,15 @@ export function TeachCTA() {
         />
         <div className="relative grid grid-cols-1 gap-10 lg:grid-cols-12 lg:items-end">
           <div className="lg:col-span-7">
-            <span className="font-mono text-xs uppercase tracking-[0.3em] text-lime">For instructors</span>
+            <span className="font-mono text-xs uppercase tracking-[0.3em] text-lime">
+              For instructors
+            </span>
             <h2 className="mt-4 font-display text-[clamp(2.5rem,5vw,4.5rem)] font-light leading-[1] tracking-tight">
               Teach what only <em className="italic text-lime">you</em> can teach.
             </h2>
             <p className="mt-6 max-w-xl text-background/70">
-              Bring your craft to thousands of motivated learners. Keep 80% of revenue,
-              own your audience, and get a producer who actually answers your messages.
+              Bring your craft to thousands of motivated learners. Keep 80% of revenue, own your
+              audience, and get a producer who actually answers your messages.
             </p>
           </div>
           <div className="lg:col-span-5">
@@ -28,7 +30,10 @@ export function TeachCTA() {
                 ["$48k", "median first-cohort earnings"],
                 ["7 days", "from idea to launch with our team"],
               ].map(([n, l]) => (
-                <div key={l} className="flex items-baseline justify-between border-b border-background/15 pb-3">
+                <div
+                  key={l}
+                  className="flex items-baseline justify-between border-b border-background/15 pb-3"
+                >
                   <div className="font-display text-3xl">{n}</div>
                   <div className="text-sm text-background/60">{l}</div>
                 </div>

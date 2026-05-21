@@ -17,9 +17,12 @@ function NotFoundComponent() {
     <div className="flex min-h-screen items-center justify-center bg-brand-dark px-6 text-white selection:bg-yellow selection:text-brand-dark">
       <div className="max-w-md text-center border border-white/10 bg-brand-deep/30 rounded-xl p-8 backdrop-blur-sm shadow-xl">
         <h1 className="text-7xl font-display font-light text-yellow">404</h1>
-        <h2 className="mt-4 text-xl font-semibold tracking-wide uppercase text-white">Resource Not Found</h2>
+        <h2 className="mt-4 text-xl font-semibold tracking-wide uppercase text-white">
+          Resource Not Found
+        </h2>
         <p className="mt-2 text-sm text-white/60 leading-relaxed">
-          The requested LMS course route, dashboard workspace, or training asset page does not exist or has been relocated.
+          The requested LMS course route, dashboard workspace, or training asset page does not exist
+          or has been relocated.
         </p>
         <div className="mt-6">
           <Link
@@ -49,7 +52,8 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
           System Execution Interrupted
         </h1>
         <p className="mt-2 text-sm text-white/60 leading-relaxed">
-          An error occurred while loading this platform node. This may be due to an active network sync fallback period.
+          An error occurred while loading this platform node. This may be due to an active network
+          sync fallback period.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <button
@@ -80,10 +84,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "ECG Training Center — Learning Management System" },
-      { name: "description", content: "The official Electricity Company of Ghana Training Center LMS Portal v2.0." },
+      {
+        name: "description",
+        content: "The official Electricity Company of Ghana Training Center LMS Portal v2.0.",
+      },
       { name: "author", content: "ECG Technical Services Team" },
       { property: "og:title", content: "ECG Training Center — Learning Management System" },
-      { property: "og:description", content: "Centralized industrial e-learning, interactive evaluations, and automated credential verification." },
+      {
+        property: "og:description",
+        content:
+          "Centralized industrial e-learning, interactive evaluations, and automated credential verification.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],

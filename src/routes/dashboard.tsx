@@ -1,7 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
-  BookOpen, Award, CheckCircle2, Clock, Play,
-  Calendar, Bell, Users, MessageSquare, ArrowRight,
+  BookOpen,
+  Award,
+  CheckCircle2,
+  Clock,
+  Play,
+  Calendar,
+  Bell,
+  Users,
+  MessageSquare,
+  ArrowRight,
 } from "lucide-react";
 import { TopBar } from "@/components/landing/TopBar";
 import { Nav } from "@/components/landing/Nav";
@@ -48,7 +56,6 @@ function DashboardPage() {
       <Nav />
 
       <main className="flex-1 mx-auto w-full max-w-7xl px-6 pt-36 pb-20">
-
         {/* ── Welcome Banner ── */}
         <div className="relative mb-6 overflow-hidden rounded-2xl bg-[#3B3DA6] p-6 shadow-[0_4px_24px_rgba(59,61,166,0.25)] md:p-8">
           {/* BG decoration */}
@@ -102,7 +109,9 @@ function DashboardPage() {
               </div>
               <div>
                 <div className="font-display text-xl font-bold text-[#1A1C5C]">{value}</div>
-                <div className="text-[11px] font-medium uppercase tracking-wider text-[#AAAAC8]">{label}</div>
+                <div className="text-[11px] font-medium uppercase tracking-wider text-[#AAAAC8]">
+                  {label}
+                </div>
               </div>
             </div>
           ))}
@@ -110,10 +119,8 @@ function DashboardPage() {
 
         {/* ── Main 2-col grid ── */}
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-
           {/* LEFT — 2/3 */}
           <div className="space-y-6 lg:col-span-2">
-
             {/* Currently studying */}
             <div className="rounded-2xl border border-[#DDDDF0] bg-white p-6 shadow-[0_2px_12px_rgba(59,61,166,0.07)]">
               <div className="mb-4 flex items-center justify-between border-b border-[#EAEBF6] pb-4">
@@ -165,12 +172,11 @@ function DashboardPage() {
 
               <div className="flex flex-col gap-3">
                 {announcements.map((ann) => (
-                  <div
-                    key={ann.id}
-                    className="rounded-xl border border-[#EAEBF6] bg-[#F4F5FB] p-4"
-                  >
+                  <div key={ann.id} className="rounded-xl border border-[#EAEBF6] bg-[#F4F5FB] p-4">
                     <div className="mb-2 flex items-center justify-between gap-3">
-                      <span className={`rounded-full border px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${ann.tagStyle}`}>
+                      <span
+                        className={`rounded-full border px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-wider ${ann.tagStyle}`}
+                      >
                         {ann.tag}
                       </span>
                       <span className="text-[10px] text-[#AAAAC8]">{ann.time}</span>
@@ -185,7 +191,6 @@ function DashboardPage() {
 
           {/* RIGHT — 1/3 */}
           <div className="space-y-6">
-
             {/* Upcoming sessions */}
             <div className="rounded-2xl border border-[#DDDDF0] bg-white p-6 shadow-[0_2px_12px_rgba(59,61,166,0.07)]">
               <div className="mb-4 flex items-center gap-2 border-b border-[#EAEBF6] pb-4">
@@ -235,8 +240,8 @@ function DashboardPage() {
                 </h2>
               </div>
               <p className="text-xs leading-relaxed text-[#8B8DAE]">
-                Engage in technical discussions, resolve engineering topics, and
-                coordinate with instructors across all cohorts.
+                Engage in technical discussions, resolve engineering topics, and coordinate with
+                instructors across all cohorts.
               </p>
               <Link
                 to="/dashboard"
@@ -245,7 +250,6 @@ function DashboardPage() {
                 Enter Community Hub <ArrowRight className="h-3 w-3" />
               </Link>
             </div>
-
           </div>
         </div>
       </main>
