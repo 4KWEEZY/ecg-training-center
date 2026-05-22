@@ -114,7 +114,7 @@ function RegisterPage() {
                     required
                     name="name"
                     type="text"
-                    placeholder="John Doe"
+                    placeholder="Joshua Mensah"
                     value={formData.name}
                     onChange={handleChange}
                     className="w-full rounded-xl border border-[#DDDDF0] bg-[#F4F5FB] py-3 pl-11 pr-4 text-sm text-[#1A1C5C] outline-none focus:border-[#3B3DA6]"
@@ -134,7 +134,7 @@ function RegisterPage() {
                     required
                     name="username"
                     type="text"
-                    placeholder="johndoe123"
+                    placeholder="Joshua Mensah"
                     value={formData.username}
                     onChange={handleChange}
                     className="w-full rounded-xl border border-[#DDDDF0] bg-[#F4F5FB] py-3 pl-11 pr-4 text-sm text-[#1A1C5C] outline-none focus:border-[#3B3DA6]"
