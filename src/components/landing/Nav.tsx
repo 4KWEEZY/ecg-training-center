@@ -1,7 +1,7 @@
 import { Link, useRouterState } from "@tanstack/react-router";
 import { ChevronDown, Menu, Search, X } from "lucide-react";
 import { useState, useEffect } from "react";
-import logo from "@/assets/ecg-logo.png";
+import logo from "@/assets/ECG.png";
 
 const links = [
   { label: "Dashboard", href: "/dashboard" },
@@ -67,12 +67,12 @@ export function Nav() {
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-2 md:px-6">
           {/* ── Logo ── */}
           <Link to="/" className="flex shrink-0 items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/15 p-1.5 ring-1 ring-white/20 transition hover:bg-white/20">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue/15 p-1.5 ring-1 ring-white/20 transition hover:bg-white/20">
               <img
                 src={logo}
                 alt="ECG logo"
-                width={40}
-                height={40}
+                width={10}
+                height={10}
                 className="h-9 w-9 object-contain"
               />
             </div>

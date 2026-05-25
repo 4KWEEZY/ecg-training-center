@@ -137,7 +137,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOWED_ORIGINS = [
   "http://localhost:5173",  # default vite port
-    "http://localhost:8081",]
+    "http://localhost:8080",]
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -160,3 +160,7 @@ SIMPLE_JWT = {
 } 
 
 AUTH_USER_MODEL = 'backend.User'
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.ngrok-free.app",
+]
