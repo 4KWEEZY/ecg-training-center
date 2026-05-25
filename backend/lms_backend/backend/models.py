@@ -51,8 +51,8 @@ class User(AbstractBaseUser):
     REQUIRED_FIELDS = ['email']
 
     name = models.CharField(max_length=254)
-    username = models.CharField(max_length=20,unique=True)
-    phone_number = models.CharField(max_length=10,validators=[RegexValidator(r'^\d+$','Only digits are allowed.')])
+    username = models.CharField(max_length=20, unique=True)
+    phone_number = models.CharField(max_length=10, validators=[RegexValidator(r'^\d+$', 'Only digits are allowed.')])
     email = models.EmailField(unique=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -64,6 +64,12 @@ class User(AbstractBaseUser):
 
     def check_password(self, raw_password):
         return check_password(raw_password, self.password)
+
+    def has_perm(self, perm, obj=None):
+        return self.is_superuser
+
+    def has_module_perms(self, app_label):
+        return self.is_superuser
 
     def __str__(self):
         return self.username
