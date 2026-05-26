@@ -1,0 +1,10 @@
+{
+    "python.defaultInterpreterPath": ".\\venv\\Scripts\\python.exe",
+    "python.analysis.exclude": [
+        "**/venv/**",
+        "**/node_modules/**"
+    ],
+    "python.analysis.ignore": [
+        "**/venv/**"
+    ]
+}

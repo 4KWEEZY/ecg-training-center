@@ -152,7 +152,14 @@ function LoginPage() {
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#3B3DA6] py-3.5 text-sm font-bold uppercase tracking-[0.15em] text-white transition hover:bg-[#2B2D8A] disabled:opacity-60"
               >
-                {loading ? "Signing In..." : <> Sign In <ArrowRight className="h-4 w-4" /> </>}
+                {loading ? (
+                  "Signing In..."
+                ) : (
+                  <>
+                    {" "}
+                    Sign In <ArrowRight className="h-4 w-4" />{" "}
+                  </>
+                )}
               </button>
             </form>
 

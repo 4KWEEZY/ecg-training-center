@@ -22,7 +22,6 @@ function VerifyOtpPage() {
 
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
-  // Countdown timer for resend
   useEffect(() => {
     if (resendCountdown <= 0) return;
     const timer = setTimeout(() => setResendCountdown((c) => c - 1), 1000);
@@ -30,14 +29,11 @@ function VerifyOtpPage() {
   }, [resendCountdown]);
 
   const handleOtpChange = (index: number, value: string) => {
-    // Only allow single digit
     if (!/^\d*$/.test(value)) return;
     const newOtp = [...otp];
     newOtp[index] = value.slice(-1);
     setOtp(newOtp);
     setError("");
-
-    // Auto-focus next input
     if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -53,7 +49,9 @@ function VerifyOtpPage() {
     e.preventDefault();
     const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
     const newOtp = [...otp];
-    pasted.split("").forEach((char, i) => { newOtp[i] = char; });
+    pasted.split("").forEach((char, i) => {
+      newOtp[i] = char;
+    });
     setOtp(newOtp);
     inputRefs.current[Math.min(pasted.length, 5)]?.focus();
   };
@@ -70,14 +68,20 @@ function VerifyOtpPage() {
     setError("");
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/verify-otp/", { email, otp: code });
-      navigate({ to: "/reset-password", search: { email, otp: code } });
+      const response = await axios.post("http://127.0.0.1:8000/api/password-reset/verify-otp/", {
+        otp_code: code,
+      });
+      navigate({
+        to: "/reset-password",
+        search: { email: response.data.email },
+      });
     } catch (err: unknown) {
       if (axios.isAxiosError(err) && err.response?.data) {
         setError(
-          err.response.data?.otp?.[0] ||
-          err.response.data?.detail ||
-          "Invalid or expired code. Please try again."
+          err.response.data?.otp_code?.[0] ||
+            err.response.data?.non_field_errors?.[0] ||
+            err.response.data?.detail ||
+            "Invalid or expired code. Please try again.",
         );
       } else {
         setError("Invalid or expired code. Please try again.");
@@ -92,7 +96,7 @@ function VerifyOtpPage() {
     setResendSuccess(false);
     setError("");
     try {
-      await axios.post("http://127.0.0.1:8000/api/forgot-password/", { email });
+      await axios.post("http://127.0.0.1:8000/api/password-reset/", { email });
       setResendCountdown(60);
       setResendSuccess(true);
       setOtp(["", "", "", "", "", ""]);
@@ -128,7 +132,8 @@ function VerifyOtpPage() {
               <span className="font-bold text-[#FFD700]">OTP Code</span>
             </h1>
             <p className="mt-6 max-w-xs text-sm leading-relaxed text-white/50">
-              A 6-digit verification code has been sent to your email address. It expires in 10 minutes.
+              A 6-digit verification code has been sent to your email address. It expires in 10
+              minutes.
             </p>
           </div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-white/30">
@@ -141,8 +146,6 @@ function VerifyOtpPage() {
       <div className="flex min-h-screen items-center justify-center px-6 py-16 lg:ml-[50%]">
         <div className="w-full max-w-md">
           <div className="rounded-2xl border border-[#DDDDF0] bg-white p-8 shadow-[0_8px_40px_rgba(59,61,166,0.12)] md:p-10">
-
-            {/* Header */}
             <div className="mb-8 text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#3B3DA6]">
                 <ShieldCheck className="h-7 w-7 text-white" />
@@ -157,7 +160,6 @@ function VerifyOtpPage() {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">
-              {/* OTP Inputs */}
               <div>
                 <label className="mb-3 block text-center text-xs font-bold uppercase tracking-[0.15em] text-[#3B3DA6]">
                   Enter 6-Digit Code
@@ -166,7 +168,9 @@ function VerifyOtpPage() {
                   {otp.map((digit, index) => (
                     <input
                       key={index}
-                      ref={(el) => { inputRefs.current[index] = el; }}
+                      ref={(el) => {
+                        inputRefs.current[index] = el;
+                      }}
                       type="text"
                       inputMode="numeric"
                       maxLength={1}
@@ -198,7 +202,6 @@ function VerifyOtpPage() {
               </button>
             </form>
 
-            {/* Resend */}
             <div className="mt-6 text-center">
               {resendCountdown > 0 ? (
                 <p className="text-sm text-[#8B8DAE]">

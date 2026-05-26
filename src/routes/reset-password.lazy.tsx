@@ -11,7 +11,7 @@ export const Route = createLazyFileRoute("/reset-password")({
 
 function ResetPasswordPage() {
   const navigate = useNavigate();
-  const { email, otp } = Route.useSearch() as { email: string; otp: string };
+  const { email } = Route.useSearch() as { email: string }; // removed otp
 
   const [formData, setFormData] = useState({ password: "", confirmPassword: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -27,8 +27,10 @@ function ResetPasswordPage() {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (formData.password.length < 8) newErrors.password = "Password must be at least 8 characters.";
-    if (formData.password !== formData.confirmPassword) newErrors.confirmPassword = "Passwords do not match.";
+    if (formData.password.length < 8)
+      newErrors.password = "Password must be at least 8 characters.";
+    if (formData.password !== formData.confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match.";
     return newErrors;
   };
 
@@ -44,10 +46,10 @@ function ResetPasswordPage() {
     setErrors({});
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/reset-password/", {
+      await axios.post("http://127.0.0.1:8000/api/password-reset/confirm/", {
         email,
-        otp,
-        password: formData.password,
+        new_password: formData.password,
+        confirm_password: formData.confirmPassword,
       });
       setSuccess(true);
     } catch (err: unknown) {
@@ -55,7 +57,9 @@ function ResetPasswordPage() {
         const djangoErrors = err.response.data;
         const formatted: Record<string, string> = {};
         Object.keys(djangoErrors).forEach((key) => {
-          formatted[key] = Array.isArray(djangoErrors[key]) ? djangoErrors[key][0] : djangoErrors[key];
+          formatted[key] = Array.isArray(djangoErrors[key])
+            ? djangoErrors[key][0]
+            : djangoErrors[key];
         });
         setErrors(formatted);
       } else {
@@ -90,7 +94,8 @@ function ResetPasswordPage() {
               <span className="font-bold text-[#FFD700]">Password</span>
             </h1>
             <p className="mt-6 max-w-xs text-sm leading-relaxed text-white/50">
-              Choose a strong password with at least 8 characters to secure your ECG Academy account.
+              Choose a strong password with at least 8 characters to secure your ECG Academy
+              account.
             </p>
           </div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-white/30">
@@ -103,9 +108,7 @@ function ResetPasswordPage() {
       <div className="flex min-h-screen items-center justify-center px-6 py-16 lg:ml-[50%]">
         <div className="w-full max-w-md">
           <div className="rounded-2xl border border-[#DDDDF0] bg-white p-8 shadow-[0_8px_40px_rgba(59,61,166,0.12)] md:p-10">
-
             {success ? (
-              /* ── Success State ── */
               <div className="text-center">
                 <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
                   <CheckCircle2 className="h-9 w-9 text-green-600" />
@@ -114,7 +117,8 @@ function ResetPasswordPage() {
                   Password Reset!
                 </h2>
                 <p className="mb-8 text-sm text-[#8B8DAE]">
-                  Your password has been updated successfully. You can now sign in with your new password.
+                  Your password has been updated successfully. You can now sign in with your new
+                  password.
                 </p>
                 <button
                   onClick={() => navigate({ to: "/login" })}
@@ -125,7 +129,6 @@ function ResetPasswordPage() {
               </div>
             ) : (
               <>
-                {/* Header */}
                 <div className="mb-8 text-center">
                   <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#3B3DA6]">
                     <Lock className="h-7 w-7 text-white" />
@@ -158,10 +161,19 @@ function ResetPasswordPage() {
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-4 top-1/2 -translate-y-1/2 text-[#AAAAC8] transition hover:text-[#3B3DA6]"
                       >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        {showPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
                       </button>
                     </div>
-                    {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
+                    {errors.password && (
+                      <p className="mt-1 text-xs text-red-500">{errors.password}</p>
+                    )}
+                    {errors.new_password && (
+                      <p className="mt-1 text-xs text-red-500">{errors.new_password}</p>
+                    )}
                   </div>
 
                   {/* Confirm Password */}
@@ -188,10 +200,20 @@ function ResetPasswordPage() {
                         {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                       </button>
                     </div>
-                    {errors.confirmPassword && <p className="mt-1 text-xs text-red-500">{errors.confirmPassword}</p>}
+                    {errors.confirmPassword && (
+                      <p className="mt-1 text-xs text-red-500">{errors.confirmPassword}</p>
+                    )}
+                    {errors.confirm_password && (
+                      <p className="mt-1 text-xs text-red-500">{errors.confirm_password}</p>
+                    )}
                   </div>
 
-                  {errors.detail && <p className="text-center text-xs text-red-500">{errors.detail}</p>}
+                  {errors.detail && (
+                    <p className="text-center text-xs text-red-500">{errors.detail}</p>
+                  )}
+                  {errors.email && (
+                    <p className="text-center text-xs text-red-500">{errors.email}</p>
+                  )}
 
                   <button
                     type="submit"

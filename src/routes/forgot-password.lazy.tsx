@@ -21,15 +21,15 @@ function ForgotPasswordPage() {
     setError("");
 
     try {
-      await axios.post("http://127.0.0.1:8000/api/forgot-password/", { email });
+      await axios.post("http://127.0.0.1:8000/api/password-reset/", { email });
       // Pass email to OTP page via search params
       navigate({ to: "/verify-otp", search: { email } });
     } catch (err: unknown) {
       if (axios.isAxiosError(err) && err.response?.data) {
         setError(
           err.response.data?.email?.[0] ||
-          err.response.data?.detail ||
-          "Something went wrong. Please try again."
+            err.response.data?.detail ||
+            "Something went wrong. Please try again.",
         );
       } else {
         setError("Something went wrong. Please try again.");
@@ -63,7 +63,8 @@ function ForgotPasswordPage() {
               <span className="font-bold text-[#FFD700]">Password</span>
             </h1>
             <p className="mt-6 max-w-xs text-sm leading-relaxed text-white/50">
-              Enter your registered email and we'll send you a verification code to get back into your account.
+              Enter your registered email and we'll send you a verification code to get back into
+              your account.
             </p>
           </div>
           <p className="text-[10px] uppercase tracking-[0.2em] text-white/30">
@@ -76,7 +77,6 @@ function ForgotPasswordPage() {
       <div className="flex min-h-screen items-center justify-center px-6 py-16 lg:ml-[50%]">
         <div className="w-full max-w-md">
           <div className="rounded-2xl border border-[#DDDDF0] bg-white p-8 shadow-[0_8px_40px_rgba(59,61,166,0.12)] md:p-10">
-
             {/* Header */}
             <div className="mb-8 text-center">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#3B3DA6]">
@@ -102,7 +102,10 @@ function ForgotPasswordPage() {
                     type="email"
                     placeholder="Enter your registered email"
                     value={email}
-                    onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      setError("");
+                    }}
                     className="w-full rounded-xl border border-[#DDDDF0] bg-[#F4F5FB] py-3.5 pl-11 pr-4 text-sm text-[#1A1C5C] outline-none placeholder:text-[#AAAAC8] focus:border-[#3B3DA6] focus:ring-2 focus:ring-[#3B3DA6]/10"
                   />
                 </div>
@@ -114,7 +117,14 @@ function ForgotPasswordPage() {
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#3B3DA6] py-3.5 text-sm font-bold uppercase tracking-[0.15em] text-white transition hover:bg-[#2B2D8A] disabled:opacity-60"
               >
-                {loading ? "Sending..." : <> Send Verification Code <ArrowRight className="h-4 w-4" /> </>}
+                {loading ? (
+                  "Sending..."
+                ) : (
+                  <>
+                    {" "}
+                    Send Verification Code <ArrowRight className="h-4 w-4" />{" "}
+                  </>
+                )}
               </button>
             </form>
 
