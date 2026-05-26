@@ -17,7 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from backend.views import RegisterView,LoginView
+from backend.views import RegisterView,LoginView,PasswordResetRequestView,PasswordResetVerifyOTPView,PasswordResetConfirmView
 
 
 
@@ -26,4 +26,7 @@ urlpatterns = [
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/login/', LoginView.as_view(), name='login'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/password-reset/', PasswordResetRequestView.as_view(), name='password_reset'),
+    path('api/password-reset/verify-otp/', PasswordResetVerifyOTPView.as_view(), name='password_reset_verify'),
+    path('api/password-reset/confirm/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
 ]

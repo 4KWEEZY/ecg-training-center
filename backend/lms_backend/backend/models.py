@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
+from datetime import timedelta
 from django.core.validators import RegexValidator
 import secrets
 import random
@@ -67,3 +68,22 @@ class User(AbstractBaseUser):
 
     def __str__(self):
         return self.username
+    
+class OTPCode(models.Model):
+    PURPOSE_CHOICES = [
+        ('2fa', '2FA Login'),
+        ('reset', 'Password Reset'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='otp_codes')
+    code = models.CharField(max_length=6)
+    purpose = models.CharField(max_length=10, choices=PURPOSE_CHOICES)
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expiry = models.DateTimeField()
+
+    def is_valid(self):
+        return not self.is_used and timezone.now() < self.expiry
+
+    def __str__(self):
+        return f"{self.user.username} - {self.purpose} - {self.code}"
