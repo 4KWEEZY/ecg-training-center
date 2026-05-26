@@ -25,9 +25,24 @@ import { Route as CoursesRouteImport } from './routes/courses'
 import { Route as CertificatesRouteImport } from './routes/certificates'
 import { Route as IndexRouteImport } from './routes/index'
 
+const VerifyOtpLazyRouteImport = createFileRoute('/verify-otp')()
+const ResetPasswordLazyRouteImport = createFileRoute('/reset-password')()
 const RegisterLazyRouteImport = createFileRoute('/register')()
 const LoginLazyRouteImport = createFileRoute('/login')()
+const ForgotPasswordLazyRouteImport = createFileRoute('/forgot-password')()
 
+const VerifyOtpLazyRoute = VerifyOtpLazyRouteImport.update({
+  id: '/verify-otp',
+  path: '/verify-otp',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() => import('./routes/verify-otp.lazy').then((d) => d.Route))
+const ResetPasswordLazyRoute = ResetPasswordLazyRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/reset-password.lazy').then((d) => d.Route),
+)
 const RegisterLazyRoute = RegisterLazyRouteImport.update({
   id: '/register',
   path: '/register',
@@ -38,6 +53,13 @@ const LoginLazyRoute = LoginLazyRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/login.lazy').then((d) => d.Route))
+const ForgotPasswordLazyRoute = ForgotPasswordLazyRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any).lazy(() =>
+  import('./routes/forgot-password.lazy').then((d) => d.Route),
+)
 const VersionRoute = VersionRouteImport.update({
   id: '/version',
   path: '/version',
@@ -118,8 +140,11 @@ export interface FileRoutesByFullPath {
   '/schedule': typeof ScheduleRoute
   '/search': typeof SearchRoute
   '/version': typeof VersionRoute
+  '/forgot-password': typeof ForgotPasswordLazyRoute
   '/login': typeof LoginLazyRoute
   '/register': typeof RegisterLazyRoute
+  '/reset-password': typeof ResetPasswordLazyRoute
+  '/verify-otp': typeof VerifyOtpLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -135,8 +160,11 @@ export interface FileRoutesByTo {
   '/schedule': typeof ScheduleRoute
   '/search': typeof SearchRoute
   '/version': typeof VersionRoute
+  '/forgot-password': typeof ForgotPasswordLazyRoute
   '/login': typeof LoginLazyRoute
   '/register': typeof RegisterLazyRoute
+  '/reset-password': typeof ResetPasswordLazyRoute
+  '/verify-otp': typeof VerifyOtpLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -153,8 +181,11 @@ export interface FileRoutesById {
   '/schedule': typeof ScheduleRoute
   '/search': typeof SearchRoute
   '/version': typeof VersionRoute
+  '/forgot-password': typeof ForgotPasswordLazyRoute
   '/login': typeof LoginLazyRoute
   '/register': typeof RegisterLazyRoute
+  '/reset-password': typeof ResetPasswordLazyRoute
+  '/verify-otp': typeof VerifyOtpLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -172,8 +203,11 @@ export interface FileRouteTypes {
     | '/schedule'
     | '/search'
     | '/version'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
+    | '/verify-otp'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -189,8 +223,11 @@ export interface FileRouteTypes {
     | '/schedule'
     | '/search'
     | '/version'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
+    | '/verify-otp'
   id:
     | '__root__'
     | '/'
@@ -206,8 +243,11 @@ export interface FileRouteTypes {
     | '/schedule'
     | '/search'
     | '/version'
+    | '/forgot-password'
     | '/login'
     | '/register'
+    | '/reset-password'
+    | '/verify-otp'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -224,12 +264,29 @@ export interface RootRouteChildren {
   ScheduleRoute: typeof ScheduleRoute
   SearchRoute: typeof SearchRoute
   VersionRoute: typeof VersionRoute
+  ForgotPasswordLazyRoute: typeof ForgotPasswordLazyRoute
   LoginLazyRoute: typeof LoginLazyRoute
   RegisterLazyRoute: typeof RegisterLazyRoute
+  ResetPasswordLazyRoute: typeof ResetPasswordLazyRoute
+  VerifyOtpLazyRoute: typeof VerifyOtpLazyRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verify-otp': {
+      id: '/verify-otp'
+      path: '/verify-otp'
+      fullPath: '/verify-otp'
+      preLoaderRoute: typeof VerifyOtpLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -242,6 +299,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginLazyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordLazyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/version': {
@@ -352,8 +416,11 @@ const rootRouteChildren: RootRouteChildren = {
   ScheduleRoute: ScheduleRoute,
   SearchRoute: SearchRoute,
   VersionRoute: VersionRoute,
+  ForgotPasswordLazyRoute: ForgotPasswordLazyRoute,
   LoginLazyRoute: LoginLazyRoute,
   RegisterLazyRoute: RegisterLazyRoute,
+  ResetPasswordLazyRoute: ResetPasswordLazyRoute,
+  VerifyOtpLazyRoute: VerifyOtpLazyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

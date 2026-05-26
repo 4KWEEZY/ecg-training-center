@@ -1,5 +1,5 @@
 import { createLazyFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { ShieldCheck, ArrowRight, Mail, Lock, User } from "lucide-react";
+import { ShieldCheck, ArrowRight, Lock, User } from "lucide-react";
 import logo from "@/assets/ecg-logo.png";
 import heroImg from "@/assets/utility-workers.jpg";
 import { useState } from "react";
@@ -32,15 +32,10 @@ function LoginPage() {
 
     try {
       const response = await axios.post("http://127.0.0.1:8000/api/login/", formData);
-
       const { access, refresh, user } = response.data;
-
-      // Store tokens and user
       localStorage.setItem("access_token", access);
       localStorage.setItem("refresh_token", refresh);
       localStorage.setItem("user", JSON.stringify(user));
-
-      // Redirect to dashboard
       navigate({ to: "/dashboard" });
     } catch (error: unknown) {
       if (axios.isAxiosError(error) && error.response?.data) {
@@ -60,7 +55,7 @@ function LoginPage() {
 
   return (
     <div className="relative min-h-screen w-full overflow-hidden bg-[#F4F5FB]">
-      {/* ── Left Panel (Hero) ── */}
+      {/* Left Panel */}
       <div className="absolute inset-y-0 left-0 hidden w-1/2 lg:block">
         <img src={heroImg} alt="ECG Training" className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-br from-[#1A1C5C]/95 via-[#3B3DA6]/85 to-[#2B2D8A]/90" />
@@ -69,10 +64,8 @@ function LoginPage() {
             <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/15 p-1.5 ring-1 ring-white/20">
               <img src={logo} alt="ECG logo" className="h-9 w-9 object-contain" />
             </div>
-            <div>
-              <div className="font-display text-base font-bold uppercase tracking-[0.12em] text-white">
-                ECG <span className="text-[#FFD700]">Training Center</span>
-              </div>
+            <div className="font-display text-base font-bold uppercase tracking-[0.12em] text-white">
+              ECG <span className="text-[#FFD700]">Training Center</span>
             </div>
           </div>
           <h1 className="font-display text-5xl font-light uppercase text-white">
@@ -85,7 +78,7 @@ function LoginPage() {
         </div>
       </div>
 
-      {/* ── Right Panel (Form) ── */}
+      {/* Right Panel */}
       <div className="flex min-h-screen items-center justify-center px-6 py-16 lg:ml-[50%]">
         <div className="w-full max-w-md">
           <div className="rounded-2xl border border-[#DDDDF0] bg-white p-8 shadow-[0_8px_40px_rgba(59,61,166,0.12)] md:p-10">
@@ -99,7 +92,6 @@ function LoginPage() {
             </div>
 
             <form onSubmit={handleLoginSubmit} className="space-y-5">
-              {/* Username */}
               <div>
                 <label className="mb-1.5 block text-xs font-bold uppercase tracking-[0.15em] text-[#3B3DA6]">
                   Username
@@ -119,12 +111,18 @@ function LoginPage() {
                 {errors.username && <p className="mt-1 text-xs text-red-500">{errors.username}</p>}
               </div>
 
-              {/* Password */}
               <div>
                 <div className="mb-1.5 flex items-center justify-between">
                   <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#3B3DA6]">
                     Password
                   </label>
+                  {/* Forgot Password link → navigates to page */}
+                  <Link
+                    to="/forgot-password"
+                    className="text-xs font-medium text-[#8B8DAE] transition hover:text-[#3B3DA6] hover:underline"
+                  >
+                    Forgot Password?
+                  </Link>
                 </div>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#AAAAC8]" />
@@ -141,7 +139,6 @@ function LoginPage() {
                 {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
               </div>
 
-              {/* General errors e.g wrong password */}
               {errors.detail && <p className="text-center text-xs text-red-500">{errors.detail}</p>}
               {errors.non_field_errors && (
                 <p className="text-center text-xs text-red-500">{errors.non_field_errors}</p>
@@ -155,13 +152,7 @@ function LoginPage() {
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#3B3DA6] py-3.5 text-sm font-bold uppercase tracking-[0.15em] text-white transition hover:bg-[#2B2D8A] disabled:opacity-60"
               >
-                {loading ? (
-                  "Signing In..."
-                ) : (
-                  <>
-                    Sign In <ArrowRight className="h-4 w-4" />
-                  </>
-                )}
+                {loading ? "Signing In..." : <> Sign In <ArrowRight className="h-4 w-4" /> </>}
               </button>
             </form>
 
