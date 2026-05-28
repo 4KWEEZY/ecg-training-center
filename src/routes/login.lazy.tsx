@@ -31,7 +31,10 @@ function LoginPage() {
     setErrors({});
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/api/login/", formData);
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/login/",
+        formData
+      );
       const { access, refresh, user } = response.data;
       localStorage.setItem("access_token", access);
       localStorage.setItem("refresh_token", refresh);
@@ -92,9 +95,11 @@ function LoginPage() {
             </div>
 
             <form onSubmit={handleLoginSubmit} className="space-y-5">
+
+              {/* Username or Email */}
               <div>
                 <label className="mb-1.5 block text-xs font-bold uppercase tracking-[0.15em] text-[#3B3DA6]">
-                  Username
+                  Username or Email
                 </label>
                 <div className="relative">
                   <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#AAAAC8]" />
@@ -102,21 +107,23 @@ function LoginPage() {
                     required
                     name="username"
                     type="text"
-                    placeholder="Enter your username"
+                    placeholder="Enter your username or email"
                     value={formData.username}
                     onChange={handleChange}
                     className="w-full rounded-xl border border-[#DDDDF0] bg-[#F4F5FB] py-3.5 pl-11 pr-4 text-sm text-[#1A1C5C] outline-none placeholder:text-[#AAAAC8] focus:border-[#3B3DA6] focus:ring-2 focus:ring-[#3B3DA6]/10"
                   />
                 </div>
-                {errors.username && <p className="mt-1 text-xs text-red-500">{errors.username}</p>}
+                {errors.username && (
+                  <p className="mt-1 text-xs text-red-500">{errors.username}</p>
+                )}
               </div>
 
+              {/* Password */}
               <div>
                 <div className="mb-1.5 flex items-center justify-between">
                   <label className="text-xs font-bold uppercase tracking-[0.15em] text-[#3B3DA6]">
                     Password
                   </label>
-                  {/* Forgot Password link → navigates to page */}
                   <Link
                     to="/forgot-password"
                     className="text-xs font-medium text-[#8B8DAE] transition hover:text-[#3B3DA6] hover:underline"
@@ -136,10 +143,15 @@ function LoginPage() {
                     className="w-full rounded-xl border border-[#DDDDF0] bg-[#F4F5FB] py-3.5 pl-11 pr-4 text-sm text-[#1A1C5C] outline-none placeholder:text-[#AAAAC8] focus:border-[#3B3DA6] focus:ring-2 focus:ring-[#3B3DA6]/10"
                   />
                 </div>
-                {errors.password && <p className="mt-1 text-xs text-red-500">{errors.password}</p>}
+                {errors.password && (
+                  <p className="mt-1 text-xs text-red-500">{errors.password}</p>
+                )}
               </div>
 
-              {errors.detail && <p className="text-center text-xs text-red-500">{errors.detail}</p>}
+              {/* General errors */}
+              {errors.detail && (
+                <p className="text-center text-xs text-red-500">{errors.detail}</p>
+              )}
               {errors.non_field_errors && (
                 <p className="text-center text-xs text-red-500">{errors.non_field_errors}</p>
               )}
@@ -152,13 +164,8 @@ function LoginPage() {
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#3B3DA6] py-3.5 text-sm font-bold uppercase tracking-[0.15em] text-white transition hover:bg-[#2B2D8A] disabled:opacity-60"
               >
-                {loading ? (
-                  "Signing In..."
-                ) : (
-                  <>
-                    {" "}
-                    Sign In <ArrowRight className="h-4 w-4" />{" "}
-                  </>
+                {loading ? "Signing In..." : (
+                  <>Sign In <ArrowRight className="h-4 w-4" /></>
                 )}
               </button>
             </form>

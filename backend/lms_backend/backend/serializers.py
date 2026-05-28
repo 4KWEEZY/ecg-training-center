@@ -67,23 +67,28 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
+        username_or_email = attrs.get('username')
+
+        # Check if input is email or username
         try:
-            user = User.objects.get(username=attrs['username'])
+            if '@' in username_or_email:
+                user = User.objects.get(email=username_or_email)
+                attrs['username'] = user.username  # swap email for username
+            else:
+                user = User.objects.get(username=username_or_email)
         except User.DoesNotExist:
             raise serializers.ValidationError({
-                "username": "No account found with this username."
+                "username": "No account found with this username or email."
             })
 
-        # Check if account is active
         if not user.is_active:
             raise serializers.ValidationError({
                 "account": "This account has been disabled."
             })
 
-        # Let the parent handle password check and token generation
+        # Let parent handle password check and token generation
         data = super().validate(attrs)
 
-        # Add user data to response
         data['user'] = {
             'name': self.user.name,
             'username': self.user.username,
