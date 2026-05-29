@@ -1,5 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { CheckCircle2, Circle, Clock, Award, BarChart3, Zap } from "lucide-react";
+import {
+  CheckCircle2,
+  Clock,
+  BarChart3,
+  Zap,
+  Award,
+} from "lucide-react";
 import { TopBar } from "@/components/landing/TopBar";
 import { Nav } from "@/components/landing/Nav";
 import { Footer } from "@/components/landing/Footer";
@@ -8,190 +14,218 @@ export const Route = createFileRoute("/progress")({
   component: Progress,
 });
 
-const modulesProgress = [
-  { name: "Workplace Safety & Compliance", status: "Completed", percent: 100 },
-  { name: "Distribution Operations 101", status: "In Progress", percent: 45 },
-  { name: "Customer Service Essentials", status: "Not Started", percent: 0 },
-  { name: "Metering & Billing Systems", status: "Not Started", percent: 0 },
-  { name: "Network Protection & Faults", status: "Not Started", percent: 0 },
-  { name: "Code of Conduct & Ethics", status: "Not Started", percent: 0 },
-];
-
-const STATUS_STYLES = {
-  Completed: { bar: "bg-[#2E9E6B]", text: "text-[#2E9E6B]" },
-  "In Progress": { bar: "bg-[#3B3DA6]", text: "text-[#3B3DA6]" },
-  "Not Started": { bar: "bg-[#DDDDF0]", text: "text-[#AAAAC8]" },
-};
-
 function Progress() {
+  const stored = localStorage.getItem("user_courses");
+
+  const courses = stored ? JSON.parse(stored) : [];
+
+  const completed = courses.filter(
+    (c: any) => c.status === "Completed"
+  );
+
+  const inProgress = courses.filter(
+    (c: any) => c.status !== "Completed"
+  );
+
+  const total = courses.length;
+
+  const overallPercent = total
+    ? Math.round((completed.length / total) * 100)
+    : 0;
+
   return (
     <div className="min-h-screen flex flex-col bg-[#F4F5FB]">
       <TopBar />
       <Nav />
 
-      <main className="flex-1 mx-auto w-full max-w-4xl px-6 pt-36 pb-20">
-        {/* Page heading */}
-        <div className="mb-8 text-center">
-          <h1 className="font-display text-3xl font-bold uppercase tracking-wide text-[#1A1C5C] sm:text-4xl">
-            Trainee Progress Tracker
+      <main className="flex-1 mx-auto w-full max-w-6xl px-6 pt-36 pb-20">
+
+        {/* HEADER */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-bold text-[#1A1C5C]">
+            Learning Progress Dashboard
           </h1>
-          <p className="mt-2 text-sm text-[#8B8DAE]">
-            Monitor your curriculum metrics, lesson runtime, and milestone statuses.
+          <p className="text-sm text-[#8B8DAE] mt-2">
+            Track your course completion, performance, and milestones
           </p>
         </div>
 
-        {/* Overall completion card */}
-        <div className="mb-6 rounded-2xl border border-[#DDDDF0] bg-[#3B3DA6] p-6 shadow-[0_4px_24px_rgba(59,61,166,0.25)]">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* MAIN OVERVIEW CARD */}
+        <div className="bg-[#3B3DA6] text-white rounded-3xl p-10 shadow-xl mb-10">
+          <div className="flex justify-between items-center">
+
             <div>
-              <span className="block text-[10px] font-bold uppercase tracking-[0.2em] text-white/60">
+              <p className="text-xs uppercase text-white/60">
                 Overall Completion
-              </span>
-              <span className="font-display text-4xl font-bold text-white">24%</span>
-              <span className="mt-1 block text-xs text-white/60">1 of 6 Modules Completed</span>
+              </p>
+              <h2 className="text-5xl font-bold mt-2">
+                {overallPercent}%
+              </h2>
+              <p className="text-sm text-white/60 mt-1">
+                {completed.length} completed · {inProgress.length} active
+              </p>
             </div>
 
-            {/* Circular progress visual */}
-            <div className="flex items-center gap-5">
-              <svg className="h-20 w-20 -rotate-90" viewBox="0 0 36 36">
+            <div className="w-28 h-28 relative">
+              <svg className="w-28 h-28 -rotate-90">
                 <circle
-                  cx="18"
-                  cy="18"
-                  r="15.9"
-                  fill="none"
+                  cx="56"
+                  cy="56"
+                  r="50"
                   stroke="rgba(255,255,255,0.15)"
-                  strokeWidth="3"
+                  strokeWidth="8"
+                  fill="none"
                 />
                 <circle
-                  cx="18"
-                  cy="18"
-                  r="15.9"
-                  fill="none"
+                  cx="56"
+                  cy="56"
+                  r="50"
                   stroke="#FFD700"
-                  strokeWidth="3"
-                  strokeDasharray="100"
-                  strokeDashoffset="76"
+                  strokeWidth="8"
+                  fill="none"
+                  strokeDasharray="314"
+                  strokeDashoffset={
+                    314 - (314 * overallPercent) / 100
+                  }
                   strokeLinecap="round"
                 />
               </svg>
-              <div className="text-right">
-                <div className="text-[10px] uppercase tracking-wider text-white/50">Target</div>
-                <div className="font-display text-lg font-bold text-[#FFD700]">100%</div>
-                <div className="text-[10px] text-white/50">by Dec 2026</div>
+
+              <div className="absolute inset-0 flex items-center justify-center font-bold text-yellow-400">
+                {overallPercent}%
               </div>
             </div>
           </div>
-
-          {/* Overall progress bar */}
-          <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-white/15">
-            <div className="h-full w-[24%] rounded-full bg-[#FFD700] transition-all duration-700" />
-          </div>
         </div>
 
-        {/* KPI stats */}
-        <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-          {[
-            {
-              icon: CheckCircle2,
-              value: "14 Lessons",
-              label: "Completed",
-              iconBg: "bg-[#2E9E6B]/10",
-              iconColor: "text-[#2E9E6B]",
-            },
-            {
-              icon: Clock,
-              value: "4.5 Hours",
-              label: "Total Study Time",
-              iconBg: "bg-[#3B3DA6]/10",
-              iconColor: "text-[#3B3DA6]",
-            },
-            {
-              icon: BarChart3,
-              value: "88% Avg",
-              label: "Quiz Accuracy",
-              iconBg: "bg-[#FFD700]/15",
-              iconColor: "text-[#B8960C]",
-            },
-          ].map(({ icon: Icon, value, label, iconBg, iconColor }) => (
-            <div
-              key={label}
-              className="flex items-center gap-4 rounded-2xl border border-[#DDDDF0] bg-white p-5 shadow-[0_2px_12px_rgba(59,61,166,0.07)]"
-            >
-              <div className={`shrink-0 rounded-xl p-3 ${iconBg} ${iconColor}`}>
-                <Icon className="h-5 w-5" />
-              </div>
-              <div>
-                <div className="font-display text-xl font-bold text-[#1A1C5C]">{value}</div>
-                <div className="text-[11px] font-medium uppercase tracking-wider text-[#AAAAC8]">
-                  {label}
+        {/* FEATURE TILES (BIG SQUARE UI) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+
+          <div className="bg-white border rounded-2xl p-8 aspect-square flex flex-col justify-between shadow-sm">
+            <CheckCircle2 className="text-green-500 w-7 h-7" />
+            <div>
+              <h3 className="text-4xl font-bold text-[#1A1C5C]">
+                {completed.length}
+              </h3>
+              <p className="text-sm text-gray-500">
+                Completed Courses
+              </p>
+            </div>
+            <span className="text-xs text-green-600 font-bold">
+              Certified Progress
+            </span>
+          </div>
+
+          <div className="bg-white border rounded-2xl p-8 aspect-square flex flex-col justify-between shadow-sm">
+            <Clock className="text-blue-500 w-7 h-7" />
+            <div>
+              <h3 className="text-4xl font-bold text-[#1A1C5C]">
+                {inProgress.length}
+              </h3>
+              <p className="text-sm text-gray-500">
+                Active Courses
+              </p>
+            </div>
+            <span className="text-xs text-blue-600 font-bold">
+              In Progress
+            </span>
+          </div>
+
+          <div className="bg-white border rounded-2xl p-8 aspect-square flex flex-col justify-between shadow-sm">
+            <BarChart3 className="text-purple-500 w-7 h-7" />
+            <div>
+              <h3 className="text-4xl font-bold text-[#1A1C5C]">
+                {overallPercent}%
+              </h3>
+              <p className="text-sm text-gray-500">
+                Performance Score
+              </p>
+            </div>
+            <span className="text-xs text-purple-600 font-bold">
+              Academic Standing
+            </span>
+          </div>
+
+        </div>
+
+        {/* IN PROGRESS SECTION */}
+        <div className="mb-14">
+          <h2 className="text-lg font-bold text-[#1A1C5C] mb-4">
+            In Progress Courses
+          </h2>
+
+          <div className="space-y-4">
+            {inProgress.length === 0 && (
+              <p className="text-sm text-gray-400">
+                No active courses
+              </p>
+            )}
+
+            {inProgress.map((course: any, i: number) => (
+              <div
+                key={i}
+                className="bg-white border rounded-xl p-5"
+              >
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="font-medium">
+                    {course.name}
+                  </span>
+                  <span className="text-blue-600">
+                    {course.progress}%
+                  </span>
+                </div>
+
+                <div className="h-2 bg-gray-100 rounded-full">
+                  <div
+                    className="h-full bg-blue-500 rounded-full"
+                    style={{
+                      width: `${course.progress}%`,
+                    }}
+                  />
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        {/* Curriculum roadmap */}
-        <div className="rounded-2xl border border-[#DDDDF0] bg-white p-6 shadow-[0_2px_12px_rgba(59,61,166,0.07)]">
-          <div className="mb-5 flex items-center gap-2 border-b border-[#EAEBF6] pb-4">
-            <Zap className="h-4 w-4 text-[#3B3DA6]" />
-            <h2 className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#AAAAC8]">
-              Curriculum Roadmap Status
+        {/* COMPLETED SECTION (ISOLATED DOWNWARD) */}
+        <div className="mt-16">
+          <div className="flex items-center gap-2 mb-5">
+            <Award className="text-green-600" />
+            <h2 className="text-lg font-bold text-[#1A1C5C]">
+              Completed Courses
             </h2>
           </div>
 
-          <div className="space-y-5">
-            {modulesProgress.map((mod, idx) => {
-              const styles = STATUS_STYLES[mod.status as keyof typeof STATUS_STYLES];
-              return (
-                <div key={mod.name} className="space-y-2">
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
-                      {/* Step number / icon */}
-                      <div
-                        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${
-                          mod.status === "Completed"
-                            ? "bg-[#2E9E6B]/15 text-[#2E9E6B]"
-                            : mod.status === "In Progress"
-                              ? "bg-[#3B3DA6]/10 text-[#3B3DA6]"
-                              : "bg-[#F4F5FB] text-[#AAAAC8]"
-                        }`}
-                      >
-                        {mod.status === "Completed" ? (
-                          <CheckCircle2 className="h-4 w-4" />
-                        ) : mod.status === "In Progress" ? (
-                          <div className="h-3 w-3 rounded-full border-2 border-[#3B3DA6] border-t-transparent animate-spin" />
-                        ) : (
-                          <span>{idx + 1}</span>
-                        )}
-                      </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                      <span
-                        className={`text-sm font-medium ${
-                          mod.status === "Not Started" ? "text-[#AAAAC8]" : "text-[#1A1C5C]"
-                        }`}
-                      >
-                        {mod.name}
-                      </span>
-                    </div>
+            {completed.length === 0 && (
+              <p className="text-sm text-gray-400">
+                No completed courses yet
+              </p>
+            )}
 
-                    <span className={`shrink-0 text-[11px] font-bold ${styles.text}`}>
-                      {mod.status}
-                      {mod.percent > 0 ? ` · ${mod.percent}%` : ""}
-                    </span>
-                  </div>
-
-                  {/* Progress bar */}
-                  <div className="ml-10 h-1.5 w-full overflow-hidden rounded-full bg-[#EAEBF6]">
-                    <div
-                      className={`h-full rounded-full transition-all duration-700 ${styles.bar}`}
-                      style={{ width: `${mod.percent}%` }}
-                    />
-                  </div>
+            {completed.map((course: any, i: number) => (
+              <div
+                key={i}
+                className="bg-green-50 border border-green-200 rounded-xl p-5 flex justify-between items-center"
+              >
+                <div>
+                  <p className="font-medium text-[#1A1C5C]">
+                    {course.name}
+                  </p>
+                  <p className="text-xs text-green-600">
+                    Completed
+                  </p>
                 </div>
-              );
-            })}
+
+                <CheckCircle2 className="text-green-600" />
+              </div>
+            ))}
+
           </div>
         </div>
+
       </main>
 
       <Footer />
