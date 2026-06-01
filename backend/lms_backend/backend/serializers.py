@@ -176,3 +176,26 @@ class PasswordResetConfirmSerializer(serializers.Serializer):
             })
 
         return data
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = [
+            'id', 'name', 'username', 'email',
+            'phone_number', 'date_joined', 'is_active'
+        ]
+        read_only_fields = ['id', 'username', 'email', 'date_joined', 'is_active']
+
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['name', 'phone_number']
+
+    def validate_phone_number(self, value):
+        if not value.isdigit():
+            raise serializers.ValidationError("Only digits are allowed.")
+        if len(value) != 10:
+            raise serializers.ValidationError("Phone number must be exactly 10 digits.")
+        return value
