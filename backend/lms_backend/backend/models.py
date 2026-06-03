@@ -221,3 +221,39 @@ class LessonCompletion(models.Model):
 
     class Meta:
         unique_together = ('user', 'lesson')
+
+
+
+class UserProgress(models.Model):
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE
+    )
+
+    current_module = models.ForeignKey(
+        Module,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    current_lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
+    percentage = models.PositiveIntegerField(
+        default=0
+    )
+
+    last_accessed = models.DateTimeField(
+        auto_now=True
+    )
