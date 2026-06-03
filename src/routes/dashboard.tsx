@@ -28,7 +28,6 @@ import {
   Phone,
   Save,
   UserRound,
-  X,
   Award,
 } from "lucide-react";
 
