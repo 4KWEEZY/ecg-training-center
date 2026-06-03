@@ -163,22 +163,17 @@ function ProfilePage() {
           {/* Profile card */}
           <div className="rounded-2xl border border-[#DDDDF0] bg-white shadow-sm">
 
-            {/* Header */}
-            <div
-              className="relative overflow-hidden rounded-t-2xl p-6"
-              style={{ background: "linear-gradient(135deg, #2B2D8A 0%, #3B3DA6 60%, #4E50C4 100%)" }}
-            >
-              <div className="pointer-events-none absolute -right-4 -top-4 h-32 w-32 rounded-full bg-white/5" />
-              <div className="pointer-events-none absolute bottom-0 right-16 h-24 w-24 rounded-full bg-white/5" />
-              <div className="relative flex items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 text-xl font-bold text-white ring-2 ring-white/20">
+            {/* Header section (simplified) */}
+            <div className="p-6 border-b border-[#DDDDF0]">
+              <div className="flex items-center gap-4">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#3B3DA6] text-xl font-bold text-white shadow-sm">
                   {initials}
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-white">
+                  <h1 className="text-xl font-bold text-[#1A1C5C]">
                     {profile?.name || profile?.username}
                   </h1>
-                  <p className="text-[13px] text-white/60">@{profile?.username}</p>
+                  <p className="text-[13px] text-[#8B8DAE]">@{profile?.username}</p>
                   <span className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${profile?.is_active ? "bg-[#EAF3DE] text-[#3B6D11]" : "bg-[#FCEBEB] text-[#A32D2D]"}`}>
                     {profile?.is_active ? "Active" : "Inactive"}
                   </span>

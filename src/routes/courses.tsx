@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { TopBar } from "@/components/landing/TopBar";
 import { Nav } from "@/components/landing/Nav";
-import { Footer } from "@/components/landing/Footer";
 
 export const Route = createFileRoute("/courses")({
   component: CoursesCatalogPage,
@@ -88,6 +87,13 @@ function CoursesCatalogPage() {
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [selectedLevel, setSelectedLevel] = useState("All Levels");
   const [enrolledCourseId, setEnrolledCourseId] = useState<string | null>(null);
+  const [unenrolledCourseId, setUnenrolledCourseId] = useState<string | null>(null);
+
+  // Load enrolled courses from localStorage
+  const [enrolledIds, setEnrolledIds] = useState<string[]>(() => {
+    const saved = localStorage.getItem("enrolled_courses");
+    return saved ? JSON.parse(saved) : [];
+  });
 
   const filteredCourses = useMemo(
     () =>
@@ -109,8 +115,23 @@ function CoursesCatalogPage() {
   );
 
   const handleEnroll = (courseId: string) => {
+    if (enrolledIds.includes(courseId)) return;
+
+    const newEnrolled = [...enrolledIds, courseId];
+    setEnrolledIds(newEnrolled);
+    localStorage.setItem("enrolled_courses", JSON.stringify(newEnrolled));
+
     setEnrolledCourseId(courseId);
     setTimeout(() => setEnrolledCourseId(null), 2500);
+  };
+
+  const handleUnenroll = (courseId: string) => {
+    const newEnrolled = enrolledIds.filter((id) => id !== courseId);
+    setEnrolledIds(newEnrolled);
+    localStorage.setItem("enrolled_courses", JSON.stringify(newEnrolled));
+
+    setUnenrolledCourseId(courseId);
+    setTimeout(() => setUnenrolledCourseId(null), 2500);
   };
 
   return (
@@ -207,20 +228,34 @@ function CoursesCatalogPage() {
                 </div>
               )}
 
-              <button
-                onClick={() => handleEnroll(course.id)}
-                className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#3B3DA6] py-3 text-xs font-bold text-white hover:bg-[#2B2D8A]"
-              >
-                Enroll <ArrowRight size={14} />
-              </button>
+              {unenrolledCourseId === course.id && (
+                <div className="mt-4 flex items-center gap-2 text-amber-600 text-xs font-bold">
+                  <CheckCircle2 size={14} />
+                  Unenrolled successfully.
+                </div>
+              )}
+
+              {enrolledIds.includes(course.id) ? (
+                <button
+                  onClick={() => handleUnenroll(course.id)}
+                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 py-3 text-xs font-bold text-red-600 hover:bg-red-100 transition"
+                >
+                  Unenroll from Programme
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleEnroll(course.id)}
+                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#3B3DA6] py-3 text-xs font-bold text-white hover:bg-[#2B2D8A] transition"
+                >
+                  Enroll <ArrowRight size={14} />
+                </button>
+              )}
 
             </div>
           ))}
 
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }

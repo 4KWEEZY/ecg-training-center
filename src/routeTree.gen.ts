@@ -18,6 +18,7 @@ import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as QuizzesRouteImport } from './routes/quizzes'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as MyCoursesRouteImport } from './routes/my-courses'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as DocumentsRouteImport } from './routes/documents'
@@ -96,6 +97,11 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/profile.lazy').then((d) => d.Route))
+const MyCoursesRoute = MyCoursesRouteImport.update({
+  id: '/my-courses',
+  path: '/my-courses',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LibraryRoute = LibraryRouteImport.update({
   id: '/library',
   path: '/library',
@@ -140,6 +146,7 @@ export interface FileRoutesByFullPath {
   '/documents': typeof DocumentsRoute
   '/help': typeof HelpRoute
   '/library': typeof LibraryRoute
+  '/my-courses': typeof MyCoursesRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/quizzes': typeof QuizzesRoute
@@ -161,6 +168,7 @@ export interface FileRoutesByTo {
   '/documents': typeof DocumentsRoute
   '/help': typeof HelpRoute
   '/library': typeof LibraryRoute
+  '/my-courses': typeof MyCoursesRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/quizzes': typeof QuizzesRoute
@@ -183,6 +191,7 @@ export interface FileRoutesById {
   '/documents': typeof DocumentsRoute
   '/help': typeof HelpRoute
   '/library': typeof LibraryRoute
+  '/my-courses': typeof MyCoursesRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/quizzes': typeof QuizzesRoute
@@ -206,6 +215,7 @@ export interface FileRouteTypes {
     | '/documents'
     | '/help'
     | '/library'
+    | '/my-courses'
     | '/profile'
     | '/progress'
     | '/quizzes'
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/documents'
     | '/help'
     | '/library'
+    | '/my-courses'
     | '/profile'
     | '/progress'
     | '/quizzes'
@@ -248,6 +259,7 @@ export interface FileRouteTypes {
     | '/documents'
     | '/help'
     | '/library'
+    | '/my-courses'
     | '/profile'
     | '/progress'
     | '/quizzes'
@@ -270,6 +282,7 @@ export interface RootRouteChildren {
   DocumentsRoute: typeof DocumentsRoute
   HelpRoute: typeof HelpRoute
   LibraryRoute: typeof LibraryRoute
+  MyCoursesRoute: typeof MyCoursesRoute
   ProfileRoute: typeof ProfileRoute
   ProgressRoute: typeof ProgressRoute
   QuizzesRoute: typeof QuizzesRoute
@@ -370,6 +383,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/my-courses': {
+      id: '/my-courses'
+      path: '/my-courses'
+      fullPath: '/my-courses'
+      preLoaderRoute: typeof MyCoursesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/library': {
       id: '/library'
       path: '/library'
@@ -430,6 +450,7 @@ const rootRouteChildren: RootRouteChildren = {
   DocumentsRoute: DocumentsRoute,
   HelpRoute: HelpRoute,
   LibraryRoute: LibraryRoute,
+  MyCoursesRoute: MyCoursesRoute,
   ProfileRoute: ProfileRoute,
   ProgressRoute: ProgressRoute,
   QuizzesRoute: QuizzesRoute,

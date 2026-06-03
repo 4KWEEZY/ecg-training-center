@@ -1,14 +1,14 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   CheckCircle2,
   Clock,
   BarChart3,
   Zap,
   Award,
+  ArrowLeft,
 } from "lucide-react";
 import { TopBar } from "@/components/landing/TopBar";
 import { Nav } from "@/components/landing/Nav";
-import { Footer } from "@/components/landing/Footer";
 
 export const Route = createFileRoute("/progress")({
   component: Progress,
@@ -16,6 +16,8 @@ export const Route = createFileRoute("/progress")({
 
 function Progress() {
   const stored = localStorage.getItem("user_courses");
+  const storedUser = localStorage.getItem("user");
+  const isLoggedIn = !!storedUser;
 
   const courses = stored ? JSON.parse(stored) : [];
 
@@ -34,11 +36,23 @@ function Progress() {
     : 0;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F4F5FB]">
-      <TopBar />
-      <Nav />
+    <div className="min-h-screen flex flex-col bg-[#F4F5FB] font-inter">
+      {!isLoggedIn && (
+        <>
+          <TopBar />
+          <Nav />
+        </>
+      )}
 
-      <main className="flex-1 mx-auto w-full max-w-6xl px-6 pt-36 pb-20">
+      <main className={`flex-1 mx-auto w-full max-w-6xl px-6 pb-20 ${isLoggedIn ? "pt-12" : "pt-36"}`}>
+        {isLoggedIn && (
+          <Link
+            to="/dashboard"
+            className="mb-8 inline-flex items-center gap-2 text-[13px] font-medium text-[#8B8DAE] transition hover:text-[#3B3DA6]"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back to Dashboard
+          </Link>
+        )}
 
         {/* HEADER */}
         <div className="text-center mb-10">
@@ -101,47 +115,47 @@ function Progress() {
         {/* FEATURE TILES (BIG SQUARE UI) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
 
-          <div className="bg-white border rounded-2xl p-8 aspect-square flex flex-col justify-between shadow-sm">
-            <CheckCircle2 className="text-green-500 w-7 h-7" />
-            <div>
-              <h3 className="text-4xl font-bold text-[#1A1C5C]">
+          <div className="bg-white border rounded-2xl p-6 flex flex-col justify-between shadow-sm max-w-[280px] mx-auto w-full min-h-[160px]">
+            <CheckCircle2 className="text-green-500 w-6 h-6 mb-4" />
+            <div className="mb-4">
+              <h3 className="text-3xl font-bold text-[#1A1C5C]">
                 {completed.length}
               </h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-xs text-gray-500">
                 Completed Courses
               </p>
             </div>
-            <span className="text-xs text-green-600 font-bold">
+            <span className="text-[10px] text-green-600 font-bold uppercase tracking-wider">
               Certified Progress
             </span>
           </div>
 
-          <div className="bg-white border rounded-2xl p-8 aspect-square flex flex-col justify-between shadow-sm">
-            <Clock className="text-blue-500 w-7 h-7" />
-            <div>
-              <h3 className="text-4xl font-bold text-[#1A1C5C]">
+          <div className="bg-white border rounded-2xl p-6 flex flex-col justify-between shadow-sm max-w-[280px] mx-auto w-full min-h-[160px]">
+            <Clock className="text-blue-500 w-6 h-6 mb-4" />
+            <div className="mb-4">
+              <h3 className="text-3xl font-bold text-[#1A1C5C]">
                 {inProgress.length}
               </h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-xs text-gray-500">
                 Active Courses
               </p>
             </div>
-            <span className="text-xs text-blue-600 font-bold">
+            <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">
               In Progress
             </span>
           </div>
 
-          <div className="bg-white border rounded-2xl p-8 aspect-square flex flex-col justify-between shadow-sm">
-            <BarChart3 className="text-purple-500 w-7 h-7" />
-            <div>
-              <h3 className="text-4xl font-bold text-[#1A1C5C]">
+          <div className="bg-white border rounded-2xl p-6 flex flex-col justify-between shadow-sm max-w-[280px] mx-auto w-full min-h-[160px]">
+            <BarChart3 className="text-purple-500 w-6 h-6 mb-4" />
+            <div className="mb-4">
+              <h3 className="text-3xl font-bold text-[#1A1C5C]">
                 {overallPercent}%
               </h3>
-              <p className="text-sm text-gray-500">
+              <p className="text-xs text-gray-500">
                 Performance Score
               </p>
             </div>
-            <span className="text-xs text-purple-600 font-bold">
+            <span className="text-[10px] text-purple-600 font-bold uppercase tracking-wider">
               Academic Standing
             </span>
           </div>
@@ -227,8 +241,6 @@ function Progress() {
         </div>
 
       </main>
-
-      <Footer />
     </div>
   );
 }

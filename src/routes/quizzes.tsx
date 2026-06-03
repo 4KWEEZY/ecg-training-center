@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { TopBar } from "@/components/landing/TopBar";
 import { Nav } from "@/components/landing/Nav";
-import { Footer } from "@/components/landing/Footer";
 
 export const Route = createFileRoute("/quizzes")({
   component: QuizzesPage,
@@ -341,9 +340,7 @@ function QuizzesPage() {
             </div>
           </div>
         )}
-      </main>
-
-      <Footer />
+        </main>
     </div>
   );
 }

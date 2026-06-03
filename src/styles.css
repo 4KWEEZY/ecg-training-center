@@ -1,7 +1,7 @@
 /* --- 1. IMPORTS MUST BE AT THE VERY TOP --- */
 @import "tailwindcss";
 @import "tw-animate-css";
-@import url("https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800&family=Barlow+Condensed:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap");
 
 /* --- 2. CONFIGURATION --- */
 @source "../src";
@@ -12,6 +12,7 @@
   /* ── Typography ── */
   --font-display: "Barlow Condensed", "Barlow", system-ui, sans-serif;
   --font-sans: "Barlow", system-ui, sans-serif;
+  --font-inter: "Inter", system-ui, sans-serif;
 
   /* ── ECG Brand Colors (matched from app screenshot) ── */
   --color-brand-primary: #3b3da6; /* deep indigo — main brand */
@@ -120,6 +121,10 @@
   .card-hover:hover {
     box-shadow: var(--shadow-card-hover);
     transform: translateY(-2px);
+  }
+
+  .font-inter {
+    font-family: var(--font-inter) !important;
   }
 
   /* Brand button */
