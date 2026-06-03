@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   LayoutDashboard,
   BookOpen,
@@ -15,6 +15,7 @@ import {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   MessageSquare,
   ArrowRight,
   Menu,
@@ -23,11 +24,30 @@ import {
   TrendingUp,
   Trophy,
   Zap,
+  Mail,
+  Phone,
+  Save,
+  UserRound,
+  X,
+  Award,
 } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
   component: DashboardPage,
 });
+
+type UserProfile = {
+  id?: number;
+  name?: string;
+  username?: string;
+  email?: string;
+  phone_number?: string;
+  date_joined?: string;
+  is_active?: boolean;
+};
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+const PROFILE_ENDPOINT = `${API_BASE_URL}/api/profile/`;
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
@@ -87,7 +107,7 @@ const announcements = [
 
 const upcomingSessions = [
   { id: "s1", title: "Transformer Grounding Workshop", date: "May 22, 2026", time: "09:00 GMT", venue: "Lab Block B, Tema", day: 22, month: 4 },
-  { id: "s2", title: "High Voltage Safety Refresher", date: "May 28, 2026", time: "10:00 GMT", venue: "Virtual — Zoom", day: 28, month: 4 },
+  { id: "s2", title: "High Voltage Safety Refresher", date: "May 28, 2026", time: "10:00 GMT", venue: "Virtual - Zoom", day: 28, month: 4 },
 ];
 
 
@@ -118,6 +138,15 @@ function ProgressBar({
 }
 
 
+function getStoredUser(): UserProfile {
+  try {
+    const storedUser = localStorage.getItem("user");
+    return storedUser ? JSON.parse(storedUser) : {};
+  } catch {
+    return {};
+  }
+}
+
 function MiniCalendar() {
   const today = new Date();
   const [current, setCurrent] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
@@ -128,6 +157,7 @@ function MiniCalendar() {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const sessionDays = upcomingSessions.filter((s) => s.month === month).map((s) => s.day);
   const days: (number | null)[] = [];
+
   for (let i = 0; i < firstDay; i++) days.push(null);
   for (let i = 1; i <= daysInMonth; i++) days.push(i);
 
@@ -148,16 +178,19 @@ function MiniCalendar() {
           </button>
         </div>
       </div>
+
       <div className="mb-1 grid grid-cols-7 text-center">
         {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
           <div key={i} className="py-1 text-[10px] font-bold uppercase text-[#AAAAC8]">{d}</div>
         ))}
       </div>
+
       <div className="grid grid-cols-7 text-center">
         {days.map((day, i) => {
           if (!day) return <div key={`e-${i}`} />;
           const isToday = day === today.getDate() && month === today.getMonth() && year === today.getFullYear();
           const hasSession = sessionDays.includes(day);
+
           return (
             <div key={day} className="flex flex-col items-center py-0.5">
               <div className={`flex h-7 w-7 items-center justify-center rounded-full text-[12px] font-medium ${isToday ? "bg-[#3B3DA6] font-bold text-white" : "text-[#1A1C5C]"}`}>
@@ -168,6 +201,7 @@ function MiniCalendar() {
           );
         })}
       </div>
+
       <div className="mt-3 flex items-center gap-3 border-t border-[#EAEBF6] pt-2">
         <div className="flex items-center gap-1.5"><div className="h-2 w-2 rounded-full bg-[#3B3DA6]" /><span className="text-[11px] text-[#8B8DAE]">Today</span></div>
         <div className="flex items-center gap-1.5"><div className="h-2 w-2 rounded-full bg-[#E8534A]" /><span className="text-[11px] text-[#8B8DAE]">Session</span></div>
@@ -241,18 +275,115 @@ function SidebarContent({ displayName, initials, email, currentPath, onLogout, o
 function DashboardPage() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
-  const storedUser = localStorage.getItem("user");
-  const user = storedUser ? JSON.parse(storedUser) : { name: "", username: "Guest", email: "" };
-  const displayName = user?.name || user?.username || "Trainee";
+  const [profile, setProfile] = useState<UserProfile>(() => getStoredUser());
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [editingProfile, setEditingProfile] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileError, setProfileError] = useState("");
+
+  const [profileForm, setProfileForm] = useState({
+    name: profile.name || "",
+    phone_number: profile.phone_number || "",
+  });
+
+  const displayName = profile?.name || profile?.username || "Trainee";
   const initials = displayName.slice(0, 2).toUpperCase();
   const currentPath = "/dashboard";
 
+  useEffect(() => {
+    const loadProfile = async () => {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+
+      try {
+        const res = await fetch(PROFILE_ENDPOINT, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!res.ok) return;
+
+        const data: UserProfile = await res.json();
+        setProfile(data);
+        setProfileForm({
+          name: data.name || "",
+          phone_number: data.phone_number || "",
+        });
+        localStorage.setItem("user", JSON.stringify(data));
+      } catch {
+        // Keep localStorage profile as fallback.
+      }
+    };
+
+    loadProfile();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+        setEditingProfile(false);
+        setProfileError("");
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleLogout = () => {
+    setProfileOpen(false);
     localStorage.removeItem("user");
     localStorage.removeItem("access_token");
     localStorage.removeItem("refresh_token");
     navigate({ to: "/login" });
+  };
+
+  const handleProfileSave = async () => {
+    const token = localStorage.getItem("access_token");
+    if (!token) {
+      navigate({ to: "/login" });
+      return;
+    }
+
+    setSavingProfile(true);
+    setProfileError("");
+
+    try {
+      const res = await fetch(PROFILE_ENDPOINT, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: profileForm.name,
+          phone_number: profileForm.phone_number,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        const message =
+          data?.phone_number?.[0] ||
+          data?.name?.[0] ||
+          "Could not update profile.";
+        setProfileError(message);
+        return;
+      }
+
+      setProfile(data);
+      localStorage.setItem("user", JSON.stringify(data));
+      setEditingProfile(false);
+    } catch {
+      setProfileError("Could not connect to the profile service.");
+    } finally {
+      setSavingProfile(false);
+    }
   };
 
   return (
@@ -262,7 +393,7 @@ function DashboardPage() {
 
         {/* Desktop sidebar */}
         <aside className="hidden lg:flex w-[220px] min-w-[220px] flex-col border-r border-[#DDDDF0]">
-          <SidebarContent displayName={displayName} initials={initials} email={user?.email} currentPath={currentPath} onLogout={handleLogout} />
+          <SidebarContent displayName={displayName} initials={initials} email={profile?.email || ""} currentPath={currentPath} onLogout={handleLogout} />
         </aside>
 
         {/* Mobile drawer */}
@@ -270,7 +401,7 @@ function DashboardPage() {
           <div className="fixed inset-0 z-40 lg:hidden">
             <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
             <div className="absolute left-0 top-0 h-full w-[260px] shadow-2xl">
-              <SidebarContent displayName={displayName} initials={initials} email={user?.email} currentPath={currentPath} onLogout={handleLogout} onClose={() => setSidebarOpen(false)} />
+              <SidebarContent displayName={displayName} initials={initials} email={profile?.email || ""} currentPath={currentPath} onLogout={handleLogout} onClose={() => setSidebarOpen(false)} />
             </div>
           </div>
         )}
@@ -289,14 +420,128 @@ function DashboardPage() {
                 </div>
               </div>
             </div>
+
             <div className="flex items-center gap-2">
               <button className="relative flex h-8 w-8 items-center justify-center rounded-lg border border-[#DDDDF0] bg-[#F4F5FB] text-[#8B8DAE]">
                 <Bell className="h-4 w-4" />
                 <span className="absolute right-1.5 top-1.5 h-1.5 w-1.5 rounded-full bg-[#E8534A]" />
               </button>
-              <div className="flex items-center gap-2 rounded-lg border border-[#DDDDF0] bg-[#F4F5FB] px-2 py-1.5 lg:px-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded bg-[#3B3DA6] text-[10px] font-bold text-white">{initials}</div>
-                <span className="hidden text-[13px] font-medium text-[#1A1C5C] sm:block">{displayName}</span>
+              <div className="relative" ref={profileMenuRef}>
+                <button
+                  type="button"
+                  onClick={() => setProfileOpen((open) => !open)}
+                  className="flex items-center gap-2 rounded-lg border border-[#DDDDF0] bg-[#F4F5FB] px-2 py-1.5 transition hover:border-[#3B3DA6]/40 hover:bg-white lg:px-3"
+                >
+                  <div className="flex h-6 w-6 items-center justify-center rounded bg-[#3B3DA6] text-[10px] font-bold text-white">
+                    {initials}
+                  </div>
+                  <span className="hidden max-w-[160px] truncate text-[13px] font-medium text-[#1A1C5C] sm:block">{displayName}</span>
+                  <ChevronDown className="h-3.5 w-3.5 text-[#8B8DAE]" />
+                </button>
+
+                {profileOpen && (
+                  <div className="absolute right-0 top-11 z-50 w-[320px] rounded-xl border border-[#DDDDF0] bg-white p-4 shadow-xl">
+                    <div className="mb-4 flex items-start gap-3 border-b border-[#EAEBF6] pb-4">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#3B3DA6] text-[13px] font-bold text-white">
+                        {initials}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-[14px] font-bold text-[#1A1C5C]">{displayName}</p>
+                        <p className="truncate text-[12px] text-[#8B8DAE]">@{profile.username || "trainee"}</p>
+                      </div>
+                    </div>
+
+                    {editingProfile ? (
+                      <div className="space-y-3">
+                        <label className="block">
+                          <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#AAAAC8]">Name</span>
+                          <input
+                            value={profileForm.name}
+                            onChange={(e) => setProfileForm((form) => ({ ...form, name: e.target.value }))}
+                            className="w-full rounded-lg border border-[#DDDDF0] px-3 py-2 text-[13px] text-[#1A1C5C] outline-none focus:border-[#3B3DA6]"
+                          />
+                        </label>
+
+                        <label className="block">
+                          <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#AAAAC8]">Phone Number</span>
+                          <input
+                            value={profileForm.phone_number}
+                            onChange={(e) => setProfileForm((form) => ({ ...form, phone_number: e.target.value }))}
+                            className="w-full rounded-lg border border-[#DDDDF0] px-3 py-2 text-[13px] text-[#1A1C5C] outline-none focus:border-[#3B3DA6]"
+                            placeholder="10 digits"
+                          />
+                        </label>
+
+                        {profileError && (
+                          <p className="rounded-lg bg-[#FCEBEB] px-3 py-2 text-[12px] text-[#A32D2D]">{profileError}</p>
+                        )}
+
+                        <div className="flex gap-2 pt-1">
+                          <button
+                            type="button"
+                            onClick={handleProfileSave}
+                            disabled={savingProfile}
+                            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#3B3DA6] px-3 py-2 text-[12px] font-bold uppercase tracking-wider text-white transition hover:bg-[#2B2D8A] disabled:opacity-60"
+                          >
+                            <Save className="h-3.5 w-3.5" />
+                            {savingProfile ? "Saving" : "Save"}
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingProfile(false);
+                              setProfileError("");
+                              setProfileForm({
+                                name: profile.name || "",
+                                phone_number: profile.phone_number || "",
+                              });
+                            }}
+                            className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#DDDDF0] text-[#8B8DAE] hover:text-[#E8534A]"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-[13px] text-[#1A1C5C]">
+                          <Mail className="h-4 w-4 text-[#8B8DAE]" />
+                          <span className="truncate">{profile.email || "No email"}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-[13px] text-[#1A1C5C]">
+                          <Phone className="h-4 w-4 text-[#8B8DAE]" />
+                          <span>{profile.phone_number || "No phone number"}</span>
+                        </div>
+
+                        <div className="flex items-center gap-2 text-[13px] text-[#1A1C5C]">
+                          <UserRound className="h-4 w-4 text-[#8B8DAE]" />
+                          <span>{profile.is_active ? "Active account" : "Inactive account"}</span>
+                        </div>
+
+                        <div className="flex gap-2 border-t border-[#EAEBF6] pt-3">
+                          <button
+                            type="button"
+                            onClick={() => setEditingProfile(true)}
+                            className="flex-1 rounded-lg bg-[#3B3DA6] px-3 py-2 text-[12px] font-bold uppercase tracking-wider text-white transition hover:bg-[#2B2D8A]"
+                          >
+                            Edit Profile
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={handleLogout}
+                            className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#F7C1C1] bg-[#FCEBEB] text-[#A32D2D] hover:bg-[#F7C1C1]"
+                            title="Logout"
+                          >
+                            <LogOut className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </header>
@@ -307,6 +552,7 @@ function DashboardPage() {
             <div className="relative mb-5 overflow-hidden rounded-xl p-5 lg:p-6" style={{ background: "linear-gradient(135deg, #2B2D8A 0%, #3B3DA6 60%, #4E50C4 100%)" }}>
               <div className="pointer-events-none absolute -right-4 -top-4 h-36 w-36 rounded-full bg-white/5" />
               <div className="pointer-events-none absolute bottom-0 right-16 h-28 w-28 rounded-full bg-white/5" />
+
               <div className="relative">
                 <span className="inline-block rounded-full border border-yellow-400/30 bg-yellow-400/12 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-yellow-400">
                   Active Trainee Profile
@@ -318,8 +564,8 @@ function DashboardPage() {
                   Cohort 2026 · Systems &amp; Technical Network Operations (IT Track)
                 </p>
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <span className="rounded-full bg-white/10 px-3 py-1 text-[12px] text-white/75">@{user?.username || "trainee"}</span>
-                  <span className="rounded-full bg-white/10 px-3 py-1 text-[12px] text-white/75">{user?.email || "—"}</span>
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-[12px] text-white/75">@{profile?.username || "trainee"}</span>
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-[12px] text-white/75">{profile?.email || "—"}</span>
                 </div>
               </div>
             </div>
@@ -347,6 +593,7 @@ function DashboardPage() {
                 ))}
               </div>
             </div>
+
 
             {/* Main 3-col grid */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -412,11 +659,12 @@ function DashboardPage() {
                       <Bell className="h-4 w-4 text-[#3B3DA6]" />
                       <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#AAAAC8]">Announcements</span>
                     </div>
-                    <Link to="/news" className="text-[11px] font-bold uppercase tracking-wider text-[#3B3DA6]">View All</Link>
+                    <Link to="/news" className="text-[11px] font-bold uppercase tracking-wider text-[#3B3DA6] hover:underline">View All</Link>
                   </div>
+
                   <div className="space-y-3">
                     {announcements.map((ann) => (
-                      <div key={ann.id} className="rounded-lg border border-[#EAEBF6] bg-[#F4F5FB] p-3">
+                      <div key={ann.id} className="rounded-lg border border-[#EAEBF6] bg-[#F4F5FB] p-3 transition hover:border-[#3B3DA6]/20">
                         <div className="mb-2 flex items-center justify-between">
                           <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${ann.tagStyle}`}>{ann.tag}</span>
                           <span className="text-[11px] text-[#AAAAC8]">{ann.time}</span>
@@ -461,15 +709,15 @@ function DashboardPage() {
               <div className="space-y-4">
                 <MiniCalendar />
 
-                {/* Sessions */}
                 <div className="rounded-xl border border-[#DDDDF0] bg-white p-4">
                   <div className="mb-3 flex items-center justify-between border-b border-[#EAEBF6] pb-3">
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-[#3B3DA6]" />
                       <span className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#AAAAC8]">Sessions</span>
                     </div>
-                    <Link to="/schedule" className="text-[11px] font-bold uppercase tracking-wider text-[#3B3DA6]">All</Link>
+                    <Link to="/schedule" className="text-[11px] font-bold uppercase tracking-wider text-[#3B3DA6] hover:underline">All</Link>
                   </div>
+
                   <div className="space-y-2.5">
                     {upcomingSessions.map((s) => (
                       <div key={s.id} className="flex items-start gap-3 rounded-lg border border-[#EAEBF6] bg-[#F4F5FB] p-3">
@@ -479,14 +727,13 @@ function DashboardPage() {
                         </div>
                         <div className="min-w-0">
                           <p className="text-[12px] font-semibold leading-snug text-[#1A1C5C]">{s.title}</p>
-                          <p className="mt-0.5 text-[11px] text-[#8B8DAE]">{s.time} · {s.venue}</p>
+                          <p className="mt-0.5 text-[11px] text-[#8B8DAE]">{s.time} - {s.venue}</p>
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Community */}
                 <div className="rounded-xl border border-[#DDDDF0] bg-white p-4">
                   <div className="mb-3 flex items-center gap-2 border-b border-[#EAEBF6] pb-3">
                     <MessageSquare className="h-4 w-4 text-[#3B3DA6]" />
