@@ -93,3 +93,131 @@ class OTPCode(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.purpose} - {self.code}"
+    
+
+class Course(models.Model):
+    title = models.CharField(max_length=254)
+    description = models.TextField()
+    code = models.CharField(max_length=20, unique=True)
+
+    modules_count = models.PositiveIntegerField(default=0)
+
+    is_active = models.BooleanField(default=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+    
+class Module(models.Model):
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='modules'
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField(
+        null=True,
+        blank=True
+    )
+    order = models.PositiveIntegerField()
+    is_published = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return self.title    
+    
+class Lesson(models.Model):
+    module = models.ForeignKey(
+        Module,
+        on_delete=models.CASCADE,
+        related_name='lessons'
+    )
+    title = models.CharField(max_length=255)
+    description = models.TextField(
+        null=True,
+        blank=True
+    )
+    order = models.PositiveIntegerField()
+    duration_minutes = models.PositiveIntegerField(
+        default=0
+    )
+    is_preview = models.BooleanField(
+        default=False
+    )
+    is_published = models.BooleanField(
+        default=True
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return self.title
+    
+
+class Resource(models.Model):
+
+    RESOURCE_TYPES = [
+        ('video', 'Video'),
+        ('pdf', 'PDF'),
+        ('slide', 'Slide'),
+        ('document', 'Document'),
+    ]
+    lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.CASCADE,
+        related_name='resources'
+    )
+    title = models.CharField(max_length=255)
+    resource_type = models.CharField(
+        max_length=20,
+        choices=RESOURCE_TYPES
+    )
+    file = models.FileField(
+        upload_to='resources/',
+        null=True,
+        blank=True
+    )
+    video_url = models.URLField(
+        null=True,
+        blank=True
+    )
+    order = models.PositiveIntegerField(
+        default=1
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return self.title
+    
+class LessonCompletion(models.Model):
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+    lesson = models.ForeignKey(
+        Lesson,
+        on_delete=models.CASCADE
+    )
+    completed = models.BooleanField(
+        default=False
+    )
+    completed_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    class Meta:
+        unique_together = ('user', 'lesson')
