@@ -257,3 +257,97 @@ class UserProgress(models.Model):
     last_accessed = models.DateTimeField(
         auto_now=True
     )
+
+from django.db import models
+
+
+class Announcement(models.Model):
+
+    TAG_CHOICES = [
+        ('urgent', 'Urgent'),
+        ('info', 'Information'),
+        ('event', 'Event'),
+        ('system', 'System Update')
+    ]
+
+    title = models.CharField(max_length=254)
+    description = models.TextField()
+    tag = models.CharField(max_length=20, choices=TAG_CHOICES)
+    is_published = models.BooleanField(default=True)
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='announcements')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+
+class TrainingSession(models.Model):
+
+    title = models.CharField(max_length=254)
+    description = models.TextField(blank=True, null=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='sessions')
+    instructor = models.CharField(max_length=254)
+    session_date = models.DateField()
+    session_time = models.TimeField()
+    venue = models.CharField(max_length=254)
+    capacity = models.PositiveIntegerField(default=50)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['session_date', 'session_time']
+
+    def __str__(self):
+        return self.title
+
+
+class UserStats(models.Model):
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='stats')
+    total_enrollments = models.PositiveIntegerField(default=0)
+    courses_completed = models.PositiveIntegerField(default=0)
+    modules_completed = models.PositiveIntegerField(default=0)
+    lessons_completed = models.PositiveIntegerField(default=0)
+    evaluations_passed = models.PositiveIntegerField(default=0)
+    badges_earned = models.PositiveIntegerField(default=0)
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.username} Stats"
+
+
+class Enrollment(models.Model):
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('completed', 'Completed'),
+        ('dropped', 'Dropped'),
+    ]
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='enrollments'
+    )
+    course = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name='enrollments'
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='active'
+    )
+    enrolled_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        unique_together = ('user', 'course')
+        ordering = ['-enrolled_at']
+
+    def __str__(self):
+        return f"{self.user.username} - {self.course.title}"

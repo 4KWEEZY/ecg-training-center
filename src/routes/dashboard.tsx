@@ -20,15 +20,11 @@ import {
   ArrowRight,
   Menu,
   X,
-  CheckCircle2,
-  TrendingUp,
-  Trophy,
-  Zap,
+  Loader,
   Mail,
+  TrendingUp,
   Phone,
-  Save,
   UserRound,
-  Award,
 } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
@@ -45,8 +41,38 @@ type UserProfile = {
   is_active?: boolean;
 };
 
+type Announcement = {
+  id: number;
+  title: string;
+  description: string;
+  tag: string;
+  created_at: string;
+};
+
+type Session = {
+  id: number;
+  title: string;
+  session_date: string;
+  session_time: string;
+  venue: string;
+};
+
+type Course = {
+  id: number;
+  title: string;
+  code: string;
+  modules_count: number;
+};
+
+type Progress = {
+  id: number;
+  course_title: string;
+  module_title: string | null;
+  lesson_title: string | null;
+  percentage: number;
+};
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
-const PROFILE_ENDPOINT = `${API_BASE_URL}/api/profile/`;
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
@@ -58,85 +84,6 @@ const navItems = [
   { icon: HelpCircle, label: "Help & Contact", to: "/help" },
 ];
 
-const quickLinks = [
-  {
-    icon: BookOpen,
-    label: "My Courses",
-    subtitle: "6 active",
-    to: "/my-courses",
-    color: "text-[#3B3DA6]",
-    iconBg: "bg-[#F0F2FB]",
-  },
-  {
-    icon: TrendingUp,
-    label: "My Progress",
-    subtitle: "Updated today",
-    to: "/progress",
-    color: "text-[#3B3DA6]",
-    iconBg: "bg-[#F0F2FB]",
-  },
-  {
-    icon: HelpCircle,
-    label: "Help",
-    subtitle: "Ask a mentor",
-    to: "/help",
-    color: "text-[#3B3DA6]",
-    iconBg: "bg-[#F0F2FB]",
-  },
-];
-
-const announcements = [
-  {
-    id: "ann-1",
-    tag: "Urgent",
-    tagStyle: "bg-[#FCEBEB] text-[#A32D2D] border-[#F7C1C1]",
-    title: "Mandatory Safety Assessment Deadline",
-    time: "2 hours ago",
-    desc: "All Cohort 2026 trainees must clear Section 2.4 evaluation before Friday midnight.",
-  },
-  {
-    id: "ann-2",
-    tag: "System",
-    tagStyle: "bg-[#E6F1FB] text-[#185FA5] border-[#B5D4F4]",
-    title: "LMS Platform Version 2.0 Deployed",
-    time: "1 day ago",
-    desc: "Registration portal and live verification engine are now online.",
-  },
-];
-
-const upcomingSessions = [
-  { id: "s1", title: "Transformer Grounding Workshop", date: "May 22, 2026", time: "09:00 GMT", venue: "Lab Block B, Tema", day: 22, month: 4 },
-  { id: "s2", title: "High Voltage Safety Refresher", date: "May 28, 2026", time: "10:00 GMT", venue: "Virtual - Zoom", day: 28, month: 4 },
-];
-
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function ProgressBar({
-  value,
-  color,
-  accent,
-  height = "h-2",
-}: {
-  value: number;
-  color: string;
-  accent: string;
-  height?: string;
-}) {
-  return (
-    <div className={`w-full overflow-hidden rounded-full bg-[#F0F2FB] ${height}`}>
-      <div
-        className="h-full rounded-full transition-all duration-700"
-        style={{
-          width: `${value}%`,
-          background: `linear-gradient(90deg, ${color} 0%, ${accent} 100%)`,
-          boxShadow: `0 0 8px ${accent}55`,
-        }}
-      />
-    </div>
-  );
-}
-
-
 function getStoredUser(): UserProfile {
   try {
     const storedUser = localStorage.getItem("user");
@@ -146,7 +93,7 @@ function getStoredUser(): UserProfile {
   }
 }
 
-function MiniCalendar() {
+function MiniCalendar({ sessions }: { sessions: Session[] }) {
   const today = new Date();
   const [current, setCurrent] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
   const year = current.getFullYear();
@@ -154,9 +101,15 @@ function MiniCalendar() {
   const monthName = current.toLocaleString("default", { month: "long" });
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const sessionDays = upcomingSessions.filter((s) => s.month === month).map((s) => s.day);
-  const days: (number | null)[] = [];
 
+  const sessionDays = sessions
+    .filter((s) => {
+      const sDate = new Date(s.session_date);
+      return sDate.getFullYear() === year && sDate.getMonth() === month;
+    })
+    .map((s) => new Date(s.session_date).getDate());
+
+  const days: (number | null)[] = [];
   for (let i = 0; i < firstDay; i++) days.push(null);
   for (let i = 1; i <= daysInMonth; i++) days.push(i);
 
@@ -269,63 +222,67 @@ function SidebarContent({ displayName, initials, email, currentPath, onLogout, o
   );
 }
 
-
-// ── Dashboard Page ─────────────────────────────────────────────────────────────
 function DashboardPage() {
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
   const [profile, setProfile] = useState<UserProfile>(() => getStoredUser());
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [editingProfile, setEditingProfile] = useState(false);
-  const [savingProfile, setSavingProfile] = useState(false);
-  const [profileError, setProfileError] = useState("");
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [sessions, setSessions] = useState<Session[]>([]);
+  const [recentCourses, setRecentCourses] = useState<Course[]>([]);
+  const [progress, setProgress] = useState<Progress | null>(null);
+  const [coursesCount, setCoursesCount] = useState(0);
 
-  const [profileForm, setProfileForm] = useState({
-    name: profile.name || "",
-    phone_number: profile.phone_number || "",
-  });
+  const [loading, setLoading] = useState(true);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const displayName = profile?.name || profile?.username || "Trainee";
   const initials = displayName.slice(0, 2).toUpperCase();
   const currentPath = "/dashboard";
+  const token = localStorage.getItem("access_token");
 
   useEffect(() => {
-    const loadProfile = async () => {
-      const token = localStorage.getItem("access_token");
-      if (!token) return;
+    const fetchDashboardData = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
       try {
-        const res = await fetch(PROFILE_ENDPOINT, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const [announcementsRes, sessionsRes, coursesRes, progressRes, myCoursesRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/announcements/`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${API_BASE_URL}/api/sessions/`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${API_BASE_URL}/api/courses/`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${API_BASE_URL}/api/progress/`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${API_BASE_URL}/api/my-courses/`, { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
 
-        if (!res.ok) return;
+        const announcementsData = await announcementsRes.json();
+        const sessionsData = await sessionsRes.json();
+        const coursesData = await coursesRes.json();
+        const progressData = await progressRes.json();
+        const myCoursesData = await myCoursesRes.json();
 
-        const data: UserProfile = await res.json();
-        setProfile(data);
-        setProfileForm({
-          name: data.name || "",
-          phone_number: data.phone_number || "",
-        });
-        localStorage.setItem("user", JSON.stringify(data));
-      } catch {
-        // Keep localStorage profile as fallback.
+        setAnnouncements(announcementsData.slice(0, 2));
+        setSessions(sessionsData.slice(0, 2));
+        setRecentCourses(coursesData.slice(0, 3));
+        setProgress(Array.isArray(progressData) ? progressData[0] : null);
+        setCoursesCount(myCoursesData.count || 0);
+      } catch (err) {
+        console.error("Failed to fetch dashboard data", err);
+      } finally {
+        setLoading(false);
       }
     };
 
-    loadProfile();
-  }, []);
+    fetchDashboardData();
+  }, [token]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
         setProfileOpen(false);
-        setEditingProfile(false);
-        setProfileError("");
       }
     };
 
@@ -341,49 +298,19 @@ function DashboardPage() {
     navigate({ to: "/login" });
   };
 
-  const handleProfileSave = async () => {
-    const token = localStorage.getItem("access_token");
-    if (!token) {
-      navigate({ to: "/login" });
-      return;
-    }
+  const quickLinks = [
+    { icon: BookOpen, label: "My Courses", subtitle: `${coursesCount} active`, to: "/courses", color: "text-[#3B3DA6]", iconBg: "bg-[#F0F2FB]" },
+    { icon: TrendingUp, label: "My Progress", subtitle: "Updated today", to: "/progress", color: "text-[#3B3DA6]", iconBg: "bg-[#F0F2FB]" },
+    { icon: HelpCircle, label: "Help", subtitle: "Ask a mentor", to: "/help", color: "text-[#3B3DA6]", iconBg: "bg-[#F0F2FB]" },
+  ];
 
-    setSavingProfile(true);
-    setProfileError("");
-
-    try {
-      const res = await fetch(PROFILE_ENDPOINT, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          name: profileForm.name,
-          phone_number: profileForm.phone_number,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        const message =
-          data?.phone_number?.[0] ||
-          data?.name?.[0] ||
-          "Could not update profile.";
-        setProfileError(message);
-        return;
-      }
-
-      setProfile(data);
-      localStorage.setItem("user", JSON.stringify(data));
-      setEditingProfile(false);
-    } catch {
-      setProfileError("Could not connect to the profile service.");
-    } finally {
-      setSavingProfile(false);
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center" style={{ background: "#f0f2fb" }}>
+        <Loader className="h-8 w-8 animate-spin text-[#3B3DA6]" />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -450,95 +377,37 @@ function DashboardPage() {
                       </div>
                     </div>
 
-                    {editingProfile ? (
-                      <div className="space-y-3">
-                        <label className="block">
-                          <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#AAAAC8]">Name</span>
-                          <input
-                            value={profileForm.name}
-                            onChange={(e) => setProfileForm((form) => ({ ...form, name: e.target.value }))}
-                            className="w-full rounded-lg border border-[#DDDDF0] px-3 py-2 text-[13px] text-[#1A1C5C] outline-none focus:border-[#3B3DA6]"
-                          />
-                        </label>
-
-                        <label className="block">
-                          <span className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-[#AAAAC8]">Phone Number</span>
-                          <input
-                            value={profileForm.phone_number}
-                            onChange={(e) => setProfileForm((form) => ({ ...form, phone_number: e.target.value }))}
-                            className="w-full rounded-lg border border-[#DDDDF0] px-3 py-2 text-[13px] text-[#1A1C5C] outline-none focus:border-[#3B3DA6]"
-                            placeholder="10 digits"
-                          />
-                        </label>
-
-                        {profileError && (
-                          <p className="rounded-lg bg-[#FCEBEB] px-3 py-2 text-[12px] text-[#A32D2D]">{profileError}</p>
-                        )}
-
-                        <div className="flex gap-2 pt-1">
-                          <button
-                            type="button"
-                            onClick={handleProfileSave}
-                            disabled={savingProfile}
-                            className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-[#3B3DA6] px-3 py-2 text-[12px] font-bold uppercase tracking-wider text-white transition hover:bg-[#2B2D8A] disabled:opacity-60"
-                          >
-                            <Save className="h-3.5 w-3.5" />
-                            {savingProfile ? "Saving" : "Save"}
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setEditingProfile(false);
-                              setProfileError("");
-                              setProfileForm({
-                                name: profile.name || "",
-                                phone_number: profile.phone_number || "",
-                              });
-                            }}
-                            className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#DDDDF0] text-[#8B8DAE] hover:text-[#E8534A]"
-                          >
-                            <X className="h-4 w-4" />
-                          </button>
-                        </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-[13px] text-[#1A1C5C]">
+                        <Mail className="h-4 w-4 text-[#8B8DAE]" />
+                        <span className="truncate">{profile.email || "No email"}</span>
                       </div>
-                    ) : (
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-2 text-[13px] text-[#1A1C5C]">
-                          <Mail className="h-4 w-4 text-[#8B8DAE]" />
-                          <span className="truncate">{profile.email || "No email"}</span>
-                        </div>
 
-                        <div className="flex items-center gap-2 text-[13px] text-[#1A1C5C]">
-                          <Phone className="h-4 w-4 text-[#8B8DAE]" />
-                          <span>{profile.phone_number || "No phone number"}</span>
-                        </div>
-
-                        <div className="flex items-center gap-2 text-[13px] text-[#1A1C5C]">
-                          <UserRound className="h-4 w-4 text-[#8B8DAE]" />
-                          <span>{profile.is_active ? "Active account" : "Inactive account"}</span>
-                        </div>
-
-                        <div className="flex gap-2 border-t border-[#EAEBF6] pt-3">
-                          <button
-                            type="button"
-                            onClick={() => setEditingProfile(true)}
-                            className="flex-1 rounded-lg bg-[#3B3DA6] px-3 py-2 text-[12px] font-bold uppercase tracking-wider text-white transition hover:bg-[#2B2D8A]"
-                          >
-                            Edit Profile
-                          </button>
-
-                          <button
-                            type="button"
-                            onClick={handleLogout}
-                            className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#F7C1C1] bg-[#FCEBEB] text-[#A32D2D] hover:bg-[#F7C1C1]"
-                            title="Logout"
-                          >
-                            <LogOut className="h-4 w-4" />
-                          </button>
-                        </div>
+                      <div className="flex items-center gap-2 text-[13px] text-[#1A1C5C]">
+                        <Phone className="h-4 w-4 text-[#8B8DAE]" />
+                        <span>{profile.phone_number || "No phone"}</span>
                       </div>
-                    )}
+
+                      <div className="flex items-center gap-2 text-[13px] text-[#1A1C5C]">
+                        <UserRound className="h-4 w-4 text-[#8B8DAE]" />
+                        <span>{profile.is_active ? "Active" : "Inactive"}</span>
+                      </div>
+
+                      <div className="flex gap-2 border-t border-[#EAEBF6] pt-3">
+                        <Link to="/profile" className="flex-1 rounded-lg bg-[#3B3DA6] px-3 py-2 text-center text-[12px] font-bold uppercase tracking-wider text-white transition hover:bg-[#2B2D8A]">
+                          View Profile
+                        </Link>
+
+                        <button
+                          type="button"
+                          onClick={handleLogout}
+                          className="flex h-9 w-9 items-center justify-center rounded-lg border border-[#F7C1C1] bg-[#FCEBEB] text-[#A32D2D] hover:bg-[#F7C1C1]"
+                          title="Logout"
+                        >
+                          <LogOut className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>
@@ -569,30 +438,26 @@ function DashboardPage() {
               </div>
             </div>
 
-            {/* Joined Quick Links Container */}
+            {/* Quick Links */}
             <div className="mb-5 overflow-hidden rounded-2xl border border-[#DDDDF0] bg-white shadow-sm">
               <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#DDDDF0]">
                 {quickLinks.map(({ icon: Icon, label, subtitle, to, color, iconBg }) => (
                   <Link
                     key={label}
                     to={to}
-                    className="group flex items-center gap-4 px-5 py-4 transition-all hover:bg-[#F8FAFF] active:bg-[#F0F2FB]"
+                    className="group flex items-center gap-4 px-5 py-4 transition-all hover:bg-[#F8FAFF]"
                   >
-                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconBg} ${color} transition-transform group-hover:scale-110`}>
+                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconBg} ${color}`}>
                       <Icon className="h-5 w-5" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-[14px] font-bold text-[#1A1C5C] leading-tight">{label}</p>
-                      <p className="text-[11px] text-[#8B8DAE] mt-1 font-medium">{subtitle}</p>
-                    </div>
-                    <div className="flex h-7 w-7 items-center justify-center rounded-full opacity-0 transition-all group-hover:bg-white group-hover:opacity-100 group-hover:shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
-                      <ArrowRight className="h-3.5 w-3.5 text-[#3B3DA6]" />
+                      <p className="text-[14px] font-bold text-[#1A1C5C]">{label}</p>
+                      <p className="text-[11px] text-[#8B8DAE] mt-1">{subtitle}</p>
                     </div>
                   </Link>
                 ))}
               </div>
             </div>
-
 
             {/* Main 3-col grid */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
@@ -601,55 +466,39 @@ function DashboardPage() {
               <div className="space-y-4 lg:col-span-2">
 
                 {/* Currently Studying Card */}
-                <div
-                  className="relative overflow-hidden rounded-2xl p-5 shadow-lg lg:p-7"
-                  style={{ background: "linear-gradient(145deg, #12153D 0%, #1A1D4E 50%, #1E2258 100%)", border: "1px solid rgba(255,255,255,0.07)" }}
-                >
-                  <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full opacity-20" style={{ background: "radial-gradient(circle, #3B3DA6 0%, transparent 70%)" }} />
-                  <div className="pointer-events-none absolute -bottom-8 right-32 h-32 w-32 rounded-full opacity-10" style={{ background: "radial-gradient(circle, #5B5ED6 0%, transparent 70%)" }} />
-
-                  <div className="relative">
-                    <div className="mb-4 flex items-start justify-between gap-4">
-                      <div className="flex items-center gap-2">
-                        <span className="relative flex h-2.5 w-2.5 shrink-0">
-                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ backgroundColor: "#34D399" }} />
-                          <span className="relative inline-flex h-2.5 w-2.5 rounded-full" style={{ backgroundColor: "#34D399" }} />
-                        </span>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#9FA3CC" }}>Currently Studying</span>
+                {progress && (
+                  <div className="relative overflow-hidden rounded-2xl p-5 shadow-lg lg:p-7" style={{ background: "linear-gradient(145deg, #12153D 0%, #1A1D4E 50%, #1E2258 100%)", border: "1px solid rgba(255,255,255,0.07)" }}>
+                    <div className="relative">
+                      <div className="mb-4 flex items-start justify-between gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className="relative flex h-2.5 w-2.5 shrink-0">
+                            <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-75" style={{ backgroundColor: "#34D399" }} />
+                            <span className="relative inline-flex h-2.5 w-2.5 rounded-full" style={{ backgroundColor: "#34D399" }} />
+                          </span>
+                          <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#9FA3CC" }}>Currently Studying</span>
+                        </div>
+                        <button type="button" className="inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-2.5 text-[12px] font-bold uppercase tracking-wider text-[#1A1C5C] transition active:scale-95 lg:px-6 lg:py-3 lg:text-[13px]" style={{ background: "linear-gradient(135deg, #FFD700 0%, #FFC200 100%)" }}>
+                          <Play className="h-3.5 w-3.5 fill-current lg:h-4 lg:w-4" />Resume
+                        </button>
                       </div>
-                      <button type="button"
-                        className="inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-2.5 text-[12px] font-bold uppercase tracking-wider text-[#1A1C5C] transition active:scale-95 lg:px-6 lg:py-3 lg:text-[13px]"
-                        style={{ background: "linear-gradient(135deg, #FFD700 0%, #FFC200 100%)", boxShadow: "0 8px 28px -6px rgba(255,215,0,0.55)" }}
-                      >
-                        <Play className="h-3.5 w-3.5 fill-current lg:h-4 lg:w-4" />Resume
-                      </button>
-                    </div>
-                    <p className="mb-1 text-[13px] font-medium" style={{ color: "#7B80C0" }}>Module 02</p>
-                    <h2 className="text-[24px] font-bold leading-tight tracking-tight text-white lg:text-[32px]">
-                      Workplace Safety &amp;<br />Compliance
-                    </h2>
-                    <p className="mt-3 text-[13px] font-medium lg:text-[14px]" style={{ color: "#9FA3CC" }}>
-                      §2.4 — High Voltage Substation Isolation Protocols
-                    </p>
-                    <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[12px] lg:text-[13px]" style={{ color: "#7B80C0" }}>
-                      <span className="flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" style={{ color: "#9FA3CC" }} />42 min left</span>
-                      <span style={{ color: "#2E3270" }}>·</span>
-                      <span>Instructor: K. Mensah</span>
-                      <span style={{ color: "#2E3270" }}>·</span>
-                      <span>Section 2 of 5</span>
-                    </div>
-                    <div className="mt-5">
-                      <div className="mb-2 flex items-center justify-between text-[12px] lg:text-[13px]">
-                        <span className="font-semibold" style={{ color: "#C8CAEE" }}>Module progress</span>
-                        <span className="font-bold" style={{ color: "#FFD700" }}>17%</span>
-                      </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.08)" }}>
-                        <div className="h-full rounded-full" style={{ width: "17%", background: "linear-gradient(90deg, #4E50C4 0%, #FFD700 100%)", boxShadow: "0 0 8px rgba(255,215,0,0.4)" }} />
+                      <h2 className="text-[24px] font-bold leading-tight tracking-tight text-white lg:text-[32px]">
+                        {progress.course_title}
+                      </h2>
+                      <p className="mt-3 text-[13px] font-medium lg:text-[14px]" style={{ color: "#9FA3CC" }}>
+                        {progress.module_title} — {progress.lesson_title}
+                      </p>
+                      <div className="mt-5">
+                        <div className="mb-2 flex items-center justify-between text-[12px] lg:text-[13px]">
+                          <span className="font-semibold" style={{ color: "#C8CAEE" }}>Progress</span>
+                          <span className="font-bold" style={{ color: "#FFD700" }}>{progress.percentage}%</span>
+                        </div>
+                        <div className="h-1.5 w-full overflow-hidden rounded-full" style={{ backgroundColor: "rgba(255,255,255,0.08)" }}>
+                          <div className="h-full rounded-full" style={{ width: `${progress.percentage}%`, background: "linear-gradient(90deg, #4E50C4 0%, #FFD700 100%)" }} />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-
+                )}
 
                 {/* Announcements */}
                 <div className="rounded-xl border border-[#DDDDF0] bg-white p-4 lg:p-5">
@@ -662,16 +511,20 @@ function DashboardPage() {
                   </div>
 
                   <div className="space-y-3">
-                    {announcements.map((ann) => (
-                      <div key={ann.id} className="rounded-lg border border-[#EAEBF6] bg-[#F4F5FB] p-3 transition hover:border-[#3B3DA6]/20">
-                        <div className="mb-2 flex items-center justify-between">
-                          <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${ann.tagStyle}`}>{ann.tag}</span>
-                          <span className="text-[11px] text-[#AAAAC8]">{ann.time}</span>
+                    {announcements.length > 0 ? (
+                      announcements.map((ann) => (
+                        <div key={ann.id} className="rounded-lg border border-[#EAEBF6] bg-[#F4F5FB] p-3 transition hover:border-[#3B3DA6]/20">
+                          <div className="mb-2 flex items-center justify-between">
+                            <span className="rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#E6F1FB] text-[#185FA5] border-[#B5D4F4]">{ann.tag}</span>
+                            <span className="text-[11px] text-[#AAAAC8]">{new Date(ann.created_at).toLocaleDateString()}</span>
+                          </div>
+                          <p className="text-[13px] font-semibold text-[#1A1C5C]">{ann.title}</p>
+                          <p className="mt-1 text-[12px] leading-relaxed text-[#8B8DAE]">{ann.description}</p>
                         </div>
-                        <p className="text-[13px] font-semibold text-[#1A1C5C]">{ann.title}</p>
-                        <p className="mt-1 text-[12px] leading-relaxed text-[#8B8DAE]">{ann.desc}</p>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <p className="text-[13px] text-[#8B8DAE]">No announcements yet.</p>
+                    )}
                   </div>
                 </div>
 
@@ -685,28 +538,28 @@ function DashboardPage() {
                     <Link to="/courses" className="text-xs font-semibold uppercase tracking-wider text-[#3B3DA6]">View All</Link>
                   </div>
                   <div className="mt-4 space-y-3">
-                    {[
-                      { title: "Workplace Safety & Compliance", meta: "Module 02 · §2.4", accessed: "Just now" },
-                      { title: "Power Systems Fundamentals", meta: "Module 01 · §1.6", accessed: "Yesterday" },
-                      { title: "Network Operations Basics", meta: "Module 03 · §3.1", accessed: "3 days ago" },
-                    ].map((c) => (
-                      <Link key={c.title} to="/courses" className="flex items-center gap-3 rounded-xl border border-[#EEF0F6] bg-[#FAFBFD] p-3 transition active:scale-[0.98] lg:p-4">
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#E6F1FB] text-[#185FA5] lg:h-11 lg:w-11">
-                          <BookOpen className="h-4 w-4 lg:h-5 lg:w-5" />
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="truncate text-[13px] font-semibold text-[#1A1E3A]">{c.title}</p>
-                          <p className="mt-0.5 text-[11px] text-[#6B7090]">{c.meta} · {c.accessed}</p>
-                        </div>
-                      </Link>
-                    ))}
+                    {recentCourses.length > 0 ? (
+                      recentCourses.map((c) => (
+                        <Link key={c.id} to="/courses" className="flex items-center gap-3 rounded-xl border border-[#EEF0F6] bg-[#FAFBFD] p-3 transition active:scale-[0.98] lg:p-4">
+                          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#E6F1FB] text-[#185FA5] lg:h-11 lg:w-11">
+                            <BookOpen className="h-4 w-4 lg:h-5 lg:w-5" />
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-[13px] font-semibold text-[#1A1E3A]">{c.title}</p>
+                            <p className="mt-0.5 text-[11px] text-[#6B7090]">{c.code} · {c.modules_count} modules</p>
+                          </div>
+                        </Link>
+                      ))
+                    ) : (
+                      <p className="text-[13px] text-[#8B8DAE]">No courses enrolled yet.</p>
+                    )}
                   </div>
                 </div>
               </div>
 
               {/* Right sidebar */}
               <div className="space-y-4">
-                <MiniCalendar />
+                <MiniCalendar sessions={sessions} />
 
                 <div className="rounded-xl border border-[#DDDDF0] bg-white p-4">
                   <div className="mb-3 flex items-center justify-between border-b border-[#EAEBF6] pb-3">
@@ -718,18 +571,22 @@ function DashboardPage() {
                   </div>
 
                   <div className="space-y-2.5">
-                    {upcomingSessions.map((s) => (
-                      <div key={s.id} className="flex items-start gap-3 rounded-lg border border-[#EAEBF6] bg-[#F4F5FB] p-3">
-                        <div className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg bg-[#3B3DA6] text-white">
-                          <span className="text-[13px] font-bold leading-none">{s.day}</span>
-                          <span className="text-[9px] uppercase leading-none opacity-75">{new Date(s.date).toLocaleString("default", { month: "short" })}</span>
+                    {sessions.length > 0 ? (
+                      sessions.map((s) => (
+                        <div key={s.id} className="flex items-start gap-3 rounded-lg border border-[#EAEBF6] bg-[#F4F5FB] p-3">
+                          <div className="flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-lg bg-[#3B3DA6] text-white">
+                            <span className="text-[13px] font-bold leading-none">{new Date(s.session_date).getDate()}</span>
+                            <span className="text-[9px] uppercase leading-none opacity-75">{new Date(s.session_date).toLocaleString("default", { month: "short" })}</span>
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-[12px] font-semibold leading-snug text-[#1A1C5C]">{s.title}</p>
+                            <p className="mt-0.5 text-[11px] text-[#8B8DAE]">{s.session_time} - {s.venue}</p>
+                          </div>
                         </div>
-                        <div className="min-w-0">
-                          <p className="text-[12px] font-semibold leading-snug text-[#1A1C5C]">{s.title}</p>
-                          <p className="mt-0.5 text-[11px] text-[#8B8DAE]">{s.time} - {s.venue}</p>
-                        </div>
-                      </div>
-                    ))}
+                      ))
+                    ) : (
+                      <p className="text-[13px] text-[#8B8DAE]">No upcoming sessions.</p>
+                    )}
                   </div>
                 </div>
 
@@ -753,3 +610,5 @@ function DashboardPage() {
     </>
   );
 }
+
+export default DashboardPage;
