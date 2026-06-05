@@ -2,13 +2,21 @@ from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import AllowAny,IsAdminUser
+from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import RegisterSerializer,CustomTokenObtainPairSerializer,PasswordResetRequestSerializer,PasswordResetVerifyOTPSerializer,PasswordResetConfirmSerializer,ProfileSerializer,ProfileUpdateSerializer,CourseSerializer, ModuleSerializer, LessonSerializer, ResourceSerializer, UserProgressSerializer, AnnouncementSerializer, TrainingSessionSerializer, UserStatsSerializer, LessonCompletionSerializer, EnrollmentSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
+from datetime import datetime, timedelta
+from .serializers import (
+    RegisterSerializer, CustomTokenObtainPairSerializer,
+    PasswordResetRequestSerializer, PasswordResetVerifyOTPSerializer,
+    PasswordResetConfirmSerializer, ProfileSerializer, ProfileUpdateSerializer,
+    CourseSerializer, ModuleSerializer, LessonSerializer, ResourceSerializer,
+    UserProgressSerializer, AnnouncementSerializer, TrainingSessionSerializer,
+    UserStatsSerializer, LessonCompletionSerializer, EnrollmentSerializer
+)
 from .utils import send_otp_email
 from .models import (
-    Course, Module, Lesson, Resource, UserProgress, Announcement,
+    User, Course, Module, Lesson, Resource, UserProgress, Announcement,
     TrainingSession, UserStats, LessonCompletion, Enrollment
 )
 # Create your views here.

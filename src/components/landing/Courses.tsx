@@ -1,185 +1,261 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
-import { BookOpen, Clock, ArrowRight, ShieldCheck, Zap, Layers, Cpu } from "lucide-react";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState, useMemo } from "react";
+import {
+  Search,
+  Clock,
+  CheckCircle2,
+  ArrowRight,
+} from "lucide-react";
 import { TopBar } from "@/components/landing/TopBar";
 import { Nav } from "@/components/landing/Nav";
-import { Footer } from "@/components/landing/Footer";
 
 export const Route = createFileRoute("/courses")({
-  component: CoursesPage,
+  component: CoursesCatalogPage,
 });
 
-// Real Operational ECG Training School Catalog Data (Payment Options Removed)
-const ECG_CATALOG_DATA = [
+const MOCK_COURSES = [
   {
-    id: "crs-01",
-    cat: "Safety",
-    title: "High Voltage Substation Safety & Isolation Protocols",
-    instructor: "Ing. Emmanuel Ofori-Atta",
-    durationWeeks: 6,
+    id: "course-1",
+    title: "High Voltage Power Systems Engineering",
+    category: "Power Systems",
+    level: "Advanced",
+    duration: "6 Weeks",
+    fee: 1200,
     description:
-      "Mandatory safety certifications covering arc-rated clothing compliance, grounding installation, and lockout/tagout operations.",
-    icon: ShieldCheck,
+      "Comprehensive training on sub-station management, network safety protection grids, and high voltage feeder operations.",
   },
   {
-    id: "crs-02",
-    cat: "Engineering",
-    title: "Distribution Operations & Grid Infrastructure II",
-    instructor: "Ing. Kwabena Mensah",
-    durationWeeks: 8,
+    id: "course-2",
+    title: "Solar PV Design and Grid Integration",
+    category: "Renewable Energy",
+    level: "Intermediate",
+    duration: "4 Weeks",
+    fee: 850,
     description:
-      "Deep dive into 11kV/33kV distribution feeder designs, substation load balancing, and automated circuit breaker protection schemes.",
-    icon: Zap,
+      "Technician framework on standard commercial solar installation systems and synchronizing clean grids to main feeds.",
   },
   {
-    id: "crs-03",
-    cat: "Metering",
-    title: "Integrated Smart Metering & AMI Architectures",
-    instructor: "Mrs. Akua Appiah",
-    durationWeeks: 4,
+    id: "course-3",
+    title: "LMS and Substation Database Administration",
+    category: "IT",
+    level: "Beginner",
+    duration: "3 Weeks",
+    fee: 500,
     description:
-      "Hands-on implementation paths for advanced smart meters, cryptographic vending protocols, and split-unit remote data sync.",
-    icon: Cpu,
+      "Introduction to digital infrastructure, internal system networking tools, and network diagnostics data setups.",
   },
   {
-    id: "crs-04",
-    cat: "Commercial",
-    title: "Utility Customer Service Charter & Loss Reduction",
-    instructor: "Mr. David Owusu-Ansah",
-    durationWeeks: 5,
+    id: "course-4",
+    title: "Safety Compliance Standards for Independent Contractors",
+    category: "Contractors",
+    level: "Beginner",
+    duration: "2 Weeks",
+    fee: 350,
     description:
-      "Strategies for mitigating commercial losses, detecting energy theft, and implementing the regulatory customer response framework.",
-    icon: Layers,
+      "Mandatory personal protective protocols, fall risk controls, and electrical hazard audits required for ECG contract approval.",
+  },
+  {
+    id: "course-5",
+    title: "Substation Transformer Diagnostics & Repair",
+    category: "Power Systems",
+    level: "Advanced",
+    duration: "8 Weeks",
+    fee: 1500,
+    description:
+      "Advanced maintenance blueprints covering cooling systems, core winding repairs, and automatic emergency trip configurations.",
   },
 ];
 
-const CATEGORIES = ["All", "Safety", "Engineering", "Metering", "Commercial"];
+const CATEGORIES = [
+  "All Categories",
+  "Power Systems",
+  "Renewable Energy",
+  "IT",
+  "Contractors",
+];
 
-function CoursesPage() {
-  // Client-Side Category Filter State
-  const [activeFilter, setActiveFilter] = useState("All");
+const LEVELS = ["All Levels", "Beginner", "Intermediate", "Advanced"];
 
-  // Filtered Computed Array
-  const filteredCourses =
-    activeFilter === "All"
-      ? ECG_CATALOG_DATA
-      : ECG_CATALOG_DATA.filter((course) => course.cat === activeFilter);
+const LEVEL_COLORS: Record<string, string> = {
+  Beginner: "bg-[#2E9E6B]/10 text-[#2E9E6B]",
+  Intermediate: "bg-[#3B3DA6]/10 text-[#3B3DA6]",
+  Advanced: "bg-[#E8534A]/10 text-[#E8534A]",
+};
+
+function CoursesCatalogPage() {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("All Categories");
+  const [selectedLevel, setSelectedLevel] = useState("All Levels");
+  const [enrolledCourseId, setEnrolledCourseId] = useState<string | null>(null);
+  const [unenrolledCourseId, setUnenrolledCourseId] = useState<string | null>(null);
+
+  // Load enrolled courses from localStorage
+  const [enrolledIds, setEnrolledIds] = useState<string[]>(() => {
+    const saved = localStorage.getItem("enrolled_courses");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  const filteredCourses = useMemo(
+    () =>
+      MOCK_COURSES.filter((c) => {
+        const matchSearch =
+          c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          c.description.toLowerCase().includes(searchQuery.toLowerCase());
+
+        const matchCategory =
+          selectedCategory === "All Categories" ||
+          c.category === selectedCategory;
+
+        const matchLevel =
+          selectedLevel === "All Levels" || c.level === selectedLevel;
+
+        return matchSearch && matchCategory && matchLevel;
+      }),
+    [searchQuery, selectedCategory, selectedLevel]
+  );
+
+  const handleEnroll = (courseId: string) => {
+    if (enrolledIds.includes(courseId)) return;
+
+    const newEnrolled = [...enrolledIds, courseId];
+    setEnrolledIds(newEnrolled);
+    localStorage.setItem("enrolled_courses", JSON.stringify(newEnrolled));
+
+    setEnrolledCourseId(courseId);
+    setTimeout(() => setEnrolledCourseId(null), 2500);
+  };
+
+  const handleUnenroll = (courseId: string) => {
+    const newEnrolled = enrolledIds.filter((id) => id !== courseId);
+    setEnrolledIds(newEnrolled);
+    localStorage.setItem("enrolled_courses", JSON.stringify(newEnrolled));
+
+    setUnenrolledCourseId(courseId);
+    setTimeout(() => setUnenrolledCourseId(null), 2500);
+  };
 
   return (
-    <div className="min-h-screen bg-brand-dark text-white selection:bg-yellow selection:text-brand-dark">
+    <div className="min-h-screen flex flex-col bg-[#F4F5FB]">
       <TopBar />
       <Nav />
 
-      {/* Main Container Core */}
-      <main className="mx-auto max-w-7xl px-6 pt-36 pb-20">
-        {/* Header Grid Section */}
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 border-b border-white/10 pb-8 mb-12">
-          <div>
-            <span className="text-[10px] font-bold uppercase tracking-widest text-yellow bg-yellow/10 border border-yellow/20 px-2.5 py-1 rounded">
-              Institutional Training Registry
-            </span>
-            <h1 className="mt-4 font-display text-3xl md:text-5xl font-light uppercase tracking-wide text-white">
-              Course <span className="text-yellow font-normal">Catalog</span>
-            </h1>
-            <p className="mt-2 text-xs md:text-sm text-white/60 max-w-2xl leading-relaxed">
-              Explore professional engineering milestones and technical certifications offered by
-              the Electricity Company of Ghana Training Academy. Select a track to view module
-              criteria.
-            </p>
-          </div>
+      <main className="flex-1 mx-auto w-full max-w-7xl px-6 pt-36 pb-20">
 
-          {/* Dynamic Filter Buttons Container */}
-          <div className="flex flex-wrap gap-2 self-start lg:self-auto">
-            {CATEGORIES.map((cat) => {
-              const isSelected = activeFilter === cat;
-              return (
-                <button
-                  key={cat}
-                  type="button"
-                  onClick={() => setActiveFilter(cat)}
-                  className={`rounded px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-all border ${
-                    isSelected
-                      ? "border-yellow bg-yellow text-brand-dark shadow-md"
-                      : "border-white/10 bg-brand-deep/40 text-white/60 hover:border-white/20 hover:text-white"
-                  }`}
-                >
-                  {cat}
-                </button>
-              );
-            })}
+        {/* Heading */}
+        <div className="mb-10 text-center">
+          <h1 className="text-5xl font-bold text-[#1A1C5C]">
+            Available Programmes
+          </h1>
+          <p className="mt-3 text-sm text-[#8B8DAE]">
+            Explore certified ECG training courses.
+          </p>
+        </div>
+
+        {/* Filters (bigger, cleaner, no harsh border) */}
+        <div className="mb-10 rounded-3xl bg-white p-6 shadow-lg">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-12">
+
+            <div className="relative md:col-span-5">
+              <Search className="absolute left-4 top-4 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search courses..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full rounded-2xl bg-[#F4F5FB] py-3 pl-11 text-sm outline-none"
+              />
+            </div>
+
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="md:col-span-4 rounded-2xl bg-[#F4F5FB] px-4 py-3 outline-none"
+            >
+              {CATEGORIES.map((c) => (
+                <option key={c}>{c}</option>
+              ))}
+            </select>
+
+            <select
+              value={selectedLevel}
+              onChange={(e) => setSelectedLevel(e.target.value)}
+              className="md:col-span-3 rounded-2xl bg-[#F4F5FB] px-4 py-3 outline-none"
+            >
+              {LEVELS.map((l) => (
+                <option key={l}>{l}</option>
+              ))}
+            </select>
+
           </div>
         </div>
 
-        {/* Dynamic Catalog Cards Loop Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2">
-          {filteredCourses.map((c) => {
-            const IconComp = c.icon;
-            return (
-              <article
-                key={c.id}
-                className="group flex flex-col justify-between rounded-xl border border-white/5 bg-brand-deep/30 p-6 shadow-xl backdrop-blur-sm transition-all duration-300 hover:border-yellow/20 hover:-translate-y-0.5"
+        {/* Courses GRID (BIG CARDS, NO OUTLINES) */}
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+
+          {filteredCourses.map((course) => (
+            <div
+              key={course.id}
+              className="rounded-3xl bg-white p-8 shadow-xl transition hover:scale-[1.02]"
+            >
+
+              <div className="flex justify-between">
+                <span className="text-xs font-bold text-yellow-600">
+                  {course.category}
+                </span>
+                <span className="flex items-center gap-1 text-xs text-gray-400">
+                  <Clock size={12} /> {course.duration}
+                </span>
+              </div>
+
+              <span
+                className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-bold ${LEVEL_COLORS[course.level]}`}
               >
-                {/* Top Metabar Block */}
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-yellow bg-yellow/5 border border-yellow/10 px-2 py-0.5 rounded">
-                      <IconComp className="h-3 w-3" /> {c.cat}
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-xs text-white/40 font-medium">
-                      <Clock className="h-3.5 w-3.5 text-white/30" /> {c.durationWeeks} Weeks
-                    </span>
-                  </div>
+                {course.level}
+              </span>
 
-                  {/* Text Structure Content Frame */}
-                  <div className="space-y-2">
-                    <h3 className="font-display text-xl font-medium tracking-wide text-white leading-snug group-hover:text-yellow transition-colors">
-                      {c.title}
-                    </h3>
-                    <p className="text-xs text-white/50 leading-relaxed max-w-xl">
-                      {c.description}
-                    </p>
-                  </div>
+              <h3 className="mt-4 text-xl font-bold text-[#1A1C5C]">
+                {course.title}
+              </h3>
+
+              <p className="mt-3 text-sm text-gray-500 leading-relaxed">
+                {course.description}
+              </p>
+
+              {enrolledCourseId === course.id && (
+                <div className="mt-4 flex items-center gap-2 text-green-600 text-xs font-bold">
+                  <CheckCircle2 size={14} />
+                  Enrolled successfully!
                 </div>
+              )}
 
-                {/* Footer Meta Section Component */}
-                <div className="mt-6 border-t border-white/5 pt-4 flex items-center justify-between gap-4">
-                  <div>
-                    <div className="text-[9px] uppercase tracking-widest text-white/40 font-bold">
-                      Lead Facilitator
-                    </div>
-                    <div className="text-xs font-medium text-white/80 mt-0.5">{c.instructor}</div>
-                  </div>
-
-                  <div className="flex items-center gap-2 shrink-0">
-                    <span className="text-xs text-white/40 group-hover:text-yellow transition-colors font-semibold uppercase tracking-wider text-[11px] mr-2">
-                      View Module
-                    </span>
-                    <Link
-                      to="/dashboard"
-                      className="inline-flex h-9 w-9 items-center justify-center rounded bg-white/5 border border-white/10 group-hover:bg-red-cta group-hover:border-red-cta text-white transition-all shadow"
-                      aria-label={`Open training node ${c.title}`}
-                    >
-                      <ArrowRight className="h-4 w-4" />
-                    </Link>
-                  </div>
+              {unenrolledCourseId === course.id && (
+                <div className="mt-4 flex items-center gap-2 text-amber-600 text-xs font-bold">
+                  <CheckCircle2 size={14} />
+                  Unenrolled successfully.
                 </div>
-              </article>
-            );
-          })}
+              )}
+
+              {enrolledIds.includes(course.id) ? (
+                <button
+                  onClick={() => handleUnenroll(course.id)}
+                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl border border-red-200 bg-red-50 py-3 text-xs font-bold text-red-600 hover:bg-red-100 transition"
+                >
+                  Unenroll from Programme
+                </button>
+              ) : (
+                <button
+                  onClick={() => handleEnroll(course.id)}
+                  className="mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#3B3DA6] py-3 text-xs font-bold text-white hover:bg-[#2B2D8A] transition"
+                >
+                  Enroll <ArrowRight size={14} />
+                </button>
+              )}
+
+            </div>
+          ))}
+
         </div>
-
-        {/* Empty Catalog Fallback Prompt */}
-        {filteredCourses.length === 0 && (
-          <div className="text-center py-20 border border-dashed border-white/10 rounded-xl bg-brand-deep/10">
-            <BookOpen className="mx-auto h-8 w-8 text-white/20 mb-3" />
-            <p className="text-sm text-white/40 font-medium">
-              No specialized programs currently matching that search parameter tier.
-            </p>
-          </div>
-        )}
       </main>
-
-      <Footer />
     </div>
   );
 }
