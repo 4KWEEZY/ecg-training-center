@@ -69,11 +69,11 @@ const navItems = [
 ];
 
 const courseColors = [
-  { bg: "from-[#6B5B95] to-[#5A4A84]", accent: "#FFD700", icon: "#8B7BB8" },
-  { bg: "from-[#0E7C86] to-[#05686D]", accent: "#00D9E9", icon: "#17A697" },
-  { bg: "from-[#2B8659] to-[#1F6B47]", accent: "#34D399", icon: "#3FA070" },
-  { bg: "from-[#D97706] to-[#B45309]", accent: "#FCD34D", icon: "#F59E0B" },
-  { bg: "from-[#3B3DA6] to-[#2B2D8A]", accent: "#FFD700", icon: "#4E50C4" },
+  { bg: "from-[#6B5B95] to-[#5A4A84]", accent: "#FFD700", icon: "#7C6BA8" },
+  { bg: "from-[#7B6BA8] to-[#6B5B95]", accent: "#E8D5FF", icon: "#8B7BB8" },
+  { bg: "from-[#5A4A84] to-[#4A3A74]", accent: "#FFD700", icon: "#6B5B95" },
+  { bg: "from-[#8B7BB8] to-[#7B6BA8]", accent: "#FFD700", icon: "#9B8BC8" },
+  { bg: "from-[#4A3A74] to-[#3A2A64]", accent: "#E8D5FF", icon: "#5A4A84" },
 ];
 
 function CourseCard({ course, progress, enrolled, colorIndex }: {
@@ -100,7 +100,7 @@ function CourseCard({ course, progress, enrolled, colorIndex }: {
 
         {/* Content */}
         <div className="p-5">
-          <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: color.accent }}>
+          <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: color.accent === "#E8D5FF" ? "#8B7BB8" : color.accent }}>
             {course.code}
           </p>
           <h3 className="text-[16px] font-bold text-[#1A1C5C] mb-3 leading-tight">{course.title}</h3>
@@ -108,7 +108,7 @@ function CourseCard({ course, progress, enrolled, colorIndex }: {
           {/* Stats */}
           <div className="flex items-center gap-3 mb-4 pb-4 border-b border-[#EAEBF6]">
             <div className="flex items-center gap-1">
-              <Star className="h-4 w-4" style={{ fill: color.accent, color: color.accent }} />
+              <Star className="h-4 w-4" style={{ fill: "#FFD700", color: "#FFD700" }} />
               <span className="text-[12px] font-semibold text-[#1A1C5C]">4.8</span>
             </div>
             <span className="text-[#DDDDF0]">·</span>
@@ -128,7 +128,7 @@ function CourseCard({ course, progress, enrolled, colorIndex }: {
                   <span className="text-[11px] font-bold uppercase tracking-wider text-[#AAAAC8]">
                     {percentage === 100 ? "Completed" : "Progress"}
                   </span>
-                  <span className="text-[12px] font-bold" style={{ color: color.accent }}>
+                  <span className="text-[12px] font-bold" style={{ color: color.icon }}>
                     {percentage}%
                   </span>
                 </div>
@@ -137,7 +137,7 @@ function CourseCard({ course, progress, enrolled, colorIndex }: {
                     className="h-full rounded-full transition-all"
                     style={{
                       width: `${percentage}%`,
-                      background: `linear-gradient(90deg, ${color.icon} 0%, ${color.accent} 100%)`,
+                      background: `linear-gradient(90deg, ${color.icon} 0%, ${color.accent === "#E8D5FF" ? "#9B8BC8" : color.accent} 100%)`,
                     }}
                   />
                 </div>
@@ -431,15 +431,17 @@ function CoursesPage() {
 
             {/* Search & Stats */}
             <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
-              <div className="col-span-1 md:col-span-2 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#AAAAC8]" />
-                <input
-                  type="text"
-                  placeholder="Search courses..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full bg-white border border-[#DDDDF0] rounded-xl pl-10 pr-4 py-2.5 text-[13px] focus:outline-none focus:border-[#3B3DA6]"
-                />
+              <div className="col-span-1 md:col-span-2">
+                <div className="relative flex items-center">
+                  <Search className="absolute left-3 h-4 w-4 text-[#AAAAC8] pointer-events-none" />
+                  <input
+                    type="text"
+                    placeholder="Search courses..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full bg-white border border-[#DDDDF0] rounded-xl pl-10 pr-4 py-2.5 text-[13px] focus:outline-none focus:border-[#3B3DA6]"
+                  />
+                </div>
               </div>
 
               <div className="rounded-xl border border-[#DDDDF0] bg-white p-4">
