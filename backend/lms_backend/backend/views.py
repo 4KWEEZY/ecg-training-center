@@ -477,9 +477,10 @@ class UserCoursesView(APIView):
 
     def get(self, request):
         enrollments = Enrollment.objects.filter(user=request.user, status='active')
+        courses = [e.course for e in enrollments]
         return Response({
-            'count': enrollments.count(),
-            'courses': EnrollmentSerializer(enrollments, many=True).data
+            'count': len(courses),
+            'courses': CourseSerializer(courses, many=True).data
         }, status=status.HTTP_200_OK)
 
 

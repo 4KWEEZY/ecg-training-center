@@ -546,7 +546,11 @@ class EnrollmentSerializer(serializers.Serializer):
         }
 
     def create(self, validated_data):
-        return Enrollment.objects.create(**validated_data)
+        return Enrollment.objects.create(
+            user_id=validated_data['user'],
+            course_id=validated_data['course'],
+            status=validated_data.get('status', 'active'),
+        )
 
     def update(self, instance, validated_data):
         instance.status = validated_data.get('status', instance.status)

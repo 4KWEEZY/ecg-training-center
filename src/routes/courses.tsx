@@ -14,7 +14,6 @@ import {
   X,
   ChevronDown,
   Search,
-  Filter,
   Play,
   Lock,
   Star,
@@ -22,8 +21,7 @@ import {
   Loader,
   Mail,
   Phone,
-  UserRound,
-  TrendingUp,
+  Award,
 } from "lucide-react";
 
 export const Route = createFileRoute("/courses")({
@@ -68,113 +66,168 @@ const navItems = [
   { icon: HelpCircle, label: "Help & Contact", to: "/help" },
 ];
 
-const courseColors = [
-  { bg: "from-[#6B5B95] to-[#5A4A84]", accent: "#FFD700", icon: "#7C6BA8" },
-  { bg: "from-[#7B6BA8] to-[#6B5B95]", accent: "#E8D5FF", icon: "#8B7BB8" },
-  { bg: "from-[#5A4A84] to-[#4A3A74]", accent: "#FFD700", icon: "#6B5B95" },
-  { bg: "from-[#8B7BB8] to-[#7B6BA8]", accent: "#FFD700", icon: "#9B8BC8" },
-  { bg: "from-[#4A3A74] to-[#3A2A64]", accent: "#E8D5FF", icon: "#5A4A84" },
+const CARD_THEMES = [
+  {
+    headerBg: "#1e206e",
+    tileMid: "rgba(59,61,166,0.85)",
+    tileDark: "rgba(12,14,52,0.9)",
+    badge: { bg: "rgba(255,215,0,0.18)", text: "#FFD700", border: "rgba(255,215,0,0.35)" },
+    progress: "#FFD700",
+    button: "#1e206e",
+  },
+  {
+    headerBg: "#0c4a6e",
+    tileMid: "rgba(14,116,144,0.85)",
+    tileDark: "rgba(7,28,48,0.9)",
+    badge: { bg: "rgba(125,211,252,0.18)", text: "#7DD3FC", border: "rgba(125,211,252,0.35)" },
+    progress: "#38BDF8",
+    button: "#1e206e",
+  },
+  {
+    headerBg: "#14532d",
+    tileMid: "rgba(21,128,61,0.85)",
+    tileDark: "rgba(5,30,15,0.9)",
+    badge: { bg: "rgba(134,239,172,0.18)", text: "#4ADE80", border: "rgba(134,239,172,0.35)" },
+    progress: "#22C55E",
+    button: "#1e206e",
+  },
+  {
+    headerBg: "#3b0764",
+    tileMid: "rgba(88,28,135,0.85)",
+    tileDark: "rgba(24,5,46,0.9)",
+    badge: { bg: "rgba(196,181,253,0.18)", text: "#C4B5FD", border: "rgba(196,181,253,0.35)" },
+    progress: "#A78BFA",
+    button: "#1e206e",
+  },
+  {
+    headerBg: "#7c2d12",
+    tileMid: "rgba(194,65,12,0.85)",
+    tileDark: "rgba(60,15,5,0.9)",
+    badge: { bg: "rgba(253,186,116,0.18)", text: "#FDB97A", border: "rgba(253,186,116,0.35)" },
+    progress: "#FB923C",
+    button: "#1e206e",
+  },
 ];
 
-function CourseCard({ course, progress, enrolled, colorIndex }: {
+function TileHeader({ theme }: { theme: (typeof CARD_THEMES)[0] }) {
+  return (
+    <div
+      className="h-[120px] w-full"
+      style={{
+        backgroundColor: theme.headerBg,
+        backgroundImage: `
+          linear-gradient(30deg, ${theme.tileDark} 12%, transparent 12.5%, transparent 87%, ${theme.tileDark} 87.5%, ${theme.tileDark}),
+          linear-gradient(150deg, ${theme.tileDark} 12%, transparent 12.5%, transparent 87%, ${theme.tileDark} 87.5%, ${theme.tileDark}),
+          linear-gradient(30deg, ${theme.tileDark} 12%, transparent 12.5%, transparent 87%, ${theme.tileDark} 87.5%, ${theme.tileDark}),
+          linear-gradient(150deg, ${theme.tileDark} 12%, transparent 12.5%, transparent 87%, ${theme.tileDark} 87.5%, ${theme.tileDark}),
+          linear-gradient(60deg, ${theme.tileMid} 25%, transparent 25.5%, transparent 75%, ${theme.tileMid} 75%, ${theme.tileMid}),
+          linear-gradient(60deg, ${theme.tileMid} 25%, transparent 25.5%, transparent 75%, ${theme.tileMid} 75%, ${theme.tileMid})
+        `,
+        backgroundSize: "36px 62px",
+        backgroundPosition: "0 0, 0 0, 18px 31px, 18px 31px, 0 0, 18px 31px",
+      }}
+    />
+  );
+}
+
+function CourseCard({ course, progress, enrolled, colorIndex, onEnroll, enrolling }: {
   course: Course;
   progress: Progress | null;
   enrolled: boolean;
   colorIndex: number;
+  onEnroll: (courseId: number) => void;
+  enrolling: boolean;
 }) {
-  const color = courseColors[colorIndex % courseColors.length];
-  const percentage = progress?.percentage || 0;
+  const theme = CARD_THEMES[colorIndex % CARD_THEMES.length];
+  const percentage = progress?.percentage ?? 0;
 
   return (
-    <div className="group">
-      <div className="relative overflow-hidden rounded-2xl border border-[#DDDDF0] bg-white shadow-lg transition-all duration-300 hover:shadow-2xl hover:border-[#3B3DA6]/40 hover:scale-105">
-        {/* Gradient Header */}
-        <div className={`h-20 bg-gradient-to-r ${color.bg} relative overflow-hidden`}>
-          <div className="absolute -right-16 -top-16 w-40 h-40 rounded-full opacity-20" style={{ background: `radial-gradient(circle, ${color.accent} 0%, transparent 70%)` }} />
-          <div className="relative h-full flex items-center px-5">
-            <div className="flex h-12 w-12 items-center justify-center rounded-lg text-white text-lg font-bold" style={{ backgroundColor: color.icon }}>
-              {course.code.split('·')[0].trim().charAt(0)}
-            </div>
+    <div className="flex flex-col overflow-hidden rounded-2xl border border-[#DDDDF0] bg-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
+      <TileHeader theme={theme} />
+
+      <div className="flex flex-1 flex-col p-5">
+        <span
+          className="mb-3 inline-block self-start rounded-md px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+          style={{ backgroundColor: theme.badge.bg, color: theme.badge.text, border: `1px solid ${theme.badge.border}` }}
+        >
+          {course.code}
+        </span>
+
+        <h3 className="mb-1 text-[15px] font-bold leading-snug text-[#1A1C5C] line-clamp-2">{course.title}</h3>
+
+        <p className="mb-3 text-[11px] text-[#8B8DAE]">
+          {course.description
+            ? course.description.slice(0, 50) + (course.description.length > 50 ? "…" : "")
+            : "ECG Training Center"}
+        </p>
+
+        <div className="mb-4 flex items-center gap-3 border-b border-[#EAEBF6] pb-4">
+          <div className="flex items-center gap-1">
+            <Star className="h-3.5 w-3.5" style={{ fill: "#FFD700", color: "#FFD700" }} />
+            <span className="text-[12px] font-semibold text-[#1A1C5C]">4.8</span>
           </div>
+          <span className="text-[#DDDDF0]">·</span>
+          <div className="flex items-center gap-1 text-[12px] text-[#8B8DAE]">
+            <Users className="h-3.5 w-3.5" />
+            <span>142</span>
+          </div>
+          <span className="text-[#DDDDF0]">·</span>
+          <span className="text-[12px] font-medium text-[#8B8DAE]">{course.modules_count} mod</span>
         </div>
 
-        {/* Content */}
-        <div className="p-5">
-          <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: color.accent === "#E8D5FF" ? "#8B7BB8" : color.accent }}>
-            {course.code}
-          </p>
-          <h3 className="text-[16px] font-bold text-[#1A1C5C] mb-3 leading-tight">{course.title}</h3>
-
-          {/* Stats */}
-          <div className="flex items-center gap-3 mb-4 pb-4 border-b border-[#EAEBF6]">
-            <div className="flex items-center gap-1">
-              <Star className="h-4 w-4" style={{ fill: "#FFD700", color: "#FFD700" }} />
-              <span className="text-[12px] font-semibold text-[#1A1C5C]">4.8</span>
+        {enrolled && (
+          <div className="mb-4">
+            <div className="mb-1.5 flex items-center justify-between text-[11px]">
+              <span className="font-bold uppercase tracking-wider text-[#AAAAC8]">
+                {percentage === 100 ? "Completed" : "Progress"}
+              </span>
+              <span className="font-bold text-[#1A1C5C]">{percentage}%</span>
             </div>
-            <span className="text-[#DDDDF0]">·</span>
-            <div className="flex items-center gap-1 text-[12px] text-[#8B8DAE]">
-              <Users className="h-4 w-4" />
-              142
+            <div className="h-2 w-full overflow-hidden rounded-full bg-[#F0F2FB]">
+              <div
+                className="h-full rounded-full transition-all duration-500"
+                style={{ width: `${percentage}%`, backgroundColor: theme.progress }}
+              />
             </div>
-            <span className="text-[#DDDDF0]">·</span>
-            <span className="text-[12px] text-[#8B8DAE] font-medium">{course.modules_count} mod</span>
-          </div>
-
-          {/* Progress or Description */}
-          {enrolled ? (
-            <>
-              <div className="mb-3">
-                <div className="flex justify-between mb-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-[#AAAAC8]">
-                    {percentage === 100 ? "Completed" : "Progress"}
-                  </span>
-                  <span className="text-[12px] font-bold" style={{ color: color.icon }}>
-                    {percentage}%
-                  </span>
-                </div>
-                <div className="h-2 w-full bg-[#F0F2FB] rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all"
-                    style={{
-                      width: `${percentage}%`,
-                      background: `linear-gradient(90deg, ${color.icon} 0%, ${color.accent === "#E8D5FF" ? "#9B8BC8" : color.accent} 100%)`,
-                    }}
-                  />
-                </div>
-              </div>
-              {progress?.lesson_title && (
-                <p className="text-[12px] text-[#8B8DAE] mb-4 line-clamp-1">
-                  <span className="font-bold text-[#1A1C5C]">Next:</span> {progress.lesson_title}
-                </p>
-              )}
-            </>
-          ) : (
-            <p className="text-[13px] text-[#8B8DAE] mb-4 line-clamp-2">{course.description}</p>
-          )}
-
-          {/* Button */}
-          <button
-            style={{ backgroundColor: color.icon }}
-            className="w-full flex items-center justify-between rounded-lg px-4 py-2.5 text-white font-bold uppercase text-[11px] tracking-wider transition-all hover:shadow-lg active:scale-95"
-          >
-            {enrolled ? (
-              <>
-                <span className="flex items-center gap-1.5">
-                  <Play className="h-3.5 w-3.5 fill-current" />
-                  Continue
-                </span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </>
-            ) : (
-              <>
-                <span className="flex items-center gap-1.5">
-                  <Lock className="h-3.5 w-3.5" />
-                  Enroll
-                </span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </>
+            {progress?.lesson_title && (
+              <p className="mt-2 text-[11px] text-[#8B8DAE] line-clamp-1">
+                <span className="font-bold text-[#1A1C5C]">Next:</span> {progress.lesson_title}
+              </p>
             )}
-          </button>
+          </div>
+        )}
+
+        <div className="mt-auto">
+          {enrolled && percentage === 100 ? (
+            <div className="flex items-center justify-center gap-1.5 rounded-xl border border-[#A3E0C9] bg-[#E6F6F0] py-2.5 text-[11px] font-bold uppercase tracking-wider text-[#147D64]">
+              <Award className="h-4 w-4" /> Certification Earned
+            </div>
+          ) : (
+            <button
+              onClick={() => onEnroll(course.id)}
+              disabled={enrolling}
+              className="group flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider text-white transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
+              style={{ backgroundColor: theme.button }}
+            >
+              {enrolled ? (
+                <>
+                  <span className="flex items-center gap-1.5">
+                    <Play className="h-3.5 w-3.5 fill-current" />
+                    Continue
+                  </span>
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                </>
+              ) : (
+                <>
+                  <span className="flex items-center gap-1.5">
+                    {enrolling ? <Loader className="h-3.5 w-3.5 animate-spin" /> : <Lock className="h-3.5 w-3.5" />}
+                    {enrolling ? "Enrolling..." : "Enroll Now"}
+                  </span>
+                  <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                </>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -235,7 +288,7 @@ function CoursesPage() {
   const navigate = useNavigate();
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
-  const [profile, setProfile] = useState<UserProfile>(() => {
+  const [profile] = useState<UserProfile>(() => {
     try {
       const user = localStorage.getItem("user");
       return user ? JSON.parse(user) : {};
@@ -251,6 +304,8 @@ function CoursesPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [enrollModal, setEnrollModal] = useState<Course | null>(null);
+  const [confirming, setConfirming] = useState(false);
   const token = localStorage.getItem("access_token");
 
   const displayName = profile?.name || profile?.username || "Trainee";
@@ -276,8 +331,8 @@ function CoursesPage() {
 
         setCourses(coursesData);
 
-        const enrolledIds = new Set(
-          Array.isArray(myCoursesData.courses) ? myCoursesData.courses.map((e: any) => e.course) : []
+        const enrolledIds = new Set<number>(
+          Array.isArray(myCoursesData.courses) ? myCoursesData.courses.map((e: any) => Number(e.id)) : []
         );
         setEnrolledCourseIds(enrolledIds);
 
@@ -317,6 +372,45 @@ function CoursesPage() {
     navigate({ to: "/login" });
   };
 
+  const handleEnroll = (courseId: number) => {
+    if (enrolledCourseIds.has(courseId)) {
+      navigate({ to: `/course/${courseId}` });
+      return;
+    }
+    const course = courses.find(c => c.id === courseId);
+    setEnrollModal(course || null);
+  };
+
+  const handleConfirmEnroll = async () => {
+    if (!enrollModal) return;
+    setConfirming(true);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/enroll/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ course: enrollModal.id, status: "active" }),
+      });
+
+      const body = await res.json().catch(() => null);
+
+      if (res.ok) {
+        setEnrolledCourseIds(new Set([...enrolledCourseIds, enrollModal.id]));
+        setEnrollModal(null);
+        navigate({ to: "/my-courses" });
+      } else {
+        console.error("Enrollment error:", res.status, body);
+      }
+    } catch (err) {
+      console.error("Enrollment failed", err);
+    } finally {
+      setConfirming(false);
+    }
+  };
+
   const filteredCourses = courses.filter(
     (c) => c.title.toLowerCase().includes(searchTerm.toLowerCase()) || c.code.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -337,12 +431,10 @@ function CoursesPage() {
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       <div className="flex min-h-screen" style={{ background: "#f0f2fb", fontFamily: "'Inter', sans-serif" }}>
 
-        {/* Desktop Sidebar */}
         <aside className="hidden lg:flex w-[220px] min-w-[220px] flex-col border-r border-[#DDDDF0]">
           <SidebarContent displayName={displayName} initials={initials} email={profile?.email || ""} onLogout={handleLogout} />
         </aside>
 
-        {/* Mobile Sidebar */}
         {sidebarOpen && (
           <div className="fixed inset-0 z-40 lg:hidden">
             <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
@@ -353,7 +445,6 @@ function CoursesPage() {
         )}
 
         <div className="flex min-w-0 flex-1 flex-col">
-          {/* Header */}
           <header className="flex items-center justify-between border-b border-[#DDDDF0] bg-white px-4 py-3 lg:px-6">
             <div className="flex items-center gap-3">
               <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#DDDDF0] bg-[#F4F5FB] text-[#8B8DAE] lg:hidden" onClick={() => setSidebarOpen(true)}>
@@ -418,18 +509,14 @@ function CoursesPage() {
 
           <main className="flex-1 overflow-y-auto p-4 lg:p-6">
 
-            {/* Welcome Banner */}
             <div className="relative mb-6 overflow-hidden rounded-xl p-5 lg:p-6" style={{ background: "linear-gradient(135deg, #2B2D8A 0%, #3B3DA6 60%, #4E50C4 100%)" }}>
               <div className="pointer-events-none absolute -right-4 -top-4 h-32 w-32 rounded-full bg-white/5" />
               <div className="relative">
-                <h1 className="text-2xl font-bold text-white mb-1">
-                  Explore & Learn
-                </h1>
+                <h1 className="text-2xl font-bold text-white mb-1">Explore & Learn</h1>
                 <p className="text-white/70 text-sm">Continue your learning journey with our world-class courses</p>
               </div>
             </div>
 
-            {/* Search & Stats */}
             <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
               <div className="col-span-1 md:col-span-2">
                 <div className="relative flex items-center">
@@ -455,12 +542,11 @@ function CoursesPage() {
               </div>
             </div>
 
-            {/* My Courses */}
             {enrolledCourses.length > 0 && (
               <div className="mb-10">
                 <div className="mb-4">
-                  <h2 className="text-[18px] font-bold text-[#1A1C5C]">My Courses</h2>
-                  <p className="text-[12px] text-[#8B8DAE]">Continue where you left off</p>
+                  <h2 className="text-[18px] font-bold text-[#1A1C5C]">MY COURSES</h2>
+                  <p className="text-[12px] text-[#8B8DAE]" style={{ fontFamily: "'Inter', sans-serif", fontVariant: "small-caps" }}>Continue where you left off</p>
                 </div>
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                   {enrolledCourses.map((course, idx) => (
@@ -470,18 +556,19 @@ function CoursesPage() {
                       progress={progressMap.get(course.id) || null}
                       enrolled={true}
                       colorIndex={idx}
+                      onEnroll={handleEnroll}
+                      enrolling={false}
                     />
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Available Courses */}
             {availableCourses.length > 0 && (
               <div>
                 <div className="mb-4">
-                  <h2 className="text-[18px] font-bold text-[#1A1C5C]">Available Courses</h2>
-                  <p className="text-[12px] text-[#8B8DAE]">Start a new learning journey</p>
+                  <h2 className="text-[18px] font-bold text-[#1A1C5C]">AVAILABLE COURSES</h2>
+                  <p className="text-[12px] text-[#8B8DAE]" style={{ fontFamily: "'Inter', sans-serif", fontVariant: "small-caps" }}>Start a new learning journey</p>
                 </div>
                 <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
                   {availableCourses.map((course, idx) => (
@@ -491,6 +578,8 @@ function CoursesPage() {
                       progress={null}
                       enrolled={false}
                       colorIndex={idx + enrolledCourses.length}
+                      onEnroll={handleEnroll}
+                      enrolling={false}
                     />
                   ))}
                 </div>
@@ -508,6 +597,34 @@ function CoursesPage() {
           </main>
         </div>
       </div>
+
+      {enrollModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold text-[#1A1C5C] mb-2">{enrollModal.title}</h2>
+            <p className="text-sm text-[#8B8DAE] mb-1">{enrollModal.code}</p>
+            <p className="text-sm text-[#8B8DAE] mb-4">{enrollModal.modules_count} modules</p>
+            
+            <p className="text-sm text-[#6B7090] mb-6 line-clamp-3">{enrollModal.description}</p>
+
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setEnrollModal(null)} 
+                className="flex-1 border border-[#DDDDF0] rounded-lg px-4 py-2.5 text-[#1A1C5C] font-bold hover:bg-[#F4F5FB]"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleConfirmEnroll} 
+                disabled={confirming} 
+                className="flex-1 bg-[#3B3DA6] rounded-lg px-4 py-2.5 text-white font-bold hover:bg-[#2B2D8A] disabled:opacity-50"
+              >
+                {confirming ? "Confirming..." : "Confirm Enroll"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
