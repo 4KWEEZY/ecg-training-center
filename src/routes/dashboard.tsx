@@ -10,8 +10,6 @@ import {
   HelpCircle,
   LogOut,
   Bell,
-  Clock,
-  Play,
   Calendar,
   ChevronLeft,
   ChevronRight,
@@ -25,6 +23,7 @@ import {
   TrendingUp,
   Phone,
   UserRound,
+  Play,
 } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
@@ -76,7 +75,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
-  { icon: BookOpen, label: "Courses", to: "/courses" },
+  { icon: BookOpen, label: "My Courses", to: "/my-courses" }, // Connected here
   { icon: Newspaper, label: "News", to: "/news" },
   { icon: Users, label: "My Community", to: "/community" },
   { icon: CalendarDays, label: "Study Planner", to: "/study" },
@@ -227,7 +226,7 @@ function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
-  const [profile, setProfile] = useState<UserProfile>(() => getStoredUser());
+  const [profile] = useState<UserProfile>(() => getStoredUser());
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [recentCourses, setRecentCourses] = useState<Course[]>([]);
@@ -268,7 +267,7 @@ function DashboardPage() {
         setSessions(sessionsData.slice(0, 2));
         setRecentCourses(coursesData.slice(0, 3));
         setProgress(Array.isArray(progressData) ? progressData[0] : null);
-        setCoursesCount(myCoursesData.count || 0);
+        setCoursesCount(Array.isArray(myCoursesData.courses) ? myCoursesData.courses.length : 0);
       } catch (err) {
         console.error("Failed to fetch dashboard data", err);
       } finally {
@@ -299,7 +298,7 @@ function DashboardPage() {
   };
 
   const quickLinks = [
-    { icon: BookOpen, label: "My Courses", subtitle: `${coursesCount} active`, to: "/courses", color: "text-[#3B3DA6]", iconBg: "bg-[#F0F2FB]" },
+    { icon: BookOpen, label: "My Courses", subtitle: `${coursesCount} active`, to: "/my-courses", color: "text-[#3B3DA6]", iconBg: "bg-[#F0F2FB]" },
     { icon: TrendingUp, label: "My Progress", subtitle: "Updated today", to: "/progress", color: "text-[#3B3DA6]", iconBg: "bg-[#F0F2FB]" },
     { icon: HelpCircle, label: "Help", subtitle: "Ask a mentor", to: "/help", color: "text-[#3B3DA6]", iconBg: "bg-[#F0F2FB]" },
   ];
@@ -477,9 +476,10 @@ function DashboardPage() {
                           </span>
                           <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#9FA3CC" }}>Currently Studying</span>
                         </div>
-                        <button type="button" className="inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-2.5 text-[12px] font-bold uppercase tracking-wider text-[#1A1C5C] transition active:scale-95 lg:px-6 lg:py-3 lg:text-[13px]" style={{ background: "linear-gradient(135deg, #FFD700 0%, #FFC200 100%)" }}>
+                        {/* Dynamic connection fallback if progress exists */}
+                        <Link to="/my-courses" className="inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-2.5 text-[12px] font-bold uppercase tracking-wider text-[#1A1C5C] transition active:scale-95 lg:px-6 lg:py-3 lg:text-[13px]" style={{ background: "linear-gradient(135deg, #FFD700 0%, #FFC200 100%)" }}>
                           <Play className="h-3.5 w-3.5 fill-current lg:h-4 lg:w-4" />Resume
-                        </button>
+                        </Link>
                       </div>
                       <h2 className="text-[24px] font-bold leading-tight tracking-tight text-white lg:text-[32px]">
                         {progress.course_title}
@@ -535,12 +535,12 @@ function DashboardPage() {
                       <BookOpen className="h-4 w-4 text-[#3B3DA6]" />
                       <h3 className="text-sm font-semibold uppercase tracking-wider text-[#3B3DA6]">Recent Courses</h3>
                     </div>
-                    <Link to="/courses" className="text-xs font-semibold uppercase tracking-wider text-[#3B3DA6]">View All</Link>
+                    <Link to="/my-courses" className="text-xs font-semibold uppercase tracking-wider text-[#3B3DA6]">View All</Link>
                   </div>
                   <div className="mt-4 space-y-3">
                     {recentCourses.length > 0 ? (
                       recentCourses.map((c) => (
-                        <Link key={c.id} to="/courses" className="flex items-center gap-3 rounded-xl border border-[#EEF0F6] bg-[#FAFBFD] p-3 transition active:scale-[0.98] lg:p-4">
+                        <Link key={c.id} to="/my-courses" className="flex items-center gap-3 rounded-xl border border-[#EEF0F6] bg-[#FAFBFD] p-3 transition active:scale-[0.98] lg:p-4">
                           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#E6F1FB] text-[#185FA5] lg:h-11 lg:w-11">
                             <BookOpen className="h-4 w-4 lg:h-5 lg:w-5" />
                           </div>

@@ -1,188 +1,238 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import {
   BookOpen,
-  Clock,
   ArrowRight,
-  ArrowLeft,
-  Zap,
+  Play,
+  Loader,
+  Award,
+  BookOpenCheck,
+  Flame,
 } from "lucide-react";
-import { TopBar } from "@/components/landing/TopBar";
-import { Nav } from "@/components/landing/Nav";
 
 export const Route = createFileRoute("/my-courses")({
   component: MyCoursesPage,
 });
 
-const MOCK_COURSES = [
-  {
-    id: "course-1",
-    title: "High Voltage Power Systems Engineering",
-    category: "Power Systems",
-    level: "Advanced",
-    duration: "6 Weeks",
-    description:
-      "Comprehensive training on sub-station management, network safety protection grids, and high voltage feeder operations.",
-  },
-  {
-    id: "course-2",
-    title: "Solar PV Design and Grid Integration",
-    category: "Renewable Energy",
-    level: "Intermediate",
-    duration: "4 Weeks",
-    description:
-      "Technician framework on standard commercial solar installation systems and synchronizing clean grids to main feeds.",
-  },
-  {
-    id: "course-3",
-    title: "LMS and Substation Database Administration",
-    category: "IT",
-    level: "Beginner",
-    duration: "3 Weeks",
-    description:
-      "Introduction to digital infrastructure, internal system networking tools, and network diagnostics data setups.",
-  },
-  {
-    id: "course-4",
-    title: "Safety Compliance Standards for Independent Contractors",
-    category: "Contractors",
-    level: "Beginner",
-    duration: "2 Weeks",
-    description:
-      "Mandatory personal protective protocols, fall risk controls, and electrical hazard audits required for ECG contract approval.",
-  },
-  {
-    id: "course-5",
-    title: "Substation Transformer Diagnostics & Repair",
-    category: "Power Systems",
-    level: "Advanced",
-    duration: "8 Weeks",
-    description:
-      "Advanced maintenance blueprints covering cooling systems, core winding repairs, and automatic emergency trip configurations.",
-  },
-];
-
-const LEVEL_COLORS: Record<string, string> = {
-  Beginner: "bg-[#2E9E6B]/10 text-[#2E9E6B]",
-  Intermediate: "bg-[#3B3DA6]/10 text-[#3B3DA6]",
-  Advanced: "bg-[#E8534A]/10 text-[#E8534A]",
+type Course = {
+  id: number;
+  title: string;
+  code: string;
+  modules_count: number;
+  description?: string;
 };
 
+type Progress = {
+  id: number;
+  course_title: string;
+  module_title: string | null;
+  lesson_title: string | null;
+  percentage: number;
+};
+
+type MyCoursesResponse = {
+  courses: Course[];
+};
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+
+// Custom palette styles to match the Dashboard theme variants
+const COURSE_STYLES = [
+  { icon: "#3B3DA6", bg: "#F0F2FB", border: "#DDDDF0" },
+  { icon: "#185FA5", bg: "#E6F1FB", border: "#B5D4F4" },
+  { icon: "#147D64", bg: "#E6F6F0", border: "#A3E0C9" },
+];
+
 function MyCoursesPage() {
-  const [enrolledIds, setEnrolledIds] = useState<string[]>(() => {
-    const saved = localStorage.getItem("enrolled_courses");
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [progressList, setProgressList] = useState<Progress[]>([]);
+  const [loading, setLoading] = useState(true);
+  const token = localStorage.getItem("access_token");
 
-  const handleUnenroll = (courseId: string) => {
-    const newEnrolled = enrolledIds.filter((id) => id !== courseId);
-    setEnrolledIds(newEnrolled);
-    localStorage.setItem("enrolled_courses", JSON.stringify(newEnrolled));
-  };
+  useEffect(() => {
+    const fetchCoursesData = async () => {
+      if (!token) {
+        setLoading(false);
+        return;
+      }
 
-  const enrolledCourses = useMemo(
-    () => MOCK_COURSES.filter((c) => enrolledIds.includes(c.id)),
-    [enrolledIds]
-  );
+      try {
+        const [myCoursesRes, progressRes] = await Promise.all([
+          fetch(`${API_BASE_URL}/api/my-courses/`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${API_BASE_URL}/api/progress/`, { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
 
-  const storedUser = localStorage.getItem("user");
-  const isLoggedIn = !!storedUser;
+        const myCoursesData: MyCoursesResponse = await myCoursesRes.json();
+        const progressData: Progress[] = await progressRes.json();
+
+        setCourses(Array.isArray(myCoursesData.courses) ? myCoursesData.courses : []);
+        setProgressList(Array.isArray(progressData) ? progressData : []);
+      } catch (err) {
+        console.error("Failed to fetch courses page data", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCoursesData();
+  }, [token]);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center" style={{ background: "#f0f2fb" }}>
+        <Loader className="h-8 w-8 animate-spin text-[#3B3DA6]" />
+      </div>
+    );
+  }
+
+  // Calculate completion stats for the header summary grid
+  const completedCoursesCount = progressList.filter((p) => p.percentage === 100).length;
+  const averageProgress = progressList.length
+    ? Math.round(progressList.reduce((acc, curr) => acc + curr.percentage, 0) / progressList.length)
+    : 0;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F4F5FB]">
-      {!isLoggedIn && (
-        <>
-          <TopBar />
-          <Nav />
-        </>
-      )}
-
-      <main className={`flex-1 mx-auto w-full max-w-7xl px-6 pb-20 ${isLoggedIn ? "pt-12" : "pt-36"}`}>
+    <>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+      <div className="min-h-screen p-4 lg:p-8" style={{ background: "#f0f2fb", fontFamily: "'Inter', sans-serif" }}>
         
-        <div className="mb-8">
-          <Link
-            to="/dashboard"
-            className="inline-flex items-center gap-2 text-[13px] font-medium text-[#8B8DAE] transition hover:text-[#3B3DA6]"
-          >
-            <ArrowLeft className="h-4 w-4" /> Back to Dashboard
-          </Link>
+        {/* Navigation Breadcrumb back to Dashboard */}
+        <div className="mb-5 flex items-center gap-2 text-[12px] font-medium text-[#8B8DAE]">
+          <Link to="/dashboard" className="hover:text-[#3B3DA6] hover:underline">Dashboard</Link>
+          <span>/</span>
+          <span className="text-[#1A1C5C] font-semibold">My Courses</span>
         </div>
 
-        {/* Heading */}
-        <div className="mb-10">
-          <h1 className="text-4xl font-bold text-[#1A1C5C]">
-            My Enrolled Courses
-          </h1>
-          <p className="mt-2 text-sm text-[#8B8DAE]">
-            Continue your learning journey with your active programs.
+        {/* Title Header Section */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-[#1A1C5C] lg:text-3xl">My Enrolled Courses</h1>
+          <p className="mt-1 text-sm text-[#8B8DAE]">
+            Manage your ongoing learning, track program blocks, and review course certifications.
           </p>
         </div>
 
-        {enrolledCourses.length > 0 ? (
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {enrolledCourses.map((course) => (
-              <div
-                key={course.id}
-                className="rounded-3xl bg-white p-8 shadow-xl transition hover:scale-[1.02]"
-              >
-                <div className="flex justify-between">
-                  <span className="text-xs font-bold text-yellow-600">
-                    {course.category}
-                  </span>
-                  <span className="flex items-center gap-1 text-xs text-gray-400">
-                    <Clock size={12} /> {course.duration}
-                  </span>
-                </div>
+        {/* Analytics Summary Widget Rows */}
+        <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="flex items-center gap-4 rounded-xl border border-[#DDDDF0] bg-white p-4 shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#F0F2FB] text-[#3B3DA6]">
+              <BookOpen className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#AAAAC8]">Enrolled</p>
+              <p className="text-xl font-bold text-[#1A1C5C]">{courses.length} Courses</p>
+            </div>
+          </div>
 
-                <span
-                  className={`mt-3 inline-block rounded-full px-3 py-1 text-xs font-bold ${LEVEL_COLORS[course.level]}`}
+          <div className="flex items-center gap-4 rounded-xl border border-[#DDDDF0] bg-white p-4 shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#E6F6F0] text-[#147D64]">
+              <BookOpenCheck className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#AAAAC8]">Completed</p>
+              <p className="text-xl font-bold text-[#1A1C5C]">{completedCoursesCount} Programs</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 rounded-xl border border-[#DDDDF0] bg-white p-4 shadow-sm">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#FFF3E0] text-[#E65100]">
+              <Flame className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#AAAAC8]">Average Speed</p>
+              <p className="text-xl font-bold text-[#1A1C5C]">{averageProgress}% Complete</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Courses Matrix Grid */}
+        {courses.length > 0 ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {courses.map((course, index) => {
+              // Assign a repeating sequential theme palette index
+              const style = COURSE_STYLES[index % COURSE_STYLES.length];
+              // Match backend code structures by checking corresponding course names
+              const progressRecord = progressList.find((p) => p.course_title === course.title);
+              const percent = progressRecord ? progressRecord.percentage : 0;
+
+              return (
+                <div 
+                  key={course.id} 
+                  className="flex flex-col justify-between rounded-2xl border bg-white p-5 shadow-sm transition-all hover:shadow-md"
+                  style={{ borderColor: style.border }}
                 >
-                  {course.level}
-                </span>
+                  <div>
+                    {/* Top row details */}
+                    <div className="mb-4 flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className="inline-block rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider" style={{ backgroundColor: style.bg, color: style.icon }}>
+                          {course.code}
+                        </span>
+                        <h3 className="mt-2 text-base font-bold leading-snug text-[#1A1C5C] line-clamp-1">
+                          {course.title}
+                        </h3>
+                      </div>
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: style.bg, color: style.icon }}>
+                        <BookOpen className="h-5 w-5" />
+                      </div>
+                    </div>
 
-                <h3 className="mt-4 text-xl font-bold text-[#1A1C5C]">
-                  {course.title}
-                </h3>
+                    <p className="text-[12px] leading-relaxed text-[#8B8DAE] line-clamp-2 mb-4">
+                      {course.description || "No deep description available for this syllabus module setup block yet."}
+                    </p>
 
-                <p className="mt-3 text-sm text-gray-500 leading-relaxed line-clamp-2">
-                  {course.description}
-                </p>
+                    {/* Progress tracking layout bar */}
+                    <div className="mb-5">
+                      <div className="mb-1.5 flex items-center justify-between text-[11px]">
+                        <span className="font-semibold text-[#6B7090]">
+                          {course.modules_count} Syllabus Modules
+                        </span>
+                        <span className="font-bold text-[#1A1C5C]">{percent}%</span>
+                      </div>
+                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#FAFBFD]" style={{ border: "1px solid #EAEBF6" }}>
+                        <div 
+                          className="h-full rounded-full transition-all duration-500" 
+                          style={{ width: `${percent}%`, backgroundColor: style.icon }} 
+                        />
+                      </div>
+                    </div>
+                  </div>
 
-                <div className="mt-8 flex items-center justify-between border-t border-[#F0F2FB] pt-6">
-                   <button
-                    onClick={() => handleUnenroll(course.id)}
-                    className="text-xs font-bold text-red-500 hover:text-red-700 transition"
-                   >
-                    Leave Programme
-                   </button>
-                   <Link
-                    to={`/courses`}
-                    className="flex items-center gap-2 text-sm font-bold text-[#3B3DA6] hover:underline"
-                   >
-                    Resume <ArrowRight size={14} />
-                   </Link>
+                  {/* Operational redirection actions */}
+                  <div className="mt-2">
+                    {percent === 100 ? (
+                      <div className="flex items-center justify-center gap-1.5 rounded-lg border border-[#A3E0C9] bg-[#E6F6F0] py-2.5 text-center text-[11px] font-bold uppercase tracking-wider text-[#147D64]">
+                        <Award className="h-4 w-4" /> Certification Earned
+                      </div>
+                    ) : (
+                      <Link
+                        to="/my-courses" // Links perfectly inside your TanStack workspace context
+                        className="group flex w-full items-center justify-between rounded-lg px-4 py-2.5 text-white font-bold uppercase text-[11px] tracking-wider transition-all hover:shadow-md active:scale-95"
+                        style={{ backgroundColor: style.icon }}
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <Play className="h-3.5 w-3.5 fill-current" />
+                          {percent > 0 ? "Resume Course" : "Start Learning"}
+                        </span>
+                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                      </Link>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center rounded-3xl bg-white py-20 shadow-xl border border-dashed border-[#DDDDF0]">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#F0F2FB] text-[#3B3DA6] mb-6">
-              <Zap size={32} />
-            </div>
-            <h2 className="text-xl font-bold text-[#1A1C5C]">No enrolled courses yet</h2>
-            <p className="mt-2 text-sm text-[#8B8DAE] max-w-sm text-center">
-              Explore our wide range of engineering and utility programs to start your journey.
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#DDDDF0] bg-white p-12 text-center shadow-sm">
+            <BookOpen className="mb-3 h-10 w-10 text-[#AAAAC8]" />
+            <h3 className="text-base font-bold text-[#1A1C5C]">No courses activated</h3>
+            <p className="mt-1 text-sm text-[#8B8DAE] max-w-sm">
+              Your profile hasn't been mapped to a learning group module block profile yet. Please check in with your systems administrator.
             </p>
-            <Link
-              to="/courses"
-              className="mt-8 rounded-2xl bg-[#3B3DA6] px-8 py-3 text-sm font-bold text-white transition hover:bg-[#2B2D8A]"
-            >
-              Explore Catalog
-            </Link>
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </>
   );
 }
+
+export default MyCoursesPage;
