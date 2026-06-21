@@ -79,7 +79,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
-  { icon: BookOpen, label: "My Courses", to: "/my-courses" }, // Connected here
+  { icon: BookOpen, label: "Courses", to: "/courses" }, // Connected here
   { icon: Newspaper, label: "News", to: "/news" },
   { icon: Users, label: "My Community", to: "/community" },
   { icon: CalendarDays, label: "Study Planner", to: "/study" },
