@@ -1,4 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { requireAuth } from "../lib/auth";
+import { withAuth } from "../components/ProtectedPage";
 import { useState } from "react";
 import { TopBar } from "@/components/landing/TopBar";
 import { Nav } from "@/components/landing/Nav";
@@ -6,7 +8,8 @@ import { Footer } from "@/components/landing/Footer";
 import { Search, BookOpen, HelpCircle, FileText, ClipboardList } from "lucide-react";
 
 export const Route = createFileRoute("/search")({
-  component: SearchPage,
+  beforeLoad: requireAuth,
+  component: withAuth(SearchPage),
 });
 
 const searchableItems = [

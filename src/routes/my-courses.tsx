@@ -1,4 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { requireAuth } from "../lib/auth";
+import { withAuth } from "../components/ProtectedPage";
 import { useEffect, useState } from "react";
 import {
   BookOpen,
@@ -13,7 +15,8 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/my-courses")({
-  component: MyCoursesPage,
+  beforeLoad: requireAuth,
+  component: withAuth(MyCoursesPage),
 });
 
 type Course = {
@@ -101,6 +104,7 @@ function CourseCard({ course, progress, themeIndex }: {
 }) {
   const theme = CARD_THEMES[themeIndex % CARD_THEMES.length];
   const percent = progress?.percentage ?? 0;
+  const navigate = useNavigate();
 
   return (
     <div className="flex flex-col overflow-hidden rounded-2xl border border-[#DDDDF0] bg-white shadow-sm transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5">
@@ -153,12 +157,18 @@ function CourseCard({ course, progress, themeIndex }: {
 
         <div className="mt-auto">
           {percent === 100 ? (
-            <div className="flex items-center justify-center gap-1.5 rounded-xl border border-[#A3E0C9] bg-[#E6F6F0] py-2.5 text-[11px] font-bold uppercase tracking-wider text-[#147D64]">
-              <Award className="h-4 w-4" /> Certification Earned
-            </div>
+            <button
+              onClick={() => navigate({ to: `/course/${course.id}` as any })}
+              className="group flex w-full items-center justify-between rounded-xl border border-[#A3E0C9] bg-[#E6F6F0] px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider text-[#147D64] transition-all hover:bg-[#D1F0E4] active:scale-95"
+            >
+              <span className="flex items-center gap-1.5">
+                <Award className="h-4 w-4" /> Certification Earned
+              </span>
+              <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+            </button>
           ) : (
-            <Link
-              to="/my-courses"
+            <button
+              onClick={() => navigate({ to: `/course/${course.id}` as any })}
               className="group flex w-full items-center justify-between rounded-xl px-4 py-2.5 text-[11px] font-bold uppercase tracking-wider text-white transition-all hover:opacity-90 active:scale-95"
               style={{ backgroundColor: theme.button }}
             >
@@ -167,7 +177,7 @@ function CourseCard({ course, progress, themeIndex }: {
                 {percent > 0 ? "Continue" : "Start Learning"}
               </span>
               <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
-            </Link>
+            </button>
           )}
         </div>
       </div>

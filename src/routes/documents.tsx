@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { requireAuth } from "../lib/auth";
+import { withAuth } from "../components/ProtectedPage";
 import { useState } from "react";
 import {
   FileText,
@@ -11,7 +13,8 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/documents")({
-  component: Documents,
+  beforeLoad: requireAuth,
+  component: withAuth(Documents),
 });
 
 const officialDocs = [

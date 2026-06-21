@@ -29,7 +29,7 @@ from backend.views import (
     AnnouncementCreateView, AnnouncementDeleteView, AnnouncementListView, AnnouncementUpdateView,
     TrainingSessionListView, TrainingSessionCreateView, TrainingSessionUpdateView, TrainingSessionDeleteView,
     UserProgressView, UserProgressUpdateView, LessonCompletionCreateView,
-    UserCoursesView, EnrollmentCreateView,
+    UserCoursesView, EnrollmentCreateView, LogoutView,
 )
 
 urlpatterns = [
@@ -94,5 +94,6 @@ urlpatterns = [
     # Enrollments
     path('api/my-courses/', UserCoursesView.as_view(), name='my_courses'),
     path('api/enroll/', EnrollmentCreateView.as_view(), name='enrollment_create'),
+    path('api/logout/', LogoutView.as_view(), name='logout'),
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
