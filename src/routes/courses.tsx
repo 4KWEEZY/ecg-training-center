@@ -23,6 +23,7 @@ import {
   Phone,
   Award,
 } from "lucide-react";
+import ecgLogo from "../assets/ecg-logo.jpg"; // ← make sure ecg-logo.jpg is in src/assets/
 
 export const Route = createFileRoute("/courses")({
   component: CoursesPage,
@@ -242,11 +243,12 @@ function SidebarContent({ displayName, initials, email, onLogout, onClose }: {
     <div className="flex h-full flex-col bg-[#1e206e]">
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-4">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#FFD700]">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <polyline points="1,8 3,8 4.5,3 6.5,13 8,5.5 10,10 11.5,8 15,8" stroke="#1e206e" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
+          {/* ECG Official Logo */}
+          <img
+            src={ecgLogo}
+            alt="ECG Logo"
+            className="h-10 w-10 rounded-md object-contain bg-white p-0.5"
+          />
           <div>
             <div className="text-[13px] font-bold text-white">ECG Training</div>
             <div className="text-[10px] uppercase tracking-wider text-white/40">Learning Portal</div>
@@ -604,19 +606,19 @@ function CoursesPage() {
             <h2 className="text-xl font-bold text-[#1A1C5C] mb-2">{enrollModal.title}</h2>
             <p className="text-sm text-[#8B8DAE] mb-1">{enrollModal.code}</p>
             <p className="text-sm text-[#8B8DAE] mb-4">{enrollModal.modules_count} modules</p>
-            
+
             <p className="text-sm text-[#6B7090] mb-6 line-clamp-3">{enrollModal.description}</p>
 
             <div className="flex gap-3">
-              <button 
-                onClick={() => setEnrollModal(null)} 
+              <button
+                onClick={() => setEnrollModal(null)}
                 className="flex-1 border border-[#DDDDF0] rounded-lg px-4 py-2.5 text-[#1A1C5C] font-bold hover:bg-[#F4F5FB]"
               >
                 Cancel
               </button>
-              <button 
-                onClick={handleConfirmEnroll} 
-                disabled={confirming} 
+              <button
+                onClick={handleConfirmEnroll}
+                disabled={confirming}
                 className="flex-1 bg-[#3B3DA6] rounded-lg px-4 py-2.5 text-white font-bold hover:bg-[#2B2D8A] disabled:opacity-50"
               >
                 {confirming ? "Confirming..." : "Confirm Enroll"}

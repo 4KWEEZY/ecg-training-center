@@ -18,12 +18,14 @@ import { Route as ResourcesRouteImport } from './routes/resources'
 import { Route as QuizzesRouteImport } from './routes/quizzes'
 import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as NewsRouteImport } from './routes/news'
 import { Route as MyCoursesRouteImport } from './routes/my-courses'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as HelpRouteImport } from './routes/help'
 import { Route as DocumentsRouteImport } from './routes/documents'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CoursesRouteImport } from './routes/courses'
+import { Route as CommunityRouteImport } from './routes/community'
 import { Route as CertificatesRouteImport } from './routes/certificates'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -97,6 +99,11 @@ const ProfileRoute = ProfileRouteImport.update({
   path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any).lazy(() => import('./routes/profile.lazy').then((d) => d.Route))
+const NewsRoute = NewsRouteImport.update({
+  id: '/news',
+  path: '/news',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MyCoursesRoute = MyCoursesRouteImport.update({
   id: '/my-courses',
   path: '/my-courses',
@@ -127,6 +134,11 @@ const CoursesRoute = CoursesRouteImport.update({
   path: '/courses',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CertificatesRoute = CertificatesRouteImport.update({
   id: '/certificates',
   path: '/certificates',
@@ -141,12 +153,14 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/certificates': typeof CertificatesRoute
+  '/community': typeof CommunityRoute
   '/courses': typeof CoursesRoute
   '/dashboard': typeof DashboardRoute
   '/documents': typeof DocumentsRoute
   '/help': typeof HelpRoute
   '/library': typeof LibraryRoute
   '/my-courses': typeof MyCoursesRoute
+  '/news': typeof NewsRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/quizzes': typeof QuizzesRoute
@@ -163,12 +177,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/certificates': typeof CertificatesRoute
+  '/community': typeof CommunityRoute
   '/courses': typeof CoursesRoute
   '/dashboard': typeof DashboardRoute
   '/documents': typeof DocumentsRoute
   '/help': typeof HelpRoute
   '/library': typeof LibraryRoute
   '/my-courses': typeof MyCoursesRoute
+  '/news': typeof NewsRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/quizzes': typeof QuizzesRoute
@@ -186,12 +202,14 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/certificates': typeof CertificatesRoute
+  '/community': typeof CommunityRoute
   '/courses': typeof CoursesRoute
   '/dashboard': typeof DashboardRoute
   '/documents': typeof DocumentsRoute
   '/help': typeof HelpRoute
   '/library': typeof LibraryRoute
   '/my-courses': typeof MyCoursesRoute
+  '/news': typeof NewsRoute
   '/profile': typeof ProfileRoute
   '/progress': typeof ProgressRoute
   '/quizzes': typeof QuizzesRoute
@@ -210,12 +228,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/certificates'
+    | '/community'
     | '/courses'
     | '/dashboard'
     | '/documents'
     | '/help'
     | '/library'
     | '/my-courses'
+    | '/news'
     | '/profile'
     | '/progress'
     | '/quizzes'
@@ -232,12 +252,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/certificates'
+    | '/community'
     | '/courses'
     | '/dashboard'
     | '/documents'
     | '/help'
     | '/library'
     | '/my-courses'
+    | '/news'
     | '/profile'
     | '/progress'
     | '/quizzes'
@@ -254,12 +276,14 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/certificates'
+    | '/community'
     | '/courses'
     | '/dashboard'
     | '/documents'
     | '/help'
     | '/library'
     | '/my-courses'
+    | '/news'
     | '/profile'
     | '/progress'
     | '/quizzes'
@@ -277,12 +301,14 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CertificatesRoute: typeof CertificatesRoute
+  CommunityRoute: typeof CommunityRoute
   CoursesRoute: typeof CoursesRoute
   DashboardRoute: typeof DashboardRoute
   DocumentsRoute: typeof DocumentsRoute
   HelpRoute: typeof HelpRoute
   LibraryRoute: typeof LibraryRoute
   MyCoursesRoute: typeof MyCoursesRoute
+  NewsRoute: typeof NewsRoute
   ProfileRoute: typeof ProfileRoute
   ProgressRoute: typeof ProgressRoute
   QuizzesRoute: typeof QuizzesRoute
@@ -383,6 +409,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/news': {
+      id: '/news'
+      path: '/news'
+      fullPath: '/news'
+      preLoaderRoute: typeof NewsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/my-courses': {
       id: '/my-courses'
       path: '/my-courses'
@@ -425,6 +458,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CoursesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/certificates': {
       id: '/certificates'
       path: '/certificates'
@@ -445,12 +485,14 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CertificatesRoute: CertificatesRoute,
+  CommunityRoute: CommunityRoute,
   CoursesRoute: CoursesRoute,
   DashboardRoute: DashboardRoute,
   DocumentsRoute: DocumentsRoute,
   HelpRoute: HelpRoute,
   LibraryRoute: LibraryRoute,
   MyCoursesRoute: MyCoursesRoute,
+  NewsRoute: NewsRoute,
   ProfileRoute: ProfileRoute,
   ProgressRoute: ProgressRoute,
   QuizzesRoute: QuizzesRoute,

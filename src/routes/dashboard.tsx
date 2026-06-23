@@ -1,3 +1,4 @@
+import ecgLogo from "../assets/ecg-logo.jpg";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -75,7 +76,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: "/dashboard" },
-  { icon: BookOpen, label: "Courses", to: "/courses" }, // Connected here
+  { icon: BookOpen, label: "Courses", to: "/courses" },
   { icon: Newspaper, label: "News", to: "/news" },
   { icon: Users, label: "My Community", to: "/community" },
   { icon: CalendarDays, label: "Study Planner", to: "/study" },
@@ -161,19 +162,30 @@ function MiniCalendar({ sessions }: { sessions: Session[] }) {
   );
 }
 
-function SidebarContent({ displayName, initials, email, currentPath, onLogout, onClose }: {
-  displayName: string; initials: string; email: string; currentPath: string;
-  onLogout: () => void; onClose?: () => void;
+function SidebarContent({
+  displayName,
+  initials,
+  email,
+  currentPath,
+  onLogout,
+  onClose,
+}: {
+  displayName: string;
+  initials: string;
+  email: string;
+  currentPath: string;
+  onLogout: () => void;
+  onClose?: () => void;
 }) {
   return (
     <div className="flex h-full flex-col bg-[#1e206e]">
       <div className="flex items-center justify-between border-b border-white/10 px-4 py-4">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#FFD700]">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <polyline points="1,8 3,8 4.5,3 6.5,13 8,5.5 10,10 11.5,8 15,8" stroke="#1e206e" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
+          <img
+            src={ecgLogo}
+            alt="ECG Training"
+            className="h-8 w-8 rounded-md object-contain bg-[#FFD700]"
+          />
           <div>
             <div className="text-[13px] font-bold text-white">ECG Training</div>
             <div className="text-[10px] uppercase tracking-wider text-white/40">Learning Portal</div>
@@ -185,29 +197,45 @@ function SidebarContent({ displayName, initials, email, currentPath, onLogout, o
           </button>
         )}
       </div>
+
       <nav className="flex-1 space-y-0.5 overflow-y-auto px-2 py-4">
         <p className="mb-2 px-2 text-[10px] font-bold uppercase tracking-widest text-white/30">Main</p>
         {navItems.slice(0, 4).map(({ icon: Icon, label, to }) => {
           const isActive = currentPath === to;
           return (
-            <Link key={to} to={to} onClick={onClose}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all ${isActive ? "bg-white/12 text-white" : "text-white/55 hover:bg-white/7 hover:text-white/85"}`}>
+            <Link
+              key={to}
+              to={to}
+              onClick={onClose}
+              className={`flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all ${
+                isActive ? "bg-white/12 text-white" : "text-white/55 hover:bg-white/7 hover:text-white/85"
+              }`}
+            >
               <Icon className={`h-4 w-4 shrink-0 ${isActive ? "text-[#FFD700]" : ""}`} />
               {label}
             </Link>
           );
         })}
+
         <p className="mb-2 mt-4 px-2 text-[10px] font-bold uppercase tracking-widest text-white/30">Tools</p>
         {navItems.slice(4).map(({ icon: Icon, label, to }) => (
-          <Link key={to} to={to} onClick={onClose}
-            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-white/55 transition-all hover:bg-white/7 hover:text-white/85">
-            <Icon className="h-4 w-4 shrink-0" />{label}
+          <Link
+            key={to}
+            to={to}
+            onClick={onClose}
+            className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] font-medium text-white/55 transition-all hover:bg-white/7 hover:text-white/85"
+          >
+            <Icon className="h-4 w-4 shrink-0" />
+            {label}
           </Link>
         ))}
       </nav>
+
       <div className="border-t border-white/10 p-3">
         <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#3B3DA6] text-[11px] font-bold text-white">{initials}</div>
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#3B3DA6] text-[11px] font-bold text-white">
+            {initials}
+          </div>
           <div className="min-w-0 flex-1">
             <p className="truncate text-[13px] font-semibold text-white">{displayName}</p>
             <p className="truncate text-[11px] text-white/40">{email || "—"}</p>
@@ -232,7 +260,6 @@ function DashboardPage() {
   const [recentCourses, setRecentCourses] = useState<Course[]>([]);
   const [progress, setProgress] = useState<Progress | null>(null);
   const [coursesCount, setCoursesCount] = useState(0);
-
   const [loading, setLoading] = useState(true);
   const [profileOpen, setProfileOpen] = useState(false);
 
@@ -315,13 +342,10 @@ function DashboardPage() {
     <>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
       <div className="flex min-h-screen" style={{ background: "#f0f2fb", fontFamily: "'Inter', sans-serif" }}>
-
-        {/* Desktop sidebar */}
         <aside className="hidden lg:flex w-[220px] min-w-[220px] flex-col border-r border-[#DDDDF0]">
           <SidebarContent displayName={displayName} initials={initials} email={profile?.email || ""} currentPath={currentPath} onLogout={handleLogout} />
         </aside>
 
-        {/* Mobile drawer */}
         {sidebarOpen && (
           <div className="fixed inset-0 z-40 lg:hidden">
             <div className="absolute inset-0 bg-black/50" onClick={() => setSidebarOpen(false)} />
@@ -332,7 +356,6 @@ function DashboardPage() {
         )}
 
         <div className="flex min-w-0 flex-1 flex-col">
-          {/* Header */}
           <header className="flex items-center justify-between border-b border-[#DDDDF0] bg-white px-4 py-3 lg:px-6">
             <div className="flex items-center gap-3">
               <button className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#DDDDF0] bg-[#F4F5FB] text-[#8B8DAE] lg:hidden" onClick={() => setSidebarOpen(true)}>
@@ -414,8 +437,6 @@ function DashboardPage() {
           </header>
 
           <main className="flex-1 overflow-y-auto p-4 lg:p-6">
-
-            {/* Welcome banner */}
             <div className="relative mb-5 overflow-hidden rounded-xl p-5 lg:p-6" style={{ background: "linear-gradient(135deg, #2B2D8A 0%, #3B3DA6 60%, #4E50C4 100%)" }}>
               <div className="pointer-events-none absolute -right-4 -top-4 h-36 w-36 rounded-full bg-white/5" />
               <div className="pointer-events-none absolute bottom-0 right-16 h-28 w-28 rounded-full bg-white/5" />
@@ -437,15 +458,10 @@ function DashboardPage() {
               </div>
             </div>
 
-            {/* Quick Links */}
             <div className="mb-5 overflow-hidden rounded-2xl border border-[#DDDDF0] bg-white shadow-sm">
               <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-[#DDDDF0]">
                 {quickLinks.map(({ icon: Icon, label, subtitle, to, color, iconBg }) => (
-                  <Link
-                    key={label}
-                    to={to}
-                    className="group flex items-center gap-4 px-5 py-4 transition-all hover:bg-[#F8FAFF]"
-                  >
+                  <Link key={label} to={to} className="group flex items-center gap-4 px-5 py-4 transition-all hover:bg-[#F8FAFF]">
                     <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${iconBg} ${color}`}>
                       <Icon className="h-5 w-5" />
                     </div>
@@ -458,13 +474,8 @@ function DashboardPage() {
               </div>
             </div>
 
-            {/* Main 3-col grid */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-
-              {/* Left/main col */}
               <div className="space-y-4 lg:col-span-2">
-
-                {/* Currently Studying Card */}
                 {progress && (
                   <div className="relative overflow-hidden rounded-2xl p-5 shadow-lg lg:p-7" style={{ background: "linear-gradient(145deg, #12153D 0%, #1A1D4E 50%, #1E2258 100%)", border: "1px solid rgba(255,255,255,0.07)" }}>
                     <div className="relative">
@@ -476,9 +487,9 @@ function DashboardPage() {
                           </span>
                           <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#9FA3CC" }}>Currently Studying</span>
                         </div>
-                        {/* Dynamic connection fallback if progress exists */}
                         <Link to="/my-courses" className="inline-flex shrink-0 items-center gap-2 rounded-full px-5 py-2.5 text-[12px] font-bold uppercase tracking-wider text-[#1A1C5C] transition active:scale-95 lg:px-6 lg:py-3 lg:text-[13px]" style={{ background: "linear-gradient(135deg, #FFD700 0%, #FFC200 100%)" }}>
-                          <Play className="h-3.5 w-3.5 fill-current lg:h-4 lg:w-4" />Resume
+                          <Play className="h-3.5 w-3.5 fill-current lg:h-4 lg:w-4" />
+                          Resume
                         </Link>
                       </div>
                       <h2 className="text-[24px] font-bold leading-tight tracking-tight text-white lg:text-[32px]">
@@ -500,7 +511,6 @@ function DashboardPage() {
                   </div>
                 )}
 
-                {/* Announcements */}
                 <div className="rounded-xl border border-[#DDDDF0] bg-white p-4 lg:p-5">
                   <div className="mb-4 flex items-center justify-between border-b border-[#EAEBF6] pb-3">
                     <div className="flex items-center gap-2">
@@ -515,7 +525,9 @@ function DashboardPage() {
                       announcements.map((ann) => (
                         <div key={ann.id} className="rounded-lg border border-[#EAEBF6] bg-[#F4F5FB] p-3 transition hover:border-[#3B3DA6]/20">
                           <div className="mb-2 flex items-center justify-between">
-                            <span className="rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#E6F1FB] text-[#185FA5] border-[#B5D4F4]">{ann.tag}</span>
+                            <span className="rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-[#E6F1FB] text-[#185FA5] border-[#B5D4F4]">
+                              {ann.tag}
+                            </span>
                             <span className="text-[11px] text-[#AAAAC8]">{new Date(ann.created_at).toLocaleDateString()}</span>
                           </div>
                           <p className="text-[13px] font-semibold text-[#1A1C5C]">{ann.title}</p>
@@ -528,7 +540,6 @@ function DashboardPage() {
                   </div>
                 </div>
 
-                {/* Recently Accessed Courses */}
                 <div className="rounded-2xl border border-[#DDDDF0] bg-white p-4 shadow-sm lg:p-6">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -557,7 +568,6 @@ function DashboardPage() {
                 </div>
               </div>
 
-              {/* Right sidebar */}
               <div className="space-y-4">
                 <MiniCalendar sessions={sessions} />
 
