@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { requireAuth } from "../lib/auth";
+import { withAuth } from "../components/ProtectedPage";
 import { FileText, Download, Map, HardDrive, ExternalLink } from "lucide-react";
 
 // Using createFileRoute because your file name is exactly resources.tsx
 export const Route = createFileRoute("/resources")({
-  component: Resources,
+  beforeLoad: requireAuth,
+  component: withAuth(Resources),
 });
 
 const coreResources = [

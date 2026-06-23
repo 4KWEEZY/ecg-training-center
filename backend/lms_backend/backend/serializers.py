@@ -111,6 +111,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             'username': self.user.username,
             'email': self.user.email,
             'phone_number': self.user.phone_number,
+            'is_active': self.user.is_active,
         }
         return data
 

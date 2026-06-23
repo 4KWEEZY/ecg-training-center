@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { requireAuth } from "../lib/auth";
+import { withAuth } from "../components/ProtectedPage";
 import { useState } from "react";
 import {
   HelpCircle,
@@ -12,7 +14,8 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/help")({
-  component: Help,
+  beforeLoad: requireAuth,
+  component: withAuth(Help),
 });
 
 const faqs = [

@@ -1,17 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  CheckCircle2,
-  Clock,
-  BarChart3,
-  Zap,
-  Award,
-  ArrowLeft,
-} from "lucide-react";
+import { requireAuth } from "../lib/auth";
+import { withAuth } from "../components/ProtectedPage";
+import { CheckCircle2, Clock, BarChart3, Zap, Award, ArrowLeft } from "lucide-react";
 import { TopBar } from "@/components/landing/TopBar";
 import { Nav } from "@/components/landing/Nav";
 
 export const Route = createFileRoute("/progress")({
-  component: Progress,
+  beforeLoad: requireAuth,
+  component: withAuth(Progress),
 });
 
 function Progress() {
@@ -21,19 +17,13 @@ function Progress() {
 
   const courses = stored ? JSON.parse(stored) : [];
 
-  const completed = courses.filter(
-    (c: any) => c.status === "Completed"
-  );
+  const completed = courses.filter((c: any) => c.status === "Completed");
 
-  const inProgress = courses.filter(
-    (c: any) => c.status !== "Completed"
-  );
+  const inProgress = courses.filter((c: any) => c.status !== "Completed");
 
   const total = courses.length;
 
-  const overallPercent = total
-    ? Math.round((completed.length / total) * 100)
-    : 0;
+  const overallPercent = total ? Math.round((completed.length / total) * 100) : 0;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F4F5FB] font-inter">
@@ -44,7 +34,9 @@ function Progress() {
         </>
       )}
 
-      <main className={`flex-1 mx-auto w-full max-w-6xl px-6 pb-20 ${isLoggedIn ? "pt-12" : "pt-36"}`}>
+      <main
+        className={`flex-1 mx-auto w-full max-w-6xl px-6 pb-20 ${isLoggedIn ? "pt-12" : "pt-36"}`}
+      >
         {isLoggedIn && (
           <Link
             to="/dashboard"
@@ -56,9 +48,7 @@ function Progress() {
 
         {/* HEADER */}
         <div className="text-center mb-10">
-          <h1 className="text-4xl font-bold text-[#1A1C5C]">
-            Learning Progress Dashboard
-          </h1>
+          <h1 className="text-4xl font-bold text-[#1A1C5C]">Learning Progress Dashboard</h1>
           <p className="text-sm text-[#8B8DAE] mt-2">
             Track your course completion, performance, and milestones
           </p>
@@ -67,14 +57,9 @@ function Progress() {
         {/* MAIN OVERVIEW CARD */}
         <div className="bg-[#3B3DA6] text-white rounded-3xl p-10 shadow-xl mb-10">
           <div className="flex justify-between items-center">
-
             <div>
-              <p className="text-xs uppercase text-white/60">
-                Overall Completion
-              </p>
-              <h2 className="text-5xl font-bold mt-2">
-                {overallPercent}%
-              </h2>
+              <p className="text-xs uppercase text-white/60">Overall Completion</p>
+              <h2 className="text-5xl font-bold mt-2">{overallPercent}%</h2>
               <p className="text-sm text-white/60 mt-1">
                 {completed.length} completed · {inProgress.length} active
               </p>
@@ -98,9 +83,7 @@ function Progress() {
                   strokeWidth="8"
                   fill="none"
                   strokeDasharray="314"
-                  strokeDashoffset={
-                    314 - (314 * overallPercent) / 100
-                  }
+                  strokeDashoffset={314 - (314 * overallPercent) / 100}
                   strokeLinecap="round"
                 />
               </svg>
@@ -114,16 +97,11 @@ function Progress() {
 
         {/* FEATURE TILES (BIG SQUARE UI) */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-
           <div className="bg-white border rounded-2xl p-6 flex flex-col justify-between shadow-sm max-w-[280px] mx-auto w-full min-h-[160px]">
             <CheckCircle2 className="text-green-500 w-6 h-6 mb-4" />
             <div className="mb-4">
-              <h3 className="text-3xl font-bold text-[#1A1C5C]">
-                {completed.length}
-              </h3>
-              <p className="text-xs text-gray-500">
-                Completed Courses
-              </p>
+              <h3 className="text-3xl font-bold text-[#1A1C5C]">{completed.length}</h3>
+              <p className="text-xs text-gray-500">Completed Courses</p>
             </div>
             <span className="text-[10px] text-green-600 font-bold uppercase tracking-wider">
               Certified Progress
@@ -133,12 +111,8 @@ function Progress() {
           <div className="bg-white border rounded-2xl p-6 flex flex-col justify-between shadow-sm max-w-[280px] mx-auto w-full min-h-[160px]">
             <Clock className="text-blue-500 w-6 h-6 mb-4" />
             <div className="mb-4">
-              <h3 className="text-3xl font-bold text-[#1A1C5C]">
-                {inProgress.length}
-              </h3>
-              <p className="text-xs text-gray-500">
-                Active Courses
-              </p>
+              <h3 className="text-3xl font-bold text-[#1A1C5C]">{inProgress.length}</h3>
+              <p className="text-xs text-gray-500">Active Courses</p>
             </div>
             <span className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">
               In Progress
@@ -148,45 +122,27 @@ function Progress() {
           <div className="bg-white border rounded-2xl p-6 flex flex-col justify-between shadow-sm max-w-[280px] mx-auto w-full min-h-[160px]">
             <BarChart3 className="text-purple-500 w-6 h-6 mb-4" />
             <div className="mb-4">
-              <h3 className="text-3xl font-bold text-[#1A1C5C]">
-                {overallPercent}%
-              </h3>
-              <p className="text-xs text-gray-500">
-                Performance Score
-              </p>
+              <h3 className="text-3xl font-bold text-[#1A1C5C]">{overallPercent}%</h3>
+              <p className="text-xs text-gray-500">Performance Score</p>
             </div>
             <span className="text-[10px] text-purple-600 font-bold uppercase tracking-wider">
               Academic Standing
             </span>
           </div>
-
         </div>
 
         {/* IN PROGRESS SECTION */}
         <div className="mb-14">
-          <h2 className="text-lg font-bold text-[#1A1C5C] mb-4">
-            In Progress Courses
-          </h2>
+          <h2 className="text-lg font-bold text-[#1A1C5C] mb-4">In Progress Courses</h2>
 
           <div className="space-y-4">
-            {inProgress.length === 0 && (
-              <p className="text-sm text-gray-400">
-                No active courses
-              </p>
-            )}
+            {inProgress.length === 0 && <p className="text-sm text-gray-400">No active courses</p>}
 
             {inProgress.map((course: any, i: number) => (
-              <div
-                key={i}
-                className="bg-white border rounded-xl p-5"
-              >
+              <div key={i} className="bg-white border rounded-xl p-5">
                 <div className="flex justify-between text-sm mb-2">
-                  <span className="font-medium">
-                    {course.name}
-                  </span>
-                  <span className="text-blue-600">
-                    {course.progress}%
-                  </span>
+                  <span className="font-medium">{course.name}</span>
+                  <span className="text-blue-600">{course.progress}%</span>
                 </div>
 
                 <div className="h-2 bg-gray-100 rounded-full">
@@ -206,17 +162,12 @@ function Progress() {
         <div className="mt-16">
           <div className="flex items-center gap-2 mb-5">
             <Award className="text-green-600" />
-            <h2 className="text-lg font-bold text-[#1A1C5C]">
-              Completed Courses
-            </h2>
+            <h2 className="text-lg font-bold text-[#1A1C5C]">Completed Courses</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-
             {completed.length === 0 && (
-              <p className="text-sm text-gray-400">
-                No completed courses yet
-              </p>
+              <p className="text-sm text-gray-400">No completed courses yet</p>
             )}
 
             {completed.map((course: any, i: number) => (
@@ -225,21 +176,15 @@ function Progress() {
                 className="bg-green-50 border border-green-200 rounded-xl p-5 flex justify-between items-center"
               >
                 <div>
-                  <p className="font-medium text-[#1A1C5C]">
-                    {course.name}
-                  </p>
-                  <p className="text-xs text-green-600">
-                    Completed
-                  </p>
+                  <p className="font-medium text-[#1A1C5C]">{course.name}</p>
+                  <p className="text-xs text-green-600">Completed</p>
                 </div>
 
                 <CheckCircle2 className="text-green-600" />
               </div>
             ))}
-
           </div>
         </div>
-
       </main>
     </div>
   );

@@ -1,8 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { requireAuth } from "../lib/auth";
+import { withAuth } from "../components/ProtectedPage";
 import { Calendar, Clock, MapPin, CheckCircle2 } from "lucide-react";
 
 export const Route = createFileRoute("/schedule")({
-  component: Schedule,
+  beforeLoad: requireAuth,
+  component: withAuth(Schedule),
 });
 
 const scheduleItems = [

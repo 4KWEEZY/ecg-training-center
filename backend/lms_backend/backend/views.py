@@ -1,9 +1,12 @@
 from django.shortcuts import render
+from django.db import transaction
+from django.utils import timezone
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.views import TokenObtainPairView
 from datetime import datetime, timedelta
 from .serializers import (
@@ -124,7 +127,7 @@ class ProfileView(APIView):
         )
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(ProfileSerializer(request.user).data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -441,8 +444,24 @@ class UserProgressView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        progress = UserProgress.objects.filter(user=request.user)
-        return Response(UserProgressSerializer(progress, many=True).data, status=status.HTTP_200_OK)
+        progress_qs = UserProgress.objects.filter(user=request.user).select_related(
+            'course', 'current_module', 'current_lesson'
+        )
+        to_update = []
+        for p in progress_qs:
+            total = Lesson.objects.filter(module__course=p.course, is_published=True).count()
+            done = LessonCompletion.objects.filter(
+                user=request.user,
+                lesson__module__course=p.course,
+                completed=True,
+            ).count()
+            recalculated = round(done / total * 100) if total > 0 else 0
+            if p.percentage != recalculated:
+                p.percentage = recalculated
+                to_update.append(p)
+        if to_update:
+            UserProgress.objects.bulk_update(to_update, ['percentage'])
+        return Response(UserProgressSerializer(progress_qs, many=True).data, status=status.HTTP_200_OK)
 
 
 class UserProgressUpdateView(APIView):
@@ -461,14 +480,82 @@ class UserProgressUpdateView(APIView):
 class LessonCompletionCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def get(self, request):
+        course_id = request.query_params.get('course')
+        if not course_id:
+            return Response([], status=status.HTTP_200_OK)
+        lesson_ids = list(
+            LessonCompletion.objects.filter(
+                user=request.user,
+                lesson__module__course_id=course_id,
+                completed=True,
+            ).values_list('lesson_id', flat=True)
+        )
+        return Response(lesson_ids)
+
+    @transaction.atomic
     def post(self, request):
-        data = request.data.copy()
-        data['user'] = request.user.id
-        serializer = LessonCompletionSerializer(data=data)
-        if serializer.is_valid():
-            completion = serializer.create(serializer.validated_data)
-            return Response(LessonCompletionSerializer(completion).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        lesson_id = request.data.get('lesson')
+        if not lesson_id:
+            return Response({'detail': 'lesson is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            lesson = Lesson.objects.select_related('module', 'module__course').get(pk=lesson_id)
+        except Lesson.DoesNotExist:
+            return Response({'detail': 'Lesson not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        module = lesson.module
+        course = module.course
+
+        # Mark lesson complete (idempotent)
+        completion, _ = LessonCompletion.objects.update_or_create(
+            user=request.user,
+            lesson=lesson,
+            defaults={'completed': True, 'completed_at': timezone.now()},
+        )
+
+        # Calculate new percentage
+        total = Lesson.objects.filter(module__course=course, is_published=True).count()
+        done = LessonCompletion.objects.filter(
+            user=request.user,
+            lesson__module__course=course,
+            completed=True,
+        ).count()
+        percentage = round(done / total * 100) if total > 0 else 0
+
+        # Find next lesson: next order in same module, else first lesson of next module
+        next_lesson = (
+            Lesson.objects.filter(module=module, order__gt=lesson.order, is_published=True)
+            .order_by('order')
+            .first()
+        )
+        if not next_lesson:
+            next_module = (
+                Module.objects.filter(course=course, order__gt=module.order, is_published=True)
+                .order_by('order')
+                .first()
+            )
+            if next_module:
+                next_lesson = (
+                    Lesson.objects.filter(module=next_module, is_published=True)
+                    .order_by('order')
+                    .first()
+                )
+
+        progress, _ = UserProgress.objects.update_or_create(
+            user=request.user,
+            course=course,
+            defaults={
+                'current_module': next_lesson.module if next_lesson else None,
+                'current_lesson': next_lesson if next_lesson else None,
+                'percentage': percentage,
+            },
+        )
+
+        return Response({
+            'completion': LessonCompletionSerializer(completion).data,
+            'progress': UserProgressSerializer(progress).data,
+        }, status=status.HTTP_200_OK)
 
 
 # ── Enrollments ──
@@ -495,3 +582,18 @@ class EnrollmentCreateView(APIView):
             enrollment = serializer.create(serializer.validated_data)
             return Response(EnrollmentSerializer(enrollment).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        refresh_token = request.data.get("refresh")
+        if not refresh_token:
+            return Response({"detail": "Refresh token required."}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+        except TokenError:
+            return Response({"detail": "Token is invalid or already blacklisted."}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "Successfully logged out."}, status=status.HTTP_205_RESET_CONTENT)

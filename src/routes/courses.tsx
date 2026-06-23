@@ -1,4 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { requireAuth } from "../lib/auth";
+import { withAuth } from "../components/ProtectedPage";
+import { logout } from "../lib/logout";
 import { useEffect, useRef, useState } from "react";
 import {
   LayoutDashboard,
@@ -26,7 +29,8 @@ import {
 import ecgLogo from "../assets/ecg-logo.jpg"; // ← make sure ecg-logo.jpg is in src/assets/
 
 export const Route = createFileRoute("/courses")({
-  component: CoursesPage,
+  beforeLoad: requireAuth,
+  component: withAuth(CoursesPage),
 });
 
 type UserProfile = {
@@ -368,10 +372,7 @@ function CoursesPage() {
 
   const handleLogout = () => {
     setProfileOpen(false);
-    localStorage.removeItem("user");
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    navigate({ to: "/login" });
+    logout(navigate);
   };
 
   const handleEnroll = (courseId: number) => {

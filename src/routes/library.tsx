@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { requireAuth } from "../lib/auth";
+import { withAuth } from "../components/ProtectedPage";
 import { useState } from "react";
 import { Play, Video, Clock, Eye, ShieldCheck, Search } from "lucide-react";
 
 export const Route = createFileRoute("/library")({
-  component: Library,
+  beforeLoad: requireAuth,
+  component: withAuth(Library),
 });
 
 const videoCatalog = [

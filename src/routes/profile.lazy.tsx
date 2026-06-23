@@ -1,15 +1,5 @@
 import { createLazyFileRoute, useNavigate } from "@tanstack/react-router";
-import {
-  User,
-  Mail,
-  Phone,
-  Calendar,
-  Edit2,
-  Save,
-  X,
-  CheckCircle2,
-  ArrowLeft,
-} from "lucide-react";
+import { User, Mail, Phone, Calendar, Edit2, Save, X, CheckCircle2, ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -43,15 +33,16 @@ function ProfilePage() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/profile/",
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const response = await axios.get("http://127.0.0.1:8000/api/profile/", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         setProfile(response.data);
         setFormData({
           name: response.data.name,
           phone_number: response.data.phone_number,
         });
+        const stored = JSON.parse(localStorage.getItem("user") || "{}");
+        localStorage.setItem("user", JSON.stringify({ ...stored, ...response.data }));
       } catch (err) {
         console.error("Failed to fetch profile", err);
       } finally {
@@ -70,11 +61,9 @@ function ProfilePage() {
     setSaving(true);
     setErrors({});
     try {
-      const response = await axios.patch(
-        "http://127.0.0.1:8000/api/profile/",
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      const response = await axios.patch("http://127.0.0.1:8000/api/profile/", formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
       setProfile({ ...profile!, ...response.data });
       // Update localStorage
       const stored = JSON.parse(localStorage.getItem("user") || "{}");
@@ -115,9 +104,7 @@ function ProfilePage() {
     });
   };
 
-  const initials = (profile?.name || profile?.username || "?")
-    .slice(0, 2)
-    .toUpperCase();
+  const initials = (profile?.name || profile?.username || "?").slice(0, 2).toUpperCase();
 
   if (loading) {
     return (
@@ -141,7 +128,6 @@ function ProfilePage() {
         style={{ background: "#f0f2fb", fontFamily: "'Inter', sans-serif" }}
       >
         <div className="mx-auto max-w-2xl">
-
           {/* Back button */}
           <button
             onClick={() => navigate({ to: "/dashboard" })}
@@ -162,7 +148,6 @@ function ProfilePage() {
 
           {/* Profile card */}
           <div className="rounded-2xl border border-[#DDDDF0] bg-white shadow-sm">
-
             {/* Header section (simplified) */}
             <div className="p-6 border-b border-[#DDDDF0]">
               <div className="flex items-center gap-4">
@@ -174,7 +159,9 @@ function ProfilePage() {
                     {profile?.name || profile?.username}
                   </h1>
                   <p className="text-[13px] text-[#8B8DAE]">@{profile?.username}</p>
-                  <span className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${profile?.is_active ? "bg-[#EAF3DE] text-[#3B6D11]" : "bg-[#FCEBEB] text-[#A32D2D]"}`}>
+                  <span
+                    className={`mt-1 inline-block rounded-full px-2.5 py-0.5 text-[11px] font-medium ${profile?.is_active ? "bg-[#EAF3DE] text-[#3B6D11]" : "bg-[#FCEBEB] text-[#A32D2D]"}`}
+                  >
                     {profile?.is_active ? "Active" : "Inactive"}
                   </span>
                 </div>
@@ -184,9 +171,7 @@ function ProfilePage() {
             {/* Body */}
             <div className="p-6">
               <div className="mb-5 flex items-center justify-between">
-                <h2 className="text-[15px] font-semibold text-[#1A1C5C]">
-                  Profile Information
-                </h2>
+                <h2 className="text-[15px] font-semibold text-[#1A1C5C]">Profile Information</h2>
                 {!editing ? (
                   <button
                     onClick={() => setEditing(true)}
@@ -215,7 +200,6 @@ function ProfilePage() {
               </div>
 
               <div className="space-y-4">
-
                 {/* Name */}
                 <div className="rounded-xl border border-[#EAEBF6] bg-[#F4F5FB] p-4">
                   <div className="mb-1 flex items-center gap-2">
@@ -238,9 +222,7 @@ function ProfilePage() {
                       )}
                     </div>
                   ) : (
-                    <p className="text-[14px] font-medium text-[#1A1C5C]">
-                      {profile?.name || "—"}
-                    </p>
+                    <p className="text-[14px] font-medium text-[#1A1C5C]">{profile?.name || "—"}</p>
                   )}
                 </div>
 
@@ -255,9 +237,7 @@ function ProfilePage() {
                       Cannot be changed
                     </span>
                   </div>
-                  <p className="text-[14px] font-medium text-[#1A1C5C]">
-                    @{profile?.username}
-                  </p>
+                  <p className="text-[14px] font-medium text-[#1A1C5C]">@{profile?.username}</p>
                 </div>
 
                 {/* Email — read only */}
@@ -271,9 +251,7 @@ function ProfilePage() {
                       Cannot be changed
                     </span>
                   </div>
-                  <p className="text-[14px] font-medium text-[#1A1C5C]">
-                    {profile?.email}
-                  </p>
+                  <p className="text-[14px] font-medium text-[#1A1C5C]">{profile?.email}</p>
                 </div>
 
                 {/* Phone */}
@@ -316,7 +294,6 @@ function ProfilePage() {
                     {profile?.date_joined ? formatDate(profile.date_joined) : "—"}
                   </p>
                 </div>
-
               </div>
             </div>
           </div>

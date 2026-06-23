@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { requireAuth } from "../lib/auth";
+import { withAuth } from "../components/ProtectedPage";
 import { useState } from "react";
 import {
   HelpCircle,
@@ -14,7 +16,8 @@ import { TopBar } from "@/components/landing/TopBar";
 import { Nav } from "@/components/landing/Nav";
 
 export const Route = createFileRoute("/quizzes")({
-  component: QuizzesPage,
+  beforeLoad: requireAuth,
+  component: withAuth(QuizzesPage),
 });
 
 const MOCK_QUIZ_QUESTIONS = [
@@ -340,7 +343,7 @@ function QuizzesPage() {
             </div>
           </div>
         )}
-        </main>
+      </main>
     </div>
   );
 }

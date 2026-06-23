@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { requireAuth } from "../lib/auth";
+import { withAuth } from "../components/ProtectedPage";
 import { useState } from "react";
 import {
   Award,
@@ -13,7 +15,8 @@ import {
 } from "lucide-react";
 
 export const Route = createFileRoute("/certificates")({
-  component: Certificates,
+  beforeLoad: requireAuth,
+  component: withAuth(Certificates),
 });
 
 const mockupCertificates = [
